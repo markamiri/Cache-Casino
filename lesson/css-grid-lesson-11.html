@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .grid-1 {
+        display: grid;
+        grid-template-columns: 200px 75px;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 50px 1fr 75px;
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        row-gap: 10px;
+        column-gap: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grid-1">
+      <p style="background-color: lightblue">200px</p>
+      <p style="background-color: lightpink">75px</p>
+    </div>
+
+    <div class="grid-2">
+      <p style="background-color: lightblue">col1</p>
+      <p style="background-color: lightpink">col2</p>
+      <p style="background-color: lightblue">col3</p>
+    </div>
+
+    <div class="grid-3">
+      <p style="background-color: lightpink">col1</p>
+      <p style="background-color: lightpink">col2</p>
+      <p style="background-color: lightpink">col3</p>
+      <p style="background-color: lightpink">col4</p>
+      <p style="background-color: lightpink">col1</p>
+      <p style="background-color: lightpink">col2</p>
+      <p style="background-color: lightpink">col3</p>
+      <p style="background-color: lightpink">col4</p>
+    </div>
+  </body>
+</html>

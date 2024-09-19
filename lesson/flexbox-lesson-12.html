@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>lesson 12</title>
+    <style>
+      div {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .flex-1 {
+        display: flex;
+        direction: row;
+        margin-bottom: 20px;
+      }
+      .flex-2 {
+        display: flex;
+        direction: row;
+        margin-bottom: 20px;
+        justify-content: space-between;
+      }
+
+      .flex-3 {
+        display: flex;
+        direction: row;
+        height: 50px;
+        justify-content: space-between;
+        border-color: gray;
+        border-radius: 2px;
+        border-style: solid;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .flex-4 {
+        display: flex;
+        direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 6px;
+        padding-bottom: 6px;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .flex-4-border {
+        border-width: 1px;
+        border-color: gray;
+        border-radius: 8px;
+        border-style: solid;
+        width: 300px;
+      }
+
+      .noti {
+        background-color: rgb(49, 109, 245);
+        color: white;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        padding-left: 10px;
+        padding-right: 10px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+      }
+      .flex-5 {
+        display: flex;
+        direction: row;
+        width: 300px;
+        align-items: center;
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+
+      .proflie-pic {
+        border-radius: 25px;
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        margin-right: 15px;
+      }
+
+      .name {
+        font-family: arial;
+        font-weight: bold;
+      }
+
+      .btn {
+        padding-top: 7px;
+        padding-bottom: 7px;
+        padding-right: 5px;
+        padding-left: 5px;
+        background-color: rgb(49, 109, 245);
+        color: white;
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: bold;
+        border-radius: 6px;
+        border: none;
+      }
+
+      .flex-6 {
+        display: flex;
+        direction: row;
+        width: 900px;
+        align-items: center;
+        background-color: rgb(120, 82, 178);
+      }
+
+      .input {
+        width: 490px;
+        height: 25px;
+        padding-left: 17px;
+        padding-right: 10px;
+        border-radius: 15px;
+        border: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="flex-1">
+      <div style="background-color: lightblue; width: 200px">200px</div>
+      <div style="background-color: lightpink; width: 75px">75px</div>
+    </div>
+
+    <div class="flex-1">
+      <div style="background-color: lightblue; width: 50px">item1</div>
+      <div style="background-color: lightpink; flex: 1">item2</div>
+      <div style="background-color: lightblue; width: 75px">item3</div>
+    </div>
+
+    <div class="flex-2">
+      <div style="background-color: pink">item1</div>
+      <div style="background-color: pink">item2</div>
+      <div style="background-color: pink">item3</div>
+      <div style="background-color: pink">item4</div>
+    </div>
+
+    <div class="flex-3">
+      <div style="background-color: pink">item1</div>
+      <div style="background-color: pink">item2</div>
+    </div>
+
+    <div class="flex-4-border">
+      <div class="flex-4">
+        <div>Home</div>
+        <div class="noti">14</div>
+      </div>
+
+      <div class="flex-4">
+        <div>Notifcations</div>
+        <div class="noti">3</div>
+      </div>
+
+      <div class="flex-4">
+        <div>Messages</div>
+        <div class="noti">5</div>
+      </div>
+    </div>
+
+    <div class="flex-5">
+      <div>
+        <img class="proflie-pic" src="cat.jpg" />
+      </div>
+      <div style="flex: 1; line-height: 7px">
+        <p class="name">Oliver</p>
+        <p style="color: grey">the cat</p>
+        <p style="color: grey; font-size: 13px">Popular</p>
+      </div>
+
+      <div>
+        <button class="btn" style="width: 70px">Follow</button>
+      </div>
+    </div>
+
+    <div class="flex-5">
+      <div>
+        <img class="proflie-pic" src="cat2.jpg" />
+      </div>
+
+      <div style="flex: 1; line-height: 7px">
+        <p class="name">Mimi</p>
+        <p style="color: grey">Sleepy cat</p>
+        <p style="color: grey; font-size: 13px">Popular</p>
+      </div>
+
+      <div>
+        <button class="btn" style="width: 70px">Follow</button>
+      </div>
+    </div>
+
+    <div class="flex-5">
+      <div>
+        <img class="proflie-pic" src="dog.jpg" />
+      </div>
+
+      <div style="flex: 1; line-height: 7px">
+        <p class="name">Mimi</p>
+        <p style="color: grey">Sleepy cat</p>
+        <p style="color: grey; font-size: 13px">Popular</p>
+      </div>
+
+      <div>
+        <button class="btn" style="width: 70px">Follow</button>
+      </div>
+    </div>
+
+    <div class="flex-6">
+      <div style="width: 150px">
+        <p style="padding-left: 17px; color: white; font-weight: bold">Home</p>
+      </div>
+      <div style="flex: 1">
+        <input class="input" placeholder="Search" />
+      </div>
+      <div style="width: 150px">
+        <button
+          style="
+            color: white;
+            border: solid;
+            border-color: white;
+            border-width: 1px;
+            background-color: rgb(120, 82, 178);
+            padding-top: 7px;
+            padding-bottom: 7px;
+            padding-left: 15px;
+            padding-right: 15px;
+            border-radius: 3px;
+          "
+        >
+          Download
+        </button>
+      </div>
+    </div>
+  </body>
+</html>
