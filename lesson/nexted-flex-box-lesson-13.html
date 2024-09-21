@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Lesson 13</title>
+
+    <style>
+      .flexbox {
+        display: flex;
+        flex-direction: row;
+        height: 50px;
+        margin-top: 20px;
+      }
+
+      .column1 {
+        width: 100px;
+        background-color: lightpink;
+      }
+
+      .column2 {
+        width: 200px;
+        background-color: lightblue;
+      }
+
+      .container{
+        display: flex;
+        width: 450px;
+        margin-top: 40px;
+        box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.45);
+
+      }
+    </style>
+  </head>
+
+  <body>
+    <div style="display: flex; height: 50px">
+      <div
+        style="
+          background-color: pink;
+          width: 100px;
+          align-items: center;
+          justify-content: center;
+          display: flex;
+        "
+      >
+        <div style="background-color: black; color: white">item1</div>
+      </div>
+      <div style="background-color: lightblue; width: 200px"></div>
+    </div>
+
+    <div class="flexbox">
+      <div class="column1"></div>
+      <div class="column2">
+        <div>row1</div>
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+          "
+        >
+          <div style="background-color: black; color: white">row2</div>
+          <div style="background-color: black; color: white">row2</div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      style="
+        margin-top: 30px;
+        border-style: solid;
+        border-color: transparent;
+        border-radius: 4px;
+        padding-left: 15px;
+        padding-bottom: 20px;
+        width: 363px;
+        box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.45);
+      "
+    >
+      <p
+        style="
+          font-family: arial;
+          color: grey;
+          font-size: 13px;
+          margin-bottom: 20px;
+        "
+      >
+        ALL INBOXES
+      </p>
+      <div style="display: flex; align-items: center">
+        <img
+          style="
+            width: 44px;
+            height: 44px;
+            border-radius: 22px;
+            object-fit: cover;
+          "
+          src="cat.jpg"
+        />
+        <div style="margin-left: 10px">
+          <div style="display: flex">
+            <div
+              style="
+                flex: 1;
+                font-weight: bold;
+                font-family: Arial;
+                font-size: 16px;
+              "
+            >
+              Chewy Promotions
+            </div>
+            <div
+              style="
+                width: 60px;
+                color: grey;
+                font-size: 13px;
+                font-family: arial;
+              "
+            >
+              4:58 PM
+            </div>
+          </div>
+          <div
+            style="
+              font-family: arial;
+              font-weight: bold;
+              font-size: 14px;
+              margin-top: 2px;
+              margin-bottom: 2px;
+            "
+          >
+            Biggest sale of the year
+          </div>
+          <div style="font-family: arial; color: grey; font-size: 14px">
+            Hey there! We're waiting to tell you about our....
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      style="
+        margin-top: 30px;
+        border-style: solid;
+        border-color: transparent;
+        border-radius: 4px;
+        padding-left: 15px;
+        padding-bottom: 20px;
+        width: 363px;
+        box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.45);
+      "
+    >
+      <p
+        style="
+          font-family: arial;
+          color: grey;
+          font-size: 13px;
+          margin-bottom: 20px;
+        "
+      >
+        ALL INBOXES
+      </p>
+
+      <div style="display: flex; align-items: center">
+        <img
+          style="
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            object-fit: cover;
+          "
+          src="cat.jpg"
+        />
+        <div style="margin-left: 10px">
+          <div style="display: flex">
+            <div
+              style="
+                flex: 1;
+                font-weight: bold;
+                font-family: Arial;
+                font-size: 16px;
+              "
+            >
+              Chewy Promotions
+            </div>
+            <div
+              style="
+                width: 50px;
+                color: grey;
+                font-size: 13px;
+                font-family: arial;
+              "
+            >
+              4:58 PM
+            </div>
+          </div>
+          <div
+            style="
+              font-family: arial;
+              font-weight: bold;
+              font-size: 14px;
+              margin-top: 2px;
+              margin-bottom: 2px;
+            "
+          >
+            Biggest sale of the year
+          </div>
+          <div style="font-family: arial; color: grey; font-size: 14px">
+            Hey there! We're waiting to tell you about our....
+          </div>
+        </div>
+      </div>
+
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          margin-top: 20px;
+          width: 363px;
+        "
+      >
+        <img
+          style="
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            object-fit: cover;
+          "
+          src="dog.jpg"
+        />
+        <div style="margin-left: 10px">
+          <div style="display: flex; width: 293px">
+            <div
+              style="
+                flex: 1;
+                font-weight: bold;
+                font-family: Arial;
+                font-size: 16px;
+              "
+            >
+              Best Buy
+            </div>
+            <div
+              style="
+                width: 57px;
+                color: grey;
+                font-size: 13px;
+                font-family: arial;
+              "
+            >
+              12:32 PM
+            </div>
+          </div>
+          <div
+            style="
+              font-family: arial;
+              font-weight: bold;
+              font-size: 14px;
+              margin-top: 2px;
+              margin-bottom: 2px;
+            "
+          >
+            Your Best Buy eReceipt
+          </div>
+          <div style="font-family: arial; color: grey; font-size: 14px">
+            Thank you for shopping at Best Buy, here is...
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; margin-top: 20px">
+        <img
+          style="
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            object-fit: cover;
+          "
+          src="cat2.jpg"
+        />
+        <div style="margin-left: 10px; width: 293px">
+          <div style="display: flex">
+            <div
+              style="
+                flex: 1;
+                font-weight: bold;
+                font-family: Arial;
+                font-size: 16px;
+              "
+            >
+              Netflix
+            </div>
+            <div
+              style="
+                width: 50px;
+                color: grey;
+                font-size: 13px;
+                font-family: arial;
+              "
+            >
+              9:00 AM
+            </div>
+          </div>
+          <div
+            style="
+              font-family: arial;
+              font-weight: bold;
+              font-size: 14px;
+              margin-top: 2px;
+              margin-bottom: 2px;
+            "
+          >
+            Here's what's coming soon to Netflix
+          </div>
+          <div style="font-family: arial; color: grey; font-size: 14px">
+            Brand new movies and shows, old favourites...
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="container">
+        <div>
+            <img style="width: 55px;; height: 55px; border-radius: 27.5px; object-fit: cover; margin-top: 10px;" src="cat.jpg"></img>
+        </div>
+
+        <div style="margin-left: 10px; margin-top: 10px;">
+            <div style="display: flex; margin-bottom: 5px;">
+                <div style="width: 133px; font-weight: bold; font-family: arial; font-size: 16px; " >
+                    supersimple.dev
+                </div>
+                <div style=" flex: 1; color: grey; font-family: arial; font-size: 16px;">
+                    @SuperSimpleDev
+                </div>
+                
+            </div>
+
+            <div style="font-family: arial; font-size: 18px;">
+                what is backend development? A complete Overview New video is up!
+            </div>
+            <div style="display: flex; margin-top: 13px; border-style: solid; border-radius: 10px; border-color:rgb(211, 211, 211) ; height: 85px; margin-bottom: 20px;">
+                <div style="background-color: rgb(212, 211, 211); width: 140px; margin-right: 10px; ">
+                </div>
+                <div style="margin-top: 14px;">
+                    <div style="font-family: arial; color: rgb(76, 76, 76); ">youtube.com
+                    </div>
+                    <div style="color: black; font-size: 17px; font-family: arial; ">
+                        Backend web development - a complete overview(2021)
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+
+        <div style="display: flex; width: 30px;">
+
+        </div>
+    </div>
+  </body>
+</html>
