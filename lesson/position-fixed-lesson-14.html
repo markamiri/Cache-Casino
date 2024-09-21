@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>lesson 14</title>
+    <style>
+      .modal-title {
+        font-size: 40px;
+        font-family: arial;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .modal-content {
+        font-family: arial;
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
+
+      .modal {
+        background-color: white;
+        width: 300px;
+        border-radius: 5px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        padding-right: 15px;
+        padding-left: 15px;
+      }
+
+      .button {
+        font-size: 16px;
+      }
+    </style>
+  </head>
+
+  <body style="height: 3000px">
+    <div
+      style="
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: black;
+        color: white;
+      "
+    >
+      bottom right
+    </div>
+
+    <div
+      style="
+        top: 0px;
+        bottom: 0px;
+        right: 0px;
+        left: 0px;
+        background-color: rgba(0, 0, 0, 0.8);
+        position: fixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      <div
+        style="
+          position: fixed;
+          right: 0px;
+          top: 0px;
+          bottom: 0px;
+          width: 100px;
+          background-color: green;
+          color: white;
+        "
+      >
+        right sidebar
+      </div>
+
+      <div class="modal">
+        <div class="modal-title">Modal Title</div>
+        <div class="modal-content">This is a modal</div>
+        <button class="button">Close</button>
+      </div>
+    </div>
+
+    <div></div>
+  </body>
+</html>
