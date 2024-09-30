@@ -1,7 +1,7 @@
 .boost_grid {
   display: grid;
-  grid-template-columns: 220px 220px 220px 220px 220px;
-  grid-template-rows: 140px;
+  grid-template-columns: 270px 276px 270px 270px 270px;
+  grid-template-rows: 181px;
   margin-left: 200px;
   column-gap: 10px;
   position: relative;
@@ -16,4 +16,78 @@
   direction: row;
   white-space: nowrap;
   align-items: center;
+  margin-top: 7px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.boost_teams {
+  display: flex;
+  direction: row;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.sport-category,
+.team-icon1,
+.team-icon2 {
+  object-fit: cover;
+  width: 25px;
+  height: 25px;
+}
+
+.sport-category {
+  margin-left: 1px;
+  margin-right: 3px;
+}
+
+.team-icon1 {
+  margin-left: 8px;
+  padding-top: 5px;
+}
+
+.super-boost {
+  width: 100px;
+  font-size: 13 px;
+  font-weight: bold;
+  color: white;
+  display: flex;
+  direction: row;
+  align-items: center;
+}
+
+.super {
+  color: yellow;
+  margin-left: 20px;
+}
+
+.boost {
+  margin-left: 5px;
+}
+
+.boost-box {
+  background-color: rgb(36, 38, 41);
+  border-radius: 8px;
+}
+
+.boost_legs {
+  display: flex;
+  direction: row;
+}
+
+.legs {
+  color: white;
+  font-size: 12px;
+  align-items: center;
+  display: flex;
+  direction: row;
+  margin-top: 5px;
+}
+
+.circle-icon {
+  object-fit: cover;
+  height: 12px;
+  width: 12px;
+  margin-right: 10px;
+  margin-left: 7px;
 }
