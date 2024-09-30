@@ -6,7 +6,7 @@
   row-gap: 40px;
   margin-left: 200px;
   overflow-x: hidden;
-  height: 150px;
+  height: 140px;
   width: 950px;
   z-index: 200;
   position: relative;
@@ -33,7 +33,7 @@
 
 /* For WebKit browsers (Chrome, Safari, etc.) */
 .promo-grid::-webkit-scrollbar {
-  width: 6px; /* Thin scrollbar width */
+  height: 10px; /* Thin scrollbar width */
 }
 
 .promo-grid::-webkit-scrollbar-thumb {

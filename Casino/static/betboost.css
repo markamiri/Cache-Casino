@@ -1,0 +1,19 @@
+.boost_grid {
+  display: grid;
+  grid-template-columns: 220px 220px 220px 220px 220px;
+  grid-template-rows: 140px;
+  margin-left: 200px;
+  column-gap: 10px;
+  position: relative;
+  overflow-x: auto;
+  width: 950px;
+  margin-top: 15px;
+  padding-bottom: 10px;
+}
+
+.boost_title {
+  display: flex;
+  direction: row;
+  white-space: nowrap;
+  align-items: center;
+}
