@@ -1,7 +1,7 @@
 .boost_grid {
   display: grid;
-  grid-template-columns: 270px 276px 270px 270px 270px;
-  grid-template-rows: 181px;
+  grid-template-columns: 321px 321px 321px 321px 321px;
+  grid-template-rows: 345px;
   margin-left: 200px;
   column-gap: 10px;
   position: relative;
@@ -90,4 +90,7 @@
   width: 12px;
   margin-right: 10px;
   margin-left: 7px;
+}
+
+.odds_button {
 }
