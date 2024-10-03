@@ -5,6 +5,11 @@
 
   align-items: center;
   margin-left: 20px;
+  position: fixed;
+  background-color: black;
+  top: 0px;
+  padding-top: 15px;
+  padding-bottom: 15px;
   /*position: fixed;
   z-index: 300; 
   The header needs to be fixed with the top fix this next time*/

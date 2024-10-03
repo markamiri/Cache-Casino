@@ -1,27 +1,16 @@
 .promo-grid {
-  margin-top: 30px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   column-gap: 20px;
   row-gap: 40px;
   margin-left: 200px;
   overflow-x: hidden;
+  overflow-y: hidden;
   height: 140px;
   width: 950px;
   z-index: 200;
-  position: relative;
-}
-
-.promo-grid::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0; /* Stick to the right side */
-  width: 50px; /* Width of the shadow effect */
-  height: 120px; /* Full height of the container */
-  box-shadow: inset -15px 50px 50px rgb(0, 0, 0); /* Right-side inset shadow */
-  pointer-events: none; /* Allows interaction with elements underneath */
-  z-index: 10; /* Make sure it appears over child elements (like images) */
+  margin-top: 90px;
+  margin-bottom: 10px;
 }
 
 .promo-img {

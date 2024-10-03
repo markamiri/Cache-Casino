@@ -1,14 +1,36 @@
 .boost_grid {
   display: grid;
-  grid-template-columns: 321px 321px 321px 321px 321px;
-  grid-template-rows: 345px;
+  grid-template-columns: 321px 321px 321px 321px 321px 321px;
+  grid-template-rows: 371px;
   margin-left: 200px;
   column-gap: 10px;
-  position: relative;
-  overflow-x: auto;
+  top: 95px;
+  overflow-x: hidden;
+  overflow-y: hidden;
   width: 950px;
-  margin-top: 15px;
   padding-bottom: 10px;
+}
+
+.boost_grid:hover {
+  overflow-x: auto;
+}
+
+/* For WebKit browsers (Chrome, Safari, etc.) */
+.boost_grid::-webkit-scrollbar {
+  height: 10px; /* Thin scrollbar width */
+}
+
+.boost_grid::-webkit-scrollbar-thumb {
+  background-color: #555; /* Dark gray color for the scrollbar */
+  border-radius: 10px; /* Rounded edges for the scrollbar */
+}
+
+.boost_grid::-webkit-scrollbar-thumb:hover {
+  background-color: #888; /* Lighter gray on hover */
+}
+
+.boost_grid::-webkit-scrollbar-track {
+  background: transparent; /* Transparent background for the track */
 }
 
 .boost_title {
