@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="module" src="firebaseauth.js" defer></script>
+  </head>
+
+  <body
+    style="background-color: rgba(17, 18, 19, 255); font-family: sans-serif"
+  >
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 35px;
+      "
+    >
+      <img
+        src="static/icons/cache_logo.png"
+        style="
+          object-fit: contain;
+          width: 200px;
+          height: 80px;
+          transform: scale(2); /* Increase the scale to make it bigger */
+        "
+      />
+    </div>
+    <div id="signInMessage" class="messageDiv" style="display: none"></div>
+    <div style="display: flex; align-items: center; justify-content: center">
+      <input
+        style="
+          color: white;
+          background-color: rgb(36, 38, 41);
+          width: 420px;
+          height: 43px;
+          border-radius: 6px;
+          border-color: rgb(166, 168, 171);
+          border-width: 1px;
+          border-style: solid;
+          margin-top: 35px;
+          padding-left: 15px;
+          outline: none; /* Remove the default outline */
+        "
+        onfocus="this.style.borderColor='rgba(255, 220, 0, 255)'; this.style.borderWidth='2px';"
+        onblur="this.style.borderColor='rgb(166, 168, 171)'; this.style.borderWidth='1px';"
+        type="text"
+        placeholder="Email"
+        id="email"
+        type="text"
+        placeholder="email"
+        id="email"
+      />
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: center">
+      <input
+        style="
+          color: white;
+          background-color: rgb(36, 38, 41);
+          width: 420px;
+          height: 43px;
+          border-radius: 6px;
+          border-color: rgb(166, 168, 171);
+          border-width: 1px;
+          border-style: solid;
+          margin-top: 35px;
+          padding-left: 15px;
+          outline: none; /* Remove the default outline */
+        "
+        onfocus="this.style.borderColor='rgba(255, 220, 0, 255)'; this.style.borderWidth='2px';"
+        onblur="this.style.borderColor='rgb(166, 168, 171)'; this.style.borderWidth='1px';"
+        type="text"
+        placeholder="Password"
+        id="password"
+        type="text"
+        placeholder="password"
+        id="password"
+      />
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: center">
+      <div
+        style="
+          color: rgba(255, 220, 0, 255);
+          margin-top: 20px;
+          font-size: 12px;
+          display: flex;
+          margin-right: 330px;
+          cursor: pointer;
+        "
+        onmouseover="this.style.textDecoration='underline'"
+        onmouseout="this.style.textDecoration='none'"
+      >
+        Forgot Password?
+      </div>
+    </div>
+
+    <div
+      style="
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-top: 35px;
+        margin-bottom: 30px;
+      "
+    >
+      <button
+        style="
+          display: flex;
+          justify-content: center;
+          width: 100%;
+          width: 439px;
+          height: 43px;
+
+          border-radius: 6px;
+          color: white;
+          background-color: rgba(255, 220, 0, 255);
+          font-weight: bold;
+          font-size: 15px;
+          border: none;
+          align-items: center;
+        "
+        id="submitSignIn"
+        onclick="signInFnc()"
+      >
+        Log In
+      </button>
+    </div>
+
+    <div
+      style="
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 20px;
+      "
+    >
+      <div
+        style="
+          padding-right: 20px;
+          border-right: 1px solid grey;
+          color: rgb(129, 132, 136);
+          cursor: pointer;
+        "
+        onmouseover="this.style.textDecoration='underline'"
+        onmouseout="this.style.textDecoration='none'"
+      >
+        Sign Up
+      </div>
+      <div
+        style="padding-left: 20px; color: rgb(129, 132, 136); cursor: pointer"
+        onmouseover="this.style.textDecoration='underline'"
+        onmouseout="this.style.textDecoration='none'"
+      >
+        Contact Us
+      </div>
+    </div>
+
+    <div
+      style="
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 15px;
+      "
+    >
+      <img
+        style="width: 26px; height: 26px; object-fit: contain"
+        src="static/icons/sign-up-icons/rg.avif"
+        alt=""
+      />
+      <img
+        style="width: 26px; height: 26px; object-fit: contain"
+        src="static/icons/sign-up-icons/age_minimum.avif"
+        alt=""
+      />
+      <img
+        style="width: 99.33px; height: 26px; object-fit: contain"
+        src="static/icons/sign-up-icons/i_go_secondary.avif"
+        alt=""
+      />
+      <img
+        style="width: 99.33px; height: 26px; object-fit: contain"
+        src="static/icons/sign-up-icons/connex_ontario.avif"
+        alt=""
+      />
+    </div>
+    <div
+      style="
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        height: 7vh;
+        align-items: center;
+      "
+    >
+      <div
+        style="
+          color: rgb(166, 168, 171);
+          width: 500px;
+          text-align: center;
+          font-size: 12px;
+        "
+      >
+        Please play responsibly. 19+. ON only. If you or someone you know has a
+        gambling problem and wants help, call Connex Ontario at
+        <span
+          style="color: rgba(255, 220, 0, 255); cursor: pointer"
+          onmouseover="this.style.textDecoration='underline'"
+          onmouseout="this.style.textDecoration='none'"
+          >1-866-531-2600</span
+        >
+        or visit
+        <span
+          style="color: rgba(255, 220, 0, 255); cursor: pointer"
+          onmouseover="this.style.textDecoration='underline'"
+          onmouseout="this.style.textDecoration='none'"
+          >ConnexOntario</span
+        >
+      </div>
+    </div>
+    <div
+      style="
+        color: rgb(166, 168, 171);
+        width: 100%;
+        justify-content: center;
+        display: flex;
+        padding-bottom: 50px;
+        font-size: 12px;
+      "
+    >
+      By logging in, you agree to our&nbsp;
+      <span
+        style="color: rgba(255, 220, 0, 255); cursor: pointer"
+        onmouseover="this.style.textDecoration='underline'"
+        onmouseout="this.style.textDecoration='none'"
+        >Terms of Use</span
+      >
+      &nbsp;and&nbsp;
+      <span
+        style="color: rgba(255, 220, 0, 255); cursor: pointer"
+        onmouseover="this.style.textDecoration='underline'"
+        onmouseout="this.style.textDecoration='none'"
+        >Privacy Policy</span
+      >
+    </div>
+  </body>
+</html>

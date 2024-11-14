@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <link rel="stylesheet" href="static/sidebar2.css" />
+    <script type="module" src="./homepage.js"></script>
+    <script type="module" src="./firebaseauth.js"></script>
+
+    <link rel="stylesheet" href="static/betboost.css" />
+  </head>
+  <body style="background-color: #31313c">
+    <div class="header">
+      <div>
+        <img
+          style="height: 175px; object-fit: contain; align-items: center"
+          src="static/icons/cache_logo.png"
+          alt=""
+        />
+      </div>
+      <div class="middle-section">
+        <button class="button-search">
+          <img class="search-icon" src="static/icons/search.svg" />
+        </button>
+        <input
+          class="search-box"
+          type="text"
+          placeholder=" Search Sportsbook and Casino"
+        />
+      </div>
+      <div class="buttons">
+        <a
+          href="https://igamingontario.ca/en/player/new-igaming-igaming-101"
+          target="_blank"
+          ><img
+            class="responsible-gambling-icon"
+            src="static/icons/responsible-gambling.png"
+        /></a>
+
+        <button onclick="redirect_login()" class="login">Log In</button>
+        <button
+          onclick="redirect_signup()"
+          style="margin-right: 20px"
+          class="signup"
+        >
+          Sign Up
+        </button>
+
+        <button
+          style="margin-right: 100px"
+          class="profile-icon"
+          id="profileButton"
+        >
+          <img class="profile-color" src="static/icons/Profile-icon.png" />
+        </button>
+      </div>
+
+      <div style="color: white" class="channel-tooltip hidden" id="tooltip">
+        <div style="position: absolute; right: 0; top: 0">
+          <button
+            id="closeButton"
+            style="background-color: transparent; border: none"
+          >
+            <img
+              style="width: 25px; height: 25px"
+              src="static/sidebar-icons/close.png"
+              alt=""
+            />
+          </button>
+        </div>
+        <div
+          style="margin-top: 5px; margin-left: 4.5px; font-family: sans-serif"
+        >
+          <div style="font-size: 20px; font-weight: bold">
+            Welcome <span id="loggedUserFName"></span>
+            <span id="loggedUserLName"></span> !
+          </div>
+
+          <div
+            style="
+              font-size: 14px;
+              margin-bottom: 15px;
+              color: rgb(166, 168, 171);
+            "
+          >
+            <span id="loggedUserEmail"></span>
+          </div>
+          <div style="font-size: 16px; margin-bottom: 10px; font-weight: bold">
+            Wallet
+          </div>
+
+          <div
+            style="
+              border-style: solid;
+              border-width: 1.5px;
+              padding-top: 13px;
+              padding-bottom: 20px;
+              padding-left: 10px;
+              padding-right: 10px;
+              width: 200px;
+              border-radius: 6px;
+              border-color: rgb(79, 80, 81);
+            "
+          >
+            <div
+              style="
+                font-size: 16px;
+                font-weight: bold;
+                margin-bottom: 15px;
+                display: flex;
+                justify-content: space-between;
+              "
+            >
+              <div>Balance:</div>
+              <div>$<span id="loggedUserBalance"></span></div>
+            </div>
+            <div style="display: flex; justify-content: space-between">
+              <button
+                style="
+                  font-size: 16px;
+                  font-weight: bold;
+                  padding-top: 12px;
+                  padding-bottom: 12px;
+                  width: 95px;
+                  border: none;
+                  border-radius: 6px;
+                  background-color: rgb(49, 49, 60);
+                  color: white;
+                "
+              >
+                Withdraw</button
+              ><button
+                style="
+                  font-size: 16px;
+                  font-weight: bold;
+                  padding-top: 12px;
+
+                  padding-bottom: 12px;
+                  width: 95px;
+                  border: none;
+                  border-radius: 6px;
+                  background-color: #ffde00;
+                  color: white;
+                "
+              >
+                Deposit
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="refer-friend-link" style="margin-top: 10px">
+          <img
+            style="height: 53px"
+            src="static/sidebar-icons/refer-a-friend.png"
+          />
+          <div
+            style="
+              font-size: 14px;
+              color: #e8eaed;
+              font-family: sans-serif;
+              width: 1000px;
+            "
+          >
+            <div style="font-size: 18px; font-weight: bold; margin-left: 5px">
+              Refer a Friend!
+            </div>
+            <div style="font-size: 12px; margin-left: 5px">
+              Invite your friends, Get rewarded!
+            </div>
+          </div>
+        </div>
+        <div
+          style="
+            height: 195px; /* Set a height for the scrollable area */
+            overflow-y: auto; /* Enables vertical scrolling when content exceeds height */
+            width: 100%; /* Optional: sets width of the scrollable area */
+            margin-top: 10px;
+            overflow-x: hidden;
+            width: 235px;
+            border-top: 1px solid #e8eaed;
+          "
+          class="custom-scrollbar"
+        >
+          <div class="profile-link">
+            <img src="static/sidebar-icons/my-bets-logo.png" />
+            <div
+              style="font-size: 14px; color: #e8eaed; font-family: sans-serif"
+            >
+              My Bets
+            </div>
+          </div>
+          <div class="profile-link">
+            <img src="static/sidebar-icons/settings.png" />
+            <div
+              style="font-size: 14px; color: #e8eaed; font-family: sans-serif"
+            >
+              Settings
+            </div>
+          </div>
+          <div class="profile-link">
+            <img src="static/sidebar-icons/wallet.png" />
+            <div
+              style="font-size: 14px; color: #e8eaed; font-family: sans-serif"
+            >
+              Wallet
+            </div>
+          </div>
+          <div class="profile-link">
+            <img src="static/icons/responsible-gambling.png" />
+            <div
+              style="font-size: 14px; color: #e8eaed; font-family: sans-serif"
+            >
+              Responsible Gaming
+            </div>
+          </div>
+          <div class="profile-link">
+            <img src="static/sidebar-icons/help.png" />
+            <div
+              style="font-size: 14px; color: #e8eaed; font-family: sans-serif"
+            >
+              Help
+            </div>
+          </div>
+          <div class="profile-link">
+            <img src="static/sidebar-icons/logout.png" />
+            <div
+              style="font-size: 14px; color: #e8eaed; font-family: sans-serif"
+            >
+              Log Out
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <style>
+      /* Tooltip hidden by default */
+      .hidden {
+        display: none;
+      }
+    </style>
+    <div class="off-screen-menu">
+      <div
+        style="
+          height: 800px; /* Set a height for the scrollable area */
+          overflow-y: auto; /* Enables vertical scrolling when content exceeds height */
+          width: 100%; /* Optional: sets width of the scrollable area */
+          margin-top: 10px;
+        "
+        class="custom-scrollbar"
+      >
+        <div
+          style="
+            margin-left: 0px;
+            font-family: sans-serif;
+            color: rgb(166, 168, 171);
+            margin-top: 10px;
+            font-size: 14px;
+            font-style: italic;
+            margin-bottom: 10px;
+          "
+        >
+          Featured
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/off_menu_icons/boost_logo.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Boosts
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/off_menu_icons/in_the_news.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            In The News
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/off_menu_icons/specials.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Specials
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/NFL_logo.avif" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            NFL
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/NBA_logo.avif" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            NBA
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/ncaaf_logo.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            NCAAF
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/MLB_logo.avif" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            MLB
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/NHL_logo.avif" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            NHL
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/ncaab_Logo.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            NCAAB
+          </div>
+        </div>
+
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/series_a.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Series A
+          </div>
+        </div>
+        <div
+          style="
+            font-family: sans-serif;
+            color: rgb(166, 168, 171);
+            margin-top: 15px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-style: italic;
+          "
+        >
+          All Sports
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/rugby.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Australian Rules
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/tennis_logo.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Badminton
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/baseball.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Baseball
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/basketball.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Basketball
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/mma_logo.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Boxing
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/cricket.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Cricket
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/cycling.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Cycling
+          </div>
+        </div>
+
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/esports.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Esports
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/football-logo.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Football
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/golf.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Golf
+          </div>
+        </div>
+
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/hockey.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Lacrosse
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/mma.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            MMA
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/soccer_logo.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Soccer
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/tennis_logo.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Table Tennis
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img src="static/sidebar-icons/tennis_logo.png" />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Tennis
+          </div>
+        </div>
+        <div class="sidebar-link" style="margin-left: 90px">
+          <img
+            src="static/sidebar-icons/sports_volleyball_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24.png"
+          />
+          <div style="font-size: 14px; color: #e8eaed; font-family: sans-serif">
+            Volleyball
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav>
+      <!-- Hamburger Menu -->
+      <div class="ham-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <!-- Buttons Section -->
+      <button
+        style="
+          background-color: #31313c;
+          margin-top: 35px;
+          height: 63px;
+          border-radius: 6px 6px 0 0;
+          border: none;
+          outline: none;
+          width: 50px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "
+      >
+        <img
+          style="
+            object-fit: contain;
+            width: 15px;
+            height: 15px;
+            transform: scale(2);
+          "
+          src="static/sidebar-icons/football-logo.png"
+          alt=""
+        />
+      </button>
+
+      <button
+        style="
+          background-color: #1c1c1f;
+          height: 63px;
+          width: 50px;
+          border-radius: 0 0 6px 6px;
+          border: solid 2px #31313c;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "
+      >
+        <img
+          style="
+            object-fit: contain;
+            width: 15px;
+            height: 15px;
+            transform: scale(2);
+          "
+          src="static/sidebar-icons/Casino-logo.png"
+          alt=""
+        />
+      </button>
+
+      <!-- Additional Buttons -->
+      <button
+        style="
+          background-color: #1c1c1f;
+          height: 63px;
+          width: 50px;
+          border: none;
+          outline: none;
+          cursor: pointer;
+          margin-top: 35px;
+          color: #e8eaed;
+        "
+      >
+        <img
+          style="
+            object-fit: contain;
+            width: 15px;
+            height: 15px;
+            transform: scale(2);
+            padding-bottom: 5px;
+          "
+          src="static/sidebar-icons/home-logo.png"
+          alt=""
+        />
+        <div style="color: #e8eaed; font-size: 10px">Home</div>
+      </button>
+      <button
+        style="
+          background-color: #1c1c1f;
+          height: 63px;
+          width: 50px;
+          border: none;
+          outline: none;
+          cursor: pointer;
+          margin-top: 10px;
+          color: #e8eaed;
+          margin-top: 20px;
+        "
+      >
+        <img
+          style="
+            object-fit: contain;
+            width: 15px;
+            height: 15px;
+            transform: scale(2);
+            padding-bottom: 5px;
+          "
+          src="static/sidebar-icons/live-now-logo.png"
+          alt=""
+        />
+        <div style="color: #e8eaed; font-size: 10px">Live Now</div>
+      </button>
+      <button
+        style="
+          background-color: #1c1c1f;
+          height: 63px;
+          width: 50px;
+          border: none;
+          outline: none;
+          cursor: pointer;
+          margin-top: 10px;
+          color: #e8eaed;
+          margin-top: 20px;
+        "
+      >
+        <img
+          style="
+            object-fit: contain;
+            width: 15px;
+            height: 15px;
+            transform: scale(2);
+            padding-bottom: 5px;
+          "
+          src="static/sidebar-icons/Promo-logo.png"
+          alt=""
+        />
+        <div style="color: #e8eaed; font-size: 10px">Promos</div>
+      </button>
+      <button
+        style="
+          background-color: #1c1c1f;
+          height: 63px;
+          width: 50px;
+          border: none;
+          outline: none;
+          cursor: pointer;
+          margin-top: 20px;
+        "
+      >
+        <img
+          style="
+            object-fit: contain;
+            width: 15px;
+            height: 15px;
+            transform: scale(2);
+            padding-bottom: 5px;
+          "
+          src="static/sidebar-icons/my-bets-logo.png"
+          alt=""
+        />
+        <div style="color: #e8eaed; font-size: 10px">My Bets</div>
+      </button>
+    </nav>
+
+    <div
+      style="
+        width: 755px;
+        height: 164px;
+        background-color: rgba(27, 28, 30, 255);
+        margin-top: 150px;
+        margin-left: 250px;
+        padding: 16px;
+        border-radius: 8px;
+      "
+    >
+      <div
+        style="
+          display: flex;
+          width: 100%;
+          height: 35px;
+          align-items: center;
+          direction: row;
+          font-family: sans-serif;
+          padding-top: 7px;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            width: 375px;
+            align-items: center;
+            justify-content: flex-start;
+          "
+        >
+          <button
+            style="
+              border-radius: 4px;
+              border: none;
+              font-weight: 850;
+              background-color: aqua;
+              font-size: 10px;
+              font-style: italic;
+              padding-top: 3px;
+              padding-bottom: 2px;
+              padding-right: 7px;
+              height: 20px;
+              margin-right: 10px;
+            "
+          >
+            SGP
+          </button>
+          <div
+            style="
+              color: rgb(255, 255, 255);
+              font-size: 13px;
+
+              font-weight: bold;
+            "
+          >
+            Today · 10:00PM
+          </div>
+        </div>
+
+        <div
+          style="
+            display: flex;
+
+            flex: 1;
+            color: rgb(166, 168, 171);
+            font-size: 17px;
+            justify-content: center;
+          "
+        >
+          Spread
+        </div>
+        <div
+          style="
+            display: flex;
+
+            flex: 1;
+            color: rgb(166, 168, 171);
+            font-size: 17px;
+            justify-content: center;
+          "
+        >
+          Total
+        </div>
+        <div
+          style="
+            display: flex;
+
+            flex: 1;
+            color: rgb(166, 168, 171);
+            font-size: 17px;
+            justify-content: center;
+          "
+        >
+          Money
+        </div>
+      </div>
+
+      <div>
+        <div style="display: flex">
+          <div
+            style="
+              display: flex;
+              width: 400px;
+              align-items: center;
+              justify-content: flex-start;
+            "
+          >
+            <div
+              style="margin-right: 18px; display: flex; justify-content: center"
+            >
+              <img
+                style="width: 28px; height: 28px"
+                src="team_Logo/nba-memphis-grizzlies-logo.png"
+                alt=""
+              />
+            </div>
+            <div style="color: white; font-family: sans-serif">
+              <div style="font-weight: bold">MEM Grizzlies</div>
+              <div>7-4, 6th Western</div>
+            </div>
+          </div>
+
+          <div style="flex: 1">
+            <button
+              class="add"
+              style="
+                width: 122px;
+                height: 48px;
+                margin-right: 6px;
+                background-color: rgb(36, 38, 41);
+                border: none;
+                border-radius: 6px;
+              "
+              id="add"
+              data-user-id="markamiri1"
+              data-bet-name='["MEM Grizzlies spread -1dot5 Nov 13 2024"]'
+              data-odds="[1.91]"
+              data-wagered="20"
+              data-transnumb="1"
+              onclick="AddData(
+        this.getAttribute('data-user-id'),
+        JSON.parse(this.getAttribute('data-bet-name')),
+        JSON.parse(this.getAttribute('data-odds')),
+        this.getAttribute('data-wagered'),
+        this.getAttribute('data-transnumb')
+          )"
+            >
+              <div
+                style="color: white; font-weight: bold; font-family: sans-serif"
+              >
+                -1.5
+              </div>
+              <div
+                style="
+                  color: rgb(255, 222, 0);
+                  font-weight: bold;
+                  font-family: sans-serif;
+                "
+              >
+                1.91
+              </div>
+            </button>
+          </div>
+          <div style="flex: 1">
+            <button
+              style="
+                width: 122px;
+                height: 48px;
+                margin-right: 6px;
+                background-color: rgb(36, 38, 41);
+                border: none;
+                border-radius: 6px;
+              "
+            >
+              <div
+                style="color: white; font-weight: bold; font-family: sans-serif"
+              >
+                Over 246.5
+              </div>
+              <div
+                style="
+                  color: rgb(255, 222, 0);
+                  font-weight: bold;
+                  font-family: sans-serif;
+                "
+              >
+                1.71
+              </div>
+            </button>
+          </div>
+          <div style="flex: 1">
+            <button
+              style="
+                width: 122px;
+                height: 48px;
+                background-color: rgb(36, 38, 41);
+                border: none;
+                border-radius: 6px;
+              "
+            >
+              <div
+                style="
+                  color: rgb(255, 222, 0);
+                  font-weight: bold;
+                  font-family: sans-serif;
+                "
+              >
+                1.71
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="display: flex; margin-top: 10px">
+          <div
+            style="
+              display: flex;
+              width: 400px;
+              align-items: center;
+              justify-content: flex-start;
+            "
+          >
+            <div
+              style="display: flex; justify-content: center; margin-left: 2px"
+            >
+              <img
+                style="width: 25px; height: 25px; image-rendering: crisp-edges"
+                src="team_Logo/nba-los-angeles-lakers-logo.png"
+                alt=""
+              />
+            </div>
+            <div
+              style="color: white; font-family: sans-serif; margin-left: 19px"
+            >
+              <div style="font-weight: bold">LA Lakers</div>
+              <div>7-4, 6th Western</div>
+            </div>
+          </div>
+
+          <div style="flex: 1">
+            <button
+              class="add"
+              style="
+                width: 122px;
+                height: 48px;
+                margin-right: 6px;
+                background-color: rgb(36, 38, 41);
+                border: none;
+                border-radius: 6px;
+              "
+              data-user-id="markamiri1"
+              data-bet-name='["LA Lakers spread rere +1dot5 Nov 13 2024"]'
+              data-odds="[1.83]"
+              data-wagered="20"
+              data-transnumb="1"
+              onclick="AddData(
+        this.getAttribute('data-user-id'),
+        JSON.parse(this.getAttribute('data-bet-name')),
+        JSON.parse(this.getAttribute('data-odds')),
+        this.getAttribute('data-wagered'),
+        this.getAttribute('data-transnumb')
+          )"
+            >
+              <div
+                style="color: white; font-weight: bold; font-family: sans-serif"
+              >
+                +1.5
+              </div>
+              <div
+                style="
+                  color: rgb(255, 222, 0);
+                  font-weight: bold;
+                  font-family: sans-serif;
+                "
+              >
+                1.83
+              </div>
+            </button>
+          </div>
+          <div style="flex: 1">
+            <button
+              style="
+                width: 122px;
+                height: 48px;
+                margin-right: 6px;
+                background-color: rgb(36, 38, 41);
+                border: none;
+                border-radius: 6px;
+              "
+            >
+              <div
+                style="color: white; font-weight: bold; font-family: sans-serif"
+              >
+                Under 246.5
+              </div>
+              <div
+                style="
+                  color: rgb(255, 222, 0);
+                  font-weight: bold;
+                  font-family: sans-serif;
+                "
+              >
+                2.1
+              </div>
+            </button>
+          </div>
+          <div style="flex: 1">
+            <button
+              style="
+                width: 122px;
+                height: 48px;
+                background-color: rgb(36, 38, 41);
+                border: none;
+                border-radius: 6px;
+              "
+            >
+              <div
+                style="
+                  color: rgb(255, 222, 0);
+                  font-weight: bold;
+                  font-family: sans-serif;
+                "
+              >
+                2.1
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-left: 90px; margin-top: 40px; display: none">
+      <div class="boost_grid">
+        <div class="boost-box">
+          <!--Make this hover grey when mouse on it also make button hover-->
+          <!-- make the +1 legs look like the screen shot with the legsopenup png-->
+          <div
+            style="
+              padding-bottom: 5px;
+              border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            "
+          >
+            <div
+              style="
+                display: flex;
+                direction: row;
+                justify-content: space-between;
+                margin-left: 20px;
+                margin-right: 20px;
+                margin-top: 10px;
+                align-items: center;
+                margin-bottom: 3px;
+              "
+            >
+              <div
+                style="
+                  color: rgb(166, 168, 171);
+                  font-size: 12px;
+                  font-family: Roboto, Arial;
+                "
+              >
+                SAME GAME PARLAY
+              </div>
+              <button
+                style="
+                  border-radius: 4px;
+                  border: none;
+                  font-weight: 850;
+                  background-color: aqua;
+                  font-size: 10px;
+                  font-style: italic;
+                  padding-top: 3px;
+                  padding-bottom: 2px;
+                  padding-right: 7px;
+                "
+              >
+                SGP
+              </button>
+            </div>
+
+            <div
+              style="
+                font-size: 15px;
+                color: white;
+                font-weight: bold;
+                margin-left: 20px;
+                padding-bottom: 5px;
+              "
+            >
+              Straight
+            </div>
+          </div>
+
+          <div>
+            <div
+              style="
+                display: flex;
+                direction: row;
+                align-items: center;
+                justify-content: space-between;
+                margin-top: 10px;
+              "
+            >
+              <div
+                style="
+                  color: rgb(166, 168, 171);
+                  font-size: 13px;
+                  margin-left: 20px;
+                "
+              >
+                Today · 8:15 AM
+              </div>
+
+              <div style="display: flex; direction: row; align-items: center">
+                <img
+                  style="margin-right: 5px; width: 25px; height: 25px"
+                  src="static/betboost-icons/bets_placed_icon.svg"
+                />
+                <div
+                  style="
+                    color: rgb(20, 184, 80);
+                    font-size: 13px;
+                    margin-right: 20px;
+                  "
+                >
+                  434 bets placed
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display: flex; direction: row; margin-top: 10px">
+              <img
+                style="
+                  width: 15px;
+                  height: 15px;
+                  margin-left: 20px;
+                  padding-top: 3px;
+                "
+                src="static/betboost-icons/Circle-icon.png"
+              />
+              <div style="margin-left: 10px">
+                <div style="color: white; font-size: 14px">1+</div>
+                <div
+                  style="
+                    color: rgb(166, 168, 171);
+                    font-size: 12px;
+                    margin-top: 3px;
+                  "
+                >
+                  Touchdown Scorer (Bij. Robinson)
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; direction: row; margin-top: 15px">
+              <img
+                style="
+                  width: 15px;
+                  height: 15px;
+                  margin-left: 20px;
+                  padding-top: 3px;
+                "
+                src="static/betboost-icons/Circle-icon.png"
+              />
+              <div style="margin-left: 10px">
+                <div style="color: white; font-size: 14px">1+</div>
+                <div
+                  style="
+                    color: rgb(166, 168, 171);
+                    font-size: 12px;
+                    margin-top: 3px;
+                  "
+                >
+                  Touchdown Scorer (M. Evans)
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; direction: row; margin-top: 15px">
+              <img
+                style="
+                  width: 15px;
+                  height: 15px;
+                  margin-left: 20px;
+                  padding-top: 3px;
+                "
+                src="static/betboost-icons/Circle-icon.png"
+              />
+              <div style="margin-left: 10px">
+                <div style="color: white; font-size: 14px">1+</div>
+                <div
+                  style="
+                    color: rgb(166, 168, 171);
+                    font-size: 12px;
+                    margin-top: 3px;
+                  "
+                >
+                  Touchdown Scorer (D. London)
+                </div>
+              </div>
+            </div>
+
+            <div
+              style="
+                margin-left: 20px;
+                color: rgb(5, 111, 250);
+                margin-top: 20px;
+                font-size: 14px;
+              "
+            >
+              +1 More Legs
+            </div>
+
+            <div
+              style="
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                margin-top: 20px;
+              "
+            ></div>
+
+            <div
+              style="
+                display: flex;
+                direction: row;
+                align-items: center;
+                justify-content: space-between;
+                margin-top: 20px;
+                margin-right: 20px;
+                margin-left: 20px;
+              "
+            >
+              <div>
+                <div style="color: white; margin-bottom: 5px">+2000</div>
+                <div style="color: rgb(166, 168, 171); font-size: 12px">
+                  $10.00 pays $200.00
+                </div>
+              </div>
+
+              <div>
+                <button
+                  style="
+                    height: 40px;
+                    border-radius: 6px;
+                    border: none;
+                    background-color: rgb(5, 111, 250);
+                    font-weight: bold;
+                    color: white;
+                    padding-left: 17px;
+                    padding-right: 17px;
+                  "
+                  id="bet-slip"
+                  data-user-id="markamiri1"
+                  data-bet-name="luka over 7.5 rebounds"
+                  data-odds="1.2"
+                  data-wagered="20"
+                  data-transnumb="1"
+                >
+                  Add to Bet Slip
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-left: 0px; margin-top: 100px">
+      <div class="boost_grid">
+        <div class="boost-box">
+          <!--Make this hover grey when mouse on it also make button hover-->
+          <!-- make the +1 legs look like the screen shot with the legsopenup png-->
+          <div
+            style="
+              padding-bottom: 5px;
+              border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            "
+          >
+            <div
+              style="
+                display: flex;
+                direction: row;
+                justify-content: space-between;
+                margin-left: 20px;
+                margin-right: 20px;
+                margin-top: 10px;
+                align-items: center;
+                margin-bottom: 3px;
+              "
+            >
+              <div
+                style="
+                  color: rgb(166, 168, 171);
+                  font-size: 12px;
+                  font-family: Roboto, Arial;
+                "
+              >
+                SAME GAME PARLAY
+              </div>
+              <button
+                style="
+                  border-radius: 4px;
+                  border: none;
+                  font-weight: 850;
+                  background-color: aqua;
+                  font-size: 10px;
+                  font-style: italic;
+                  padding-top: 3px;
+                  padding-bottom: 2px;
+                  padding-right: 7px;
+                "
+              >
+                SGP
+              </button>
+            </div>
+
+            <div
+              style="
+                font-size: 15px;
+                color: white;
+                font-weight: bold;
+                margin-left: 20px;
+                padding-bottom: 5px;
+              "
+            >
+              Multi Leg Parlay
+            </div>
+          </div>
+
+          <div>
+            <div
+              style="
+                display: flex;
+                direction: row;
+                align-items: center;
+                justify-content: space-between;
+                margin-top: 10px;
+              "
+            >
+              <div
+                style="
+                  color: rgb(166, 168, 171);
+                  font-size: 13px;
+                  margin-left: 20px;
+                "
+              >
+                Today · 8:15 AM
+              </div>
+
+              <div style="display: flex; direction: row; align-items: center">
+                <img
+                  style="margin-right: 5px; width: 25px; height: 25px"
+                  src="static/betboost-icons/bets_placed_icon.svg"
+                />
+                <div
+                  style="
+                    color: rgb(20, 184, 80);
+                    font-size: 13px;
+                    margin-right: 20px;
+                  "
+                >
+                  434 bets placed
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display: flex; direction: row; margin-top: 10px">
+              <img
+                style="
+                  width: 15px;
+                  height: 15px;
+                  margin-left: 20px;
+                  padding-top: 3px;
+                "
+                src="static/betboost-icons/Circle-icon.png"
+              />
+              <div style="margin-left: 10px">
+                <div style="color: white; font-size: 14px">1+</div>
+                <div
+                  style="
+                    color: rgb(166, 168, 171);
+                    font-size: 12px;
+                    margin-top: 3px;
+                  "
+                >
+                  Touchdown Scorer (Bij. Robinson)
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; direction: row; margin-top: 15px">
+              <img
+                style="
+                  width: 15px;
+                  height: 15px;
+                  margin-left: 20px;
+                  padding-top: 3px;
+                "
+                src="static/betboost-icons/Circle-icon.png"
+              />
+              <div style="margin-left: 10px">
+                <div style="color: white; font-size: 14px">1+</div>
+                <div
+                  style="
+                    color: rgb(166, 168, 171);
+                    font-size: 12px;
+                    margin-top: 3px;
+                  "
+                >
+                  Touchdown Scorer (M. Evans)
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; direction: row; margin-top: 15px">
+              <img
+                style="
+                  width: 15px;
+                  height: 15px;
+                  margin-left: 20px;
+                  padding-top: 3px;
+                "
+                src="static/betboost-icons/Circle-icon.png"
+              />
+              <div style="margin-left: 10px">
+                <div style="color: white; font-size: 14px">1+</div>
+                <div
+                  style="
+                    color: rgb(166, 168, 171);
+                    font-size: 12px;
+                    margin-top: 3px;
+                  "
+                >
+                  Touchdown Scorer (D. London)
+                </div>
+              </div>
+            </div>
+
+            <div
+              style="
+                margin-left: 20px;
+                color: rgb(5, 111, 250);
+                margin-top: 20px;
+                font-size: 14px;
+              "
+            >
+              +1 More Legs
+            </div>
+
+            <div
+              style="
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                margin-top: 20px;
+              "
+            ></div>
+
+            <div
+              style="
+                display: flex;
+                direction: row;
+                align-items: center;
+                justify-content: space-between;
+                margin-top: 20px;
+                margin-right: 20px;
+                margin-left: 20px;
+              "
+            >
+              <div>
+                <div style="color: white; margin-bottom: 5px">+2000</div>
+                <div style="color: rgb(166, 168, 171); font-size: 12px">
+                  $10.00 pays $200.00
+                </div>
+              </div>
+
+              <div>
+                <button
+                  style="
+                    height: 40px;
+                    border-radius: 6px;
+                    border: none;
+                    background-color: rgb(5, 111, 250);
+                    font-weight: bold;
+                    color: white;
+                    padding-left: 17px;
+                    padding-right: 17px;
+                  "
+                  data-user-id="markamiri1"
+                  data-bet-name='["Raptor Money Line"]'
+                  data-odds="[3]"
+                  data-wagered="60"
+                  data-transnumb="1"
+                  onclick="AddData(
+        this.getAttribute('data-user-id'),
+        JSON.parse(this.getAttribute('data-bet-name')),
+        JSON.parse(this.getAttribute('data-odds')),
+        this.getAttribute('data-wagered'),
+        this.getAttribute('data-transnumb')
+    )"
+                >
+                  Add to Bet Slip
+                </button>
+
+                <button
+                  id="find-bet"
+                  data-user-id="markamiri1"
+                  data-bet-name="BOS Celtics Money Line"
+                >
+                  Find Bet Occurrences
+                </button>
+                <button id="cache-straights-btn">Cache Straights</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-left: 200px; margin-top: 200px">
+      <button id="get-balance-btn">Get Balance</button>
+
+      <div id="balance"></div>
+    </div>
+
+    <script>
+      const profileButton = document.getElementById("profileButton");
+      const tooltip = document.getElementById("tooltip");
+      const closeButton = document.getElementById("closeButton");
+
+      profileButton.addEventListener("click", () => {
+        tooltip.classList.toggle("hidden");
+      });
+      closeButton.addEventListener("click", () => {
+        tooltip.classList.add("hidden");
+      });
+    </script>
+
+    <script>
+      const hamMenu = document.querySelector(".ham-menu");
+      const offScreenMenu = document.querySelector(".off-screen-menu");
+      hamMenu.addEventListener("click", () => {
+        hamMenu.classList.toggle("active");
+        offScreenMenu.classList.toggle("active");
+      });
+    </script>
+    <script>
+      function redirect_login() {
+        window.location.href = "temp-signin.html";
+      }
+      function redirect_signup() {
+        window.location.href = "temp-signup.html";
+      }
+    </script>
+    <script>
+      const loggedInUserId = localStorage.getItem("loggedInUserId");
+      if (loggedInUserId) {
+        document.querySelector(".login").style.display = "none";
+        document.querySelector(".signup").style.display = " none";
+      }
+    </script>
+    <!--<script type="module">
+      import { AddData, AddParlayData } from "./addbet.js";
+
+      window.addparlaybetslip = function () {
+        const legs = [
+          { description: "Team A wins", odds: 1.8 },
+          { description: "Player B scores", odds: 2.1 },
+        ];
+
+        // Call AddParlayData with the legs array
+        AddParlayData(legs);
+      }; 
+    </script>-->
+
+    <script type="module">
+      import { AddData } from "./casino-functions.js"; // Import the AddData function
+
+      document.querySelector("#add").addEventListener("click", function () {
+        const userId = this.getAttribute("data-user-id");
+        const betName = this.getAttribute("data-bet-name");
+        const odds = this.getAttribute("data-odds");
+        const wagered = this.getAttribute("data-wagered");
+
+        AddData(userId, betName, odds, wagered); // Call AddData function
+      });
+    </script>
+
+    <script type="module">
+      import { FindOccurrencesOfBet } from "./casino-functions.js"; // Import the function
+
+      // Event listener for the button
+      document
+        .querySelector("#find-bet")
+        .addEventListener("click", function () {
+          const userId = this.getAttribute("data-user-id");
+          const targetBetName = this.getAttribute("data-bet-name");
+
+          // Call the FindOccurrencesOfBet function
+          FindOccurrencesOfBet(userId, targetBetName)
+            .then((matchingBets) => {
+              if (matchingBets && matchingBets.length > 0) {
+                alert(
+                  `Found ${matchingBets.length} occurrences of "${targetBetName}".`
+                );
+              } else {
+                alert(`No occurrences of "${targetBetName}" found.`);
+              }
+            })
+            .catch((error) => {
+              alert("Error: " + error.message);
+            });
+        });
+    </script>
+
+    <script type="module">
+      import { cache_straights } from "./casino-functions.js"; // Adjust path as needed
+
+      document
+        .querySelector("#cache-straights-btn")
+        .addEventListener("click", function () {
+          console.log("Button clicked"); // Log to ensure the event is triggered
+
+          const userId = "markamiri1"; // Replace with the actual user ID
+          const targetBetName = "BOS Celtics Money Line"; // The bet name you're targeting
+
+          cache_straights(userId, targetBetName)
+            .then(() => {
+              alert("Cache straights function completed.");
+            })
+            .catch((error) => {
+              alert("Error: " + error.message);
+            });
+        });
+    </script>
+
+    <script type="module">
+      import { getUserBalance } from "./casino-functions.js"; // Adjust path as needed
+
+      // Event listener for button click
+      document
+        .querySelector("#get-balance-btn")
+        .addEventListener("click", function () {
+          getUserBalance()
+            .then((balance) => {
+              if (balance !== null) {
+                document.querySelector(
+                  "#balance"
+                ).textContent = `User Balance: $${balance}`;
+              } else {
+                document.querySelector("#balance").textContent =
+                  "Unable to retrieve user balance.";
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching balance:", error);
+            });
+        });
+    </script>
+  </body>
+</html>

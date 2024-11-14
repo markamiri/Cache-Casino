@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="module" src="./homepage.js"></script>
+    <script type="module" src="./firebaseauth.js"></script>
+  </head>
+
+  <body>
+    <h1>welcome to home page</h1>
+    <div>First Name: <span id="loggedUserFName"></span></div>
+    <div>Last Name: <span id="loggedUserLName"></span></div>
+    <div>Email: <span id="loggedUserEmail"></span></div>
+    <div>Balance: $ <span id="loggedUserBalance"></span></div>
+    <div>Username: <span id="loggedUsername"></span></div>
+
+    <div>
+      <div class="bet">BOS celtics spread -12.5</div>
+      <div class="odds">1.87</div>
+      <div class="amountwagered">20</div>
+      <button onclick="addBetSlip('BOS celtics spread -12.5', 1.87, 20 )">
+        bet now
+      </button>
+    </div>
+    <button id="logout">logout</button>
+  </body>
+</html>

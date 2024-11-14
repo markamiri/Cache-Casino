@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style></style>
+  </head>
+
+  <body>
+    <div id="hiddenDiv" style="display: none">
+      <input type="text" placeholder="Task" class="task" />
+      <input
+        type="text"
+        placeholder="Time Spent/Repitition Completed"
+        class="quantity"
+      />
+    </div>
+    <button onclick="addToSlip()">Add to Bet Slip</button>
+    <div class="js-todo">text</div>
+
+    <script>
+      const todo = [
+        {
+          task: "make dinner",
+          quantity: "1 hour",
+        },
+      ];
+
+      function renderToDoList() {
+        let todolistHTML = "";
+
+        for (let i = 0; i < todo.length; i++) {
+          const todoObject = todo[i];
+          const { task, quantity } = todoObject;
+
+          const html = `<div> ${task} </div> <div> ${quantity} </div>`;
+          todolistHTML += html;
+          console.log(html);
+        }
+
+        document.querySelector(".js-todo").innerHTML = todolistHTML;
+      }
+
+      function addToSlip() {
+        var div = document.getElementById("hiddenDiv");
+        if (div.style.display === "none") {
+          div.style.display = "block";
+        } else {
+          const inputTask = document.querySelector(".task");
+          const inputQuantity = document.querySelector(".quantity");
+          const task = inputTask.value;
+          const quantity = inputQuantity.value;
+          todo.push({ task: task, quantity: quantity });
+          task.value = "";
+          quantity.value = "";
+
+          renderToDoList();
+        }
+      }
+    </script>
+  </body>
+</html>

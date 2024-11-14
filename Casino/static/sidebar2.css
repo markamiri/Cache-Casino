@@ -1,0 +1,359 @@
+.off-screen-menu {
+  background-color: #1c1c1f;
+  height: 100vh;
+  width: 100%;
+  max-width: 293px;
+  position: fixed;
+  top: 0;
+  left: -450px;
+  display: flex;
+  flex-direction: column;
+
+  text-align: center;
+  font-size: 3rem;
+  transition: 0.3s ease;
+}
+
+.off-screen-menu.active {
+  left: 0;
+}
+nav {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  background-color: #1c1c1f;
+  width: 55px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  align-items: center;
+  border-right: 1.3px solid #31313c;
+}
+
+.ham-menu {
+  height: 50px;
+  width: 40px;
+
+  position: relative;
+}
+
+.ham-menu span {
+  height: 5px;
+  width: 100%;
+  background-color: #e8eaed;
+  border-radius: 25px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: 0.3s ease;
+}
+
+.ham-menu span:nth-child(1) {
+  top: 25%;
+}
+
+.ham-menu span:nth-child(3) {
+  top: 75%;
+}
+
+.ham-menu.active span:nth-child(1) {
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.ham-menu.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.ham-menu.active span:nth-child(3) {
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.sidebar {
+  position: fixed;
+  left: 0px;
+  bottom: 0px;
+  top: 80px;
+  width: 200px;
+  z-index: 200;
+  padding-top: 5px;
+  background-color: black;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.sidebar:hover {
+  overflow-y: auto;
+}
+
+/* For WebKit browsers (Chrome, Safari, etc.) */
+.sidebar::-webkit-scrollbar {
+  width: 6px; /* Thin scrollbar width */
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: #555; /* Dark gray color for the scrollbar */
+  border-radius: 10px; /* Rounded edges for the scrollbar */
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background-color: #888; /* Lighter gray on hover */
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent; /* Transparent background for the track */
+}
+
+.sidebar-link {
+  height: 40px;
+  width: 160px;
+  padding-left: 12px;
+  padding-right: 12px;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  flex-direction: row;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-left: 3px;
+}
+
+.sidebar-link img {
+  height: 24px;
+  margin-bottom: 4px;
+  margin-right: 10px;
+}
+
+.sidebar-link:hover {
+  background-color: #31313c;
+}
+
+.sidebar div {
+  font: Roboto;
+  font-weight: bold;
+  color: white;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.lol-logo {
+  filter: invert(90%);
+}
+
+.google-logos {
+  filter: invert(50%);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 7.3px; /* Adjusts scrollbar width */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent; /* Optional: transparent background for track */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #434352; /* Color of the scrollbar thumb */
+  border-radius: 10px; /* Rounded corners for the scrollbar thumb */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* Slightly lighter color on hover for effect */
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-left: 79px;
+  top: 0;
+  width: 100%;
+  height: 70px;
+  position: fixed;
+
+  background-color: #1c1c1f;
+}
+.middle-section {
+  display: flex;
+  align-items: center;
+  margin-right: 30px;
+  width: 500px;
+  flex-direction: row;
+}
+
+.search-icon {
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  filter: invert(50%);
+  margin-left: 10px;
+}
+.search-box {
+  height: 50px;
+  width: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background-color: rgb(36, 38, 41);
+  border: none;
+  color: black;
+  outline: none;
+  border-radius: 0 10px 10px 0;
+  color: white;
+}
+.button-search {
+  background-color: rgb(36, 38, 41);
+  border: none;
+  border-radius: 10px 0 0 10px;
+  height: 52px;
+}
+input::placeholder {
+  color: grey;
+  font-size: 17px;
+}
+.buttons {
+  display: flex;
+}
+.responsible-gambling-icon {
+  margin-right: 20px;
+  padding-top: 8px;
+}
+
+.login {
+  margin-right: 15px;
+  height: 50px;
+  width: 110px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background-color: rgb(36, 38, 41);
+  cursor: pointer;
+  font: Roboto, Arial;
+}
+
+.signup {
+  margin-right: 15px;
+  height: 50px;
+  width: 110px;
+  color: white;
+  background-color: rgba(255, 220, 0, 255);
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  font: Roboto, Arial;
+}
+
+.profile-icon {
+  margin-right: 20px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: none;
+  background-color: rgb(36, 38, 41);
+  cursor: pointer;
+}
+
+.left-section {
+  width: 250px;
+}
+
+.profile-color {
+  filter: invert(1%);
+  width: 40px;
+  height: 40px;
+}
+
+.profile-icon:hover,
+.login:hover,
+.signup:hover {
+  opacity: 0.8;
+}
+
+.profile-icon:active,
+.login:active,
+.signup:active {
+  opacity: 0.4;
+}
+
+.channel-tooltip {
+  background-color: rgb(17, 18, 19);
+  width: 210px;
+  padding: 12px 12px;
+  padding-right: 30px;
+  box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  position: absolute;
+  top: 80px;
+  height: 468px;
+  right: 100px;
+  z-index: 300;
+  opacity: 1;
+  pointer-events: auto;
+
+  transition: opacity 0.15s;
+  border-style: solid;
+  border-width: 1.5px;
+  border-color: rgb(79, 80, 81);
+}
+.channel-tooltip.hidden {
+  opacity: 0; /* Hidden state */
+  pointer-events: none; /* Disable interaction when hidden */
+}
+
+.profile-link {
+  height: 40px;
+  width: 200px;
+  padding-left: 12px;
+  padding-right: 12px;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  flex-direction: row;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-left: 3px;
+}
+.profile-link img {
+  height: 24px;
+  margin-bottom: 4px;
+  margin-right: 10px;
+}
+
+.profile-link:hover {
+  background-color: #31313c;
+}
+
+.profile-link:hover {
+  background-color: #31313c;
+}
+
+.profile-link.special-style {
+  background-color: #454552; /* New default background for the combined class */
+  border: 2px solid #ffde00; /* Additional style */
+}
+
+.refer-friend-link {
+  height: 60px;
+  width: 200px;
+  padding-left: 12px;
+  padding-right: 12px;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  flex-direction: row;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-left: 3px;
+}
+.refer-friend-link:hover {
+  background-color: #31313c;
+}

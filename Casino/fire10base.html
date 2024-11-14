@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Database Tutorial</title>
+    <link rel="stylesheet" href="static/sidebar2.css" />
+  </head>
+
+  <body style="font-family: sans-serif">
+    <!--Sidebar-->
+    <div style="display: none" class="off-screen-menu"></div>
+    <nav style="display: none">
+      <div class="ham-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </nav>
+
+    <label>User</label>
+    <input type="text" id="user" />
+    <label>Bet Name</label>
+    <input type="text" id="betName" />
+    <label>Odds</label>
+    <input type="text" id="odds" />
+    <label>Amount Wagered</label>
+    <input type="text" id="wagered" />
+    <label>trans</label>
+    <input type="text" id="transnumb" />
+    <label>cache</label>
+    <input type="text" id="cache" />
+
+    <button id="add">Place bet</button>
+    <button id="retrieve">Retrieve</button>
+    <button id="update">Update</button>
+    <button id="delete">Delete</button>
+    <button id="findBalance">Find Latest Balance</button>
+    <button id="cashout">Cash out</button>
+    <button id="cachebtn">cache</button>
+
+    <button id="logout">logout</button>
+    <div>
+      <div>First Name: <span id="loggedUserFName"></span></div>
+      <div>Last Name: <span id="loggedUserLName"></span></div>
+      <div>Email: <span id="loggedUserEmail"></span></div>
+      <div>Balance: $ <span id="loggedUserBalance"></span></div>
+      <div>Username: <span id="loggedUsername"></span></div>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        set,
+        get,
+        child,
+        update,
+        remove,
+      } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+      import {
+        getFirestore,
+        doc,
+        updateDoc,
+        getDoc,
+      } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCjl0DH8mQxyDvtHj5XO37lHFUpv5FE61E",
+        authDomain: "fir-v10-5e04f.firebaseapp.com",
+        databaseURL: "https://fir-v10-5e04f-default-rtdb.firebaseio.com",
+        projectId: "fir-v10-5e04f",
+        storageBucket: "fir-v10-5e04f.appspot.com",
+        messagingSenderId: "539121343265",
+        appId: "1:539121343265:web:0972f1e127abab931efc60",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase();
+      const firestore = getFirestore(app);
+
+      let user = document.querySelector("#user");
+      let betName = document.querySelector("#betName");
+      let odds = document.querySelector("#odds");
+      let wagered = document.querySelector("#wagered");
+      let transnumb = document.querySelector("#transnumb");
+
+      // Function to add data
+      function AddData() {
+        const userId = user.value;
+        const wageredAmount = parseFloat(wagered.value); // Convert wagered input to a number
+
+        // Fetch the user's transaction history to determine the next transaction number
+        const userRef = ref(db, "betslipSet/" + userId);
+
+        get(userRef)
+          .then((snapshot) => {
+            let currentBalance = 500; // Default balance for first transaction
+            let nextTransactionNumber = 1; // Default transaction number if this is the user's first transaction
+
+            if (snapshot.exists()) {
+              // Retrieve all transactions and determine the latest transaction number
+              const allTransactions = snapshot.val();
+              const transactionKeys = Object.keys(allTransactions);
+
+              // Find the highest transaction number and increment it
+              nextTransactionNumber = transactionKeys.length + 1;
+
+              // Get the latest balance from the latest transaction
+              const latestTransaction =
+                allTransactions[transactionKeys[transactionKeys.length - 1]];
+              currentBalance = latestTransaction.balance;
+            }
+
+            // Check if the wagered amount is less than or equal to the current balance
+            if (wageredAmount > currentBalance) {
+              alert(
+                "Insufficient funds. Your current balance is: $" +
+                  currentBalance
+              );
+            } else {
+              // Subtract wagered amount from balance and create the new bet data
+              const newBalance = currentBalance - wageredAmount;
+
+              const betData = {
+                name: userId,
+                nameofbet: betName.value,
+                betodds: odds.value,
+                amtwagered: wageredAmount,
+                transaction: nextTransactionNumber, // Set the transaction number automatically
+                unsettled: true,
+                cache: "None",
+                totalreturn: 0,
+                balance: newBalance, // Update balance after wager
+                cashout: false,
+              };
+
+              // Store data under user and transaction number in Realtime Database
+              set(
+                ref(db, "betslipSet/" + userId + "/" + nextTransactionNumber),
+                betData
+              )
+                .then(() => {
+                  alert(
+                    "Bet added successfully. New balance is: $" + newBalance
+                  );
+
+                  // Update balance in Firestore
+                  const loggedInUserId = localStorage.getItem("loggedInUserId");
+
+                  const userDocRef = doc(firestore, "users", loggedInUserId);
+
+                  return updateDoc(userDocRef, { balance: newBalance });
+                })
+                .then(() => {
+                  alert("Balance updated successfully in Firestore.");
+                })
+                .catch((error) => {
+                  alert("Error updating Firestore: " + error);
+                });
+            }
+          })
+          .catch((error) => {
+            alert("Error retrieving user data: " + error);
+          });
+      }
+
+      // Function to retrieve data based on user and transaction number
+      function RetData() {
+        const dbRef = ref(db);
+        const userId = user.value;
+        const transactionNumber = transnumb.value;
+
+        // Check if both user and transaction number are provided
+        if (!userId || !transactionNumber) {
+          alert("Both user and transaction number must be provided.");
+          return;
+        }
+
+        // Fetch data based on user and transaction number
+        get(child(dbRef, "betslipSet/" + userId + "/" + transactionNumber))
+          .then((snapshot) => {
+            if (snapshot.exists()) {
+              const betData = snapshot.val();
+              user.value = betData.name;
+              betName.value = betData.nameofbet;
+              odds.value = betData.betodds;
+              wagered.value = betData.amtwagered;
+              transnumb.value = betData.transaction;
+              alert("Data retrieved successfully");
+            } else {
+              alert(
+                "No data available for the given user and transaction number."
+              );
+            }
+          })
+          .catch((error) => {
+            alert("Error retrieving data: " + error);
+          });
+      }
+
+      // Function to update data
+      function UpdateData() {
+        const betData = {
+          name: user.value,
+          nameofbet: betName.value,
+          betodds: odds.value,
+          amtwagered: wagered.value,
+        };
+
+        update(
+          ref(db, "betslipSet/" + user.value + "/" + transnumb.value),
+          betData
+        )
+          .then(() => {
+            alert("Data updated successfully");
+          })
+          .catch((error) => {
+            alert("Error updating data: " + error);
+          });
+      }
+
+      function UpdateBetslipWithCache() {
+        const userId = user.value;
+        const betNameValue = betName.value.trim();
+        const cacheValue = document
+          .querySelector("#cache")
+          .value.trim()
+          .toLowerCase();
+
+        if (
+          !userId ||
+          !betNameValue ||
+          (cacheValue !== "true" && cacheValue !== "false")
+        ) {
+          alert(
+            "Please enter a valid username, bet name, and cache value (true or false)."
+          );
+          return;
+        }
+
+        const userRef = ref(db, "betslipSet/" + userId);
+        const loggedInUserId = localStorage.getItem("loggedInUserId");
+        const userDocRef = doc(firestore, "users", loggedInUserId);
+
+        getDoc(userDocRef)
+          .then((userDoc) => {
+            if (!userDoc.exists()) {
+              throw new Error("User not found in Firestore.");
+            }
+
+            let updatedBalance = userDoc.data().balance; // Start with Firestore balance
+            let foundMatchingBet = false; // Flag to track if any matching bets are found
+
+            return get(userRef).then((snapshot) => {
+              if (!snapshot.exists()) {
+                throw new Error("No bets found for the specified user.");
+              }
+
+              const allBets = snapshot.val();
+              let updates = {};
+              let totalReturnValue = 0;
+
+              for (let transactionId in allBets) {
+                const betData = allBets[transactionId];
+                let betNamesArray = [];
+
+                // Parse nameofbet as an array if it’s stored as a JSON string
+                try {
+                  betNamesArray = JSON.parse(betData.nameofbet);
+                } catch (e) {
+                  console.error("Error parsing betData.nameofbet:", e);
+                }
+
+                // Check if betNameValue is in betNamesArray and bet is unsettled
+                if (
+                  Array.isArray(betNamesArray) &&
+                  betNamesArray.includes(betNameValue) &&
+                  betData.unsettled === true
+                ) {
+                  foundMatchingBet = true; // Set flag to true if a matching bet is found
+
+                  if (cacheValue === "true") {
+                    // Calculate the total return if the bet is cached (paid out)
+                    totalReturnValue = betData.amtwagered * betData.betodds;
+                    updatedBalance += totalReturnValue;
+                  }
+
+                  updates[transactionId] = {
+                    ...betData,
+                    cache: true,
+                    unsettled: false,
+                    totalreturn: totalReturnValue,
+                    balance: updatedBalance,
+                  };
+                }
+              }
+
+              if (!foundMatchingBet) {
+                alert("No unsettled bets match the specified criteria.");
+                return Promise.reject(new Error("No bets matched criteria."));
+              }
+
+              // Batch update all matching bet slips in the real-time database
+              return update(userRef, updates).then(() => updatedBalance);
+            });
+          })
+          .then((updatedBalance) => {
+            alert("Bets updated successfully with cache condition.");
+
+            // Update Firestore user balance only if there's a change
+            return updateDoc(userDocRef, { balance: updatedBalance });
+          })
+          .catch((error) => {
+            alert("Error: " + error.message);
+          });
+      }
+
+      // Function to delete data
+      function DeleteData() {
+        remove(ref(db, "betslipSet/" + user.value + "/" + transnumb.value))
+          .then(() => {
+            alert("Data deleted successfully");
+            user.value = "";
+            betName.value = "";
+            odds.value = "";
+            wagered.value = "";
+            transnumb.value = "";
+          })
+          .catch((error) => {
+            alert("Error deleting data: " + error);
+          });
+      }
+
+      function FindLatestBalance() {
+        const dbRef = ref(db);
+        const userId = user.value;
+
+        if (!userId) {
+          alert("User must be provided.");
+          return;
+        }
+
+        // Get all transactions for the user
+        get(child(dbRef, "betslipSet/" + userId))
+          .then((snapshot) => {
+            if (snapshot.exists()) {
+              const userBets = snapshot.val();
+              const transactions = Object.keys(userBets);
+
+              // Find the largest transaction number (latest transaction)
+              const latestTransaction = Math.max(...transactions.map(Number));
+
+              // Get the balance from the latest transaction
+              const latestBetData = userBets[latestTransaction];
+              const latestBalance = latestBetData.balance || 0;
+
+              alert(`The latest balance is: ${latestBalance}`);
+            } else {
+              alert("No transactions found for this user.");
+            }
+          })
+          .catch((error) => {
+            alert("Error retrieving data: " + error);
+          });
+      }
+
+      
+      
+      function findBetName(){
+        
+      }
+      
+      
+      
+      // Event listeners for buttons
+      document.querySelector("#add").addEventListener("click", AddData);
+      document.querySelector("#retrieve").addEventListener("click", RetData);
+      document.querySelector("#update").addEventListener("click", UpdateData);
+      document.querySelector("#delete").addEventListener("click", DeleteData);
+      document
+        .querySelector("#findBalance")
+        .addEventListener("click", FindLatestBalance);
+      document.querySelector("#cashout").addEventListener("click", CashOutBet);
+      document
+        .querySelector("#cachebtn")
+        .addEventListener("click", UpdateBetslipWithCache);
+      function CashOutBet() {
+        const userId = user.value;
+        const transactionNumber = transnumb.value;
+
+        // Check if user and transaction number are provided
+        if (!userId || !transactionNumber) {
+          alert("Please enter both username and transaction number.");
+          return;
+        }
+
+        // Reference to the specific bet slip in the database
+        const betRef = ref(
+          db,
+          "betslipSet/" + userId + "/" + transactionNumber
+        );
+
+        get(betRef)
+          .then((snapshot) => {
+            if (snapshot.exists()) {
+              const betData = snapshot.val();
+
+              // Only proceed if the bet is unsettled and cashout is false
+              if (!betData.unsettled || betData.cashout) {
+                alert("This bet is already settled or cashed out.");
+                return;
+              }
+
+              // Calculate updated balance after cashout
+              const updatedBalance = betData.balance + betData.amtwagered;
+
+              // Update the bet slip data
+              const updatedBetData = {
+                ...betData,
+                cashout: true,
+                totalreturn: betData.amtwagered,
+                balance: updatedBalance,
+                unsettled: false,
+              };
+
+              // Update the bet slip in the database
+              update(betRef, updatedBetData)
+                .then(() => {
+                  alert(
+                    "Cashout successful. Updated balance: $" + updatedBalance
+                  );
+
+                  const loggedInUserId = localStorage.getItem("loggedInUserId");
+
+                  const userDocRef = doc(firestore, "users", loggedInUserId);
+
+                  return updateDoc(userDocRef, { balance: updatedBalance });
+                })
+                .catch((error) => {
+                  alert("Error updating bet slip: " + error);
+                });
+            } else {
+              alert(
+                "No bet slip found for the given user and transaction number."
+              );
+            }
+          })
+          .catch((error) => {
+            alert("Error retrieving bet slip: " + error);
+          });
+      }
+    </script>
+    <script type="module" src="./homepage.js"></script>
+    <script>
+      const hamMenu = document.querySelector("ham-menu");
+      const offScreenMenu = document.querySelector(".off-screen-menu");
+      hamMenu.addEventListener("click", () => {
+        hamMenu.classList.toggle("active");
+        offScreenMenu.classList.toggle("active");
+      });
+    </script>
+  </body>
+</html>
