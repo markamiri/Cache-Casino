@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="static/sidebar2.css" />
     <script type="module" src="./homepage.js"></script>
     <script type="module" src="./firebaseauth.js"></script>
+    
 
     <link rel="stylesheet" href="static/betboost.css" />
   </head>
@@ -733,7 +734,6 @@
                 border: none;
                 border-radius: 6px;
               "
-              id="add"
               data-user-id="markamiri1"
               data-bet-name='["MEM Grizzlies spread -1dot5 Nov 13 2024"]'
               data-odds="[1.91]"
@@ -765,6 +765,7 @@
           </div>
           <div style="flex: 1">
             <button
+              class="add"
               style="
                 width: 122px;
                 height: 48px;
@@ -773,6 +774,18 @@
                 border: none;
                 border-radius: 6px;
               "
+              data-user-id="markamiri1"
+              data-bet-name='["MEM Grizzlies over 246dot5 Nov 13 2024"]'
+              data-odds="[1.71]"
+              data-wagered="20"
+              data-transnumb="1"
+              onclick="AddData(
+        this.getAttribute('data-user-id'),
+        JSON.parse(this.getAttribute('data-bet-name')),
+        JSON.parse(this.getAttribute('data-odds')),
+        this.getAttribute('data-wagered'),
+        this.getAttribute('data-transnumb')
+          )"
             >
               <div
                 style="color: white; font-weight: bold; font-family: sans-serif"
@@ -792,6 +805,7 @@
           </div>
           <div style="flex: 1">
             <button
+              class="add"
               style="
                 width: 122px;
                 height: 48px;
@@ -799,6 +813,18 @@
                 border: none;
                 border-radius: 6px;
               "
+              data-user-id="markamiri1"
+              data-bet-name='["MEM Grizzlies moneyline Nov 13 2024"]'
+              data-odds="[1.71]"
+              data-wagered="20"
+              data-transnumb="1"
+              onclick="AddData(
+        this.getAttribute('data-user-id'),
+        JSON.parse(this.getAttribute('data-bet-name')),
+        JSON.parse(this.getAttribute('data-odds')),
+        this.getAttribute('data-wagered'),
+        this.getAttribute('data-transnumb')
+          )"
             >
               <div
                 style="
@@ -852,7 +878,7 @@
                 border-radius: 6px;
               "
               data-user-id="markamiri1"
-              data-bet-name='["LA Lakers spread rere +1dot5 Nov 13 2024"]'
+              data-bet-name='["LA Lakers spread +1dot5 Nov 13 2024"]'
               data-odds="[1.83]"
               data-wagered="20"
               data-transnumb="1"
@@ -882,6 +908,7 @@
           </div>
           <div style="flex: 1">
             <button
+              class="add"
               style="
                 width: 122px;
                 height: 48px;
@@ -890,6 +917,18 @@
                 border: none;
                 border-radius: 6px;
               "
+              data-user-id="markamiri1"
+              data-bet-name='["LA Lakers under 246dot5 Nov 13 2024"]'
+              data-odds="[2.1]"
+              data-wagered="20"
+              data-transnumb="1"
+              onclick="AddData(
+        this.getAttribute('data-user-id'),
+        JSON.parse(this.getAttribute('data-bet-name')),
+        JSON.parse(this.getAttribute('data-odds')),
+        this.getAttribute('data-wagered'),
+        this.getAttribute('data-transnumb')
+          )"
             >
               <div
                 style="color: white; font-weight: bold; font-family: sans-serif"
@@ -923,6 +962,19 @@
                   font-weight: bold;
                   font-family: sans-serif;
                 "
+                class="add"
+                data-user-id="markamiri1"
+                data-bet-name='["LA Lakers moneyline Nov 13 2024"]'
+                data-odds="[2.1]"
+                data-wagered="20"
+                data-transnumb="1"
+                onclick="AddData(
+        this.getAttribute('data-user-id'),
+        JSON.parse(this.getAttribute('data-bet-name')),
+        JSON.parse(this.getAttribute('data-odds')),
+        this.getAttribute('data-wagered'),
+        this.getAttribute('data-transnumb')
+          )"
               >
                 2.1
               </div>
@@ -1380,6 +1432,7 @@
 
               <div>
                 <button
+                  class="add"
                   style="
                     height: 40px;
                     border-radius: 6px;
@@ -1480,13 +1533,15 @@
     <script type="module">
       import { AddData } from "./casino-functions.js"; // Import the AddData function
 
-      document.querySelector("#add").addEventListener("click", function () {
-        const userId = this.getAttribute("data-user-id");
-        const betName = this.getAttribute("data-bet-name");
-        const odds = this.getAttribute("data-odds");
-        const wagered = this.getAttribute("data-wagered");
+      document.querySelectorAll(".add").forEach((button) => {
+        button.addEventListener("click", function () {
+          const userId = this.getAttribute("data-user-id");
+          const betName = this.getAttribute("data-bet-name");
+          const odds = this.getAttribute("data-odds");
+          const wagered = this.getAttribute("data-wagered");
 
-        AddData(userId, betName, odds, wagered); // Call AddData function
+          AddData(userId, betName, odds, wagered); // Call AddData function
+        });
       });
     </script>
 

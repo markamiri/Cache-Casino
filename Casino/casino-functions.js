@@ -6,6 +6,7 @@ import {
   set,
   get,
   update,
+  push,
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 import {
   getFirestore,
@@ -34,6 +35,8 @@ export function AddData(userId, betName, odds, wagered) {
   const wageredAmount = parseFloat(wagered);
   const userRef = ref(db, "betslipSet/" + userId);
   const userBalanceRef = ref(db, "betslipSet/" + userId + "/balance");
+  const transRef = ref(db, "unsettled/");
+
   let currentBalance = 500;
   let nextTransactionNumber = 1;
 
@@ -100,12 +103,17 @@ export function AddData(userId, betName, odds, wagered) {
           return set(
             ref(db, "betslipSet/" + userId + "/" + nextTransactionNumber),
             betData
-          ).then(() => {
-            alert("Bet added successfully. New Balance is: $" + newBalance);
-            const loggedInUserId = localStorage.getItem("loggedInUserId");
-            const userDocRef = doc(firestore, "users", loggedInUserId);
-            return updateDoc(userDocRef, { balance: newBalance });
-          });
+          )
+            .then(() => {
+              alert("Bet added successfully. New Balance is: $" + newBalance);
+              const unsettledRef = ref(db, "unsettled/");
+              return push(unsettledRef, betData);
+            })
+            .then(() => {
+              const loggedInUserId = localStorage.getItem("loggedInUserId");
+              const userDocRef = doc(firestore, "users", loggedInUserId);
+              return updateDoc(userDocRef, { balance: newBalance });
+            });
         });
       }
     })
@@ -294,3 +302,37 @@ export function getUserBalance() {
       throw error;
     });
 }
+
+// Import axios
+import axios from "axios";
+
+// Replace with your actual API key
+const API_KEY = "476e4e29camsh75537a1cd930f5cp1fff3fjsnec1b55d737cb";
+const BASE_URL = "https://api-nba-v1.p.rapidapi.com/";
+
+// Function to call the API
+async function fetchPlayerData() {
+  const options = {
+    method: "GET",
+    url: `${BASE_URL}players`,
+    params: {
+      name: "lebron james", // Player's name
+      season: "2024", // Season year
+    },
+    headers: {
+      "x-rapidapi-key": API_KEY, // Your API key here
+      "x-rapidapi-host": "api-nba-v1.p.rapidapi.com",
+    },
+  };
+
+  try {
+    // Making the API call using Axios
+    const response = await axios.request(options);
+    console.log(response.data); // Log the API response
+  } catch (error) {
+    console.error("Error fetching player data:", error); // Handle errors
+  }
+}
+
+// Call the function
+fetchPlayerData();

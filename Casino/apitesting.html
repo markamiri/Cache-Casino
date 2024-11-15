@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NBA API Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <script>
+      // Replace with your actual API key
+      const API_KEY = "476e4e29camsh75537a1cd930f5cp1fff3fjsnec1b55d737cb";
+      const BASE_URL = "https://api-nba-v1.p.rapidapi.com/";
+
+      // Function to call the API
+      // Asynchronous function to fetch NBA games for a specific date
+      async function fetchNBAData() {
+        const options = {
+          method: "GET",
+          url: "https://api-nba-v1.p.rapidapi.com/games/statistics",
+          params: { id: "14287" },
+          headers: {
+            "x-rapidapi-key":
+              "c90a3cc54fmsh5fa28b05ff28b82p15b212jsn2308fcc24e55",
+            "x-rapidapi-host": "api-nba-v1.p.rapidapi.com",
+          },
+        };
+
+        try {
+          const response = await axios.request(options);
+          console.log(response.data);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      // Call the function to fetch the data
+      fetchNBAData();
+    </script>
+  </body>
+</html>
