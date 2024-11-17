@@ -7,28 +7,62 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   </head>
   <body>
+    <div class="homeTeam">homeTeam</div>
+    <div class="awayTeam">awayTeam</div>
+    <div class="commenceTime">CommenceTime</div>
+
     <script>
       // Replace with your actual API key
-      const API_KEY = "476e4e29camsh75537a1cd930f5cp1fff3fjsnec1b55d737cb";
-      const BASE_URL = "https://api-nba-v1.p.rapidapi.com/";
+      const API_KEY = "743ecb6572msh7921b757954e5b6p17850cjsn40bf0515f96d";
+      const BASE_URL = "https://api.the-odds-api.com";
 
       // Function to call the API
       // Asynchronous function to fetch NBA games for a specific date
+
+      function filterGameData(data) {
+        // Extract the basic fields
+        const { commence_time, away_team, home_team, bookmakers } = data;
+
+        // Find the bookmaker entry for 'fanduel'
+        const fanduelData = bookmakers.find(
+          (bookmaker) => bookmaker.key === "fanduel"
+        );
+
+        // Return the organized object
+        return {
+          commence_time,
+          away_team,
+          home_team,
+          fanduel: fanduelData || null, // If fanduel doesn't exist, return null
+        };
+      }
+
       async function fetchNBAData() {
         const options = {
           method: "GET",
-          url: "https://api-nba-v1.p.rapidapi.com/games/statistics",
-          params: { id: "14287" },
+          url: "https://odds.p.rapidapi.com/v4/sports/basketball_nba/odds",
+          params: {
+            regions: "us",
+            oddsFormat: "decimal",
+            markets: "h2h,spreads,totals",
+          },
           headers: {
             "x-rapidapi-key":
               "c90a3cc54fmsh5fa28b05ff28b82p15b212jsn2308fcc24e55",
-            "x-rapidapi-host": "api-nba-v1.p.rapidapi.com",
+            "x-rapidapi-host": "odds.p.rapidapi.com",
           },
         };
 
         try {
           const response = await axios.request(options);
-          console.log(response.data);
+          const result = filterGameData(response.data[1]);
+
+          // Update the DOM with the fetched data
+          document.querySelector(".homeTeam").textContent = result.home_team;
+          document.querySelector(".awayTeam").textContent = result.away_team;
+          const commenceDate = new Date(result.commence_time);
+          document.querySelector(".commenceTime").textContent =
+            commenceDate.toLocaleString();
         } catch (error) {
           console.error(error);
         }
