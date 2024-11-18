@@ -1,0 +1,157 @@
+.container {
+  width: 755px;
+  height: 164px;
+  background-color: rgba(27, 28, 30, 255);
+  margin-top: 150px;
+  margin-left: 250px;
+  padding: 16px;
+  border-radius: 8px;
+}
+.gameHeader {
+  display: flex;
+  width: 100%;
+  height: 35px;
+  align-items: center;
+  direction: row;
+  font-family: sans-serif;
+  padding-top: 7px;
+}
+.headerLeft {
+  display: flex;
+  width: 377px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.sgpButton {
+  border-radius: 4px;
+  border: none;
+  font-weight: 850;
+  background-color: aqua;
+  font-size: 10px;
+  font-style: italic;
+  padding-top: 3px;
+  padding-bottom: 2px;
+  padding-right: 7px;
+  height: 20px;
+  margin-right: 10px;
+}
+.commenceTime {
+  color: rgb(255, 255, 255);
+  font-size: 13px;
+
+  font-weight: bold;
+}
+
+.headerSpread {
+  display: flex;
+
+  flex: 1;
+  color: rgb(166, 168, 171);
+  font-size: 17px;
+  justify-content: center;
+}
+.headerTotal {
+  display: flex;
+
+  flex: 1;
+  color: rgb(166, 168, 171);
+  font-size: 17px;
+  justify-content: center;
+}
+
+.headerMoney {
+  display: flex;
+
+  flex: 1;
+  color: rgb(166, 168, 171);
+  font-size: 17px;
+  justify-content: center;
+}
+
+.awayteamIcon {
+  margin-right: 18px;
+  display: flex;
+  justify-content: center;
+  background-color: lightblue;
+}
+.hometeamIcon {
+  display: flex;
+  justify-content: center;
+  margin-left: 2px;
+}
+
+.parentAwayContainer {
+  display: flex;
+  background-color: lightblue;
+}
+
+.awayTeam {
+  display: flex;
+  width: 500px;
+  align-items: center;
+}
+
+.awayTeamIcon {
+  margin-right: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+.awayTeamIconSize {
+  width: 28px;
+  height: 28px;
+}
+
+.awayTeamFont {
+  color: white;
+  font-family: sans-serif;
+}
+.homeTeamFont {
+  color: white;
+  font-family: sans-serif;
+  margin-left: 19px;
+}
+
+.awayTeamSpreadButton,
+.awayTeamOUButton,
+.awayTeamMLButton,
+.homeTeamSpreadButton,
+.homeTeamOUButton,
+.homeTeamMLButton {
+  width: 122px;
+  height: 48px;
+  margin-right: 6px;
+  background-color: rgb(36, 38, 41);
+  border: none;
+  border-radius: 6px;
+}
+
+.awayTeamSpreadLine,
+.awayTeamOULine,
+.homeTeamSpreadLine,
+.homeTeamOULine {
+  color: white;
+  font-weight: bold;
+  font-family: sans-serif;
+}
+.awayTeamSpreadLineOdds,
+.awayTeamOULineOdds,
+.awayTeamMLOdds,
+.homeTeamSpreadOdds,
+.homeTeamOUodds {
+  color: rgb(255, 222, 0);
+  font-weight: bold;
+  font-family: sans-serif;
+}
+
+.awayMoneyContainer,
+.homeMoneyContainer {
+  width: 122px;
+  height: 48px;
+}
+
+.awayTeamSpreadButtonContainer,
+.awayTeamOUButtonContainer {
+  flex: 1;
+}
