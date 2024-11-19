@@ -59,14 +59,14 @@
             const gameHeader = document.createElement("div");
             gameHeader.classList.add("gameHeader");
 
-            const headerLeft = document.createElement("div");
-            headerLeft.classList.add("headerLeft");
+            const awayheaderLeft = document.createElement("div");
+            awayheaderLeft.classList.add("awayheaderLeft");
 
             const sgpButton = document.createElement("button");
             sgpButton.classList.add("sgpButton");
             sgpButton.textContent = "SGP";
 
-            headerLeft.appendChild(sgpButton);
+            awayheaderLeft.appendChild(sgpButton);
 
             const commenceTimeDiv = document.createElement("div");
             commenceTimeDiv.classList.add("commenceTime");
@@ -75,7 +75,7 @@
             const commenceDate = new Date(commence_time);
             commenceTimeDiv.textContent = ` ${commenceDate.toLocaleString()}`;
 
-            headerLeft.appendChild(commenceTimeDiv);
+            awayheaderLeft.appendChild(commenceTimeDiv);
 
             const gameWrapper = document.createElement("div");
             gameWrapper.classList.add("container");
@@ -89,7 +89,7 @@
             awayTeamDiv.classList.add("awayTeam");
             awayTeamDiv.textContent = `Away Team: ${away_team}`;
 
-            gameHeader.appendChild(headerLeft);
+            gameHeader.appendChild(awayheaderLeft);
 
             const headerSpread = document.createElement("div");
             headerSpread.classList.add("headerSpread");
@@ -156,8 +156,8 @@
             awayTeamSpreadLine.textContent = "-1.5";
 
             const awayTeamSpreadLineOdds = document.createElement("div");
-            awayTeamSpreadLineOdds.classList.add("awayTeamSpreadLine");
-            awayTeamSpreadLine.textContent = "1.91";
+            awayTeamSpreadLineOdds.classList.add("awayTeamSpreadLineOdds");
+            awayTeamSpreadLineOdds.textContent = "1.91";
 
             awayTeamSpreadButton.appendChild(awayTeamSpreadLine);
             awayTeamSpreadButton.appendChild(awayTeamSpreadLineOdds);
@@ -198,12 +198,96 @@
             awayMoneyContainer.appendChild(awayTeamMLButton);
 
             awayTeamSpreadButtonContainer.appendChild(awayTeamSpreadButton);
+
+            parentAwayContainer.appendChild(awayTeam);
             parentAwayContainer.appendChild(awayTeamSpreadButtonContainer);
             parentAwayContainer.appendChild(awayTeamOUButtonContainer);
 
             parentAwayContainer.appendChild(awayMoneyContainer);
+            //Home team div
+            const parentHomeContainer = document.createElement("div");
+            parentHomeContainer.classList.add("parentHomeContainer");
+
+            const homeheaderLeft = document.createElement("div");
+            homeheaderLeft.classList.add("homeheaderLeft");
+
+            const hometeamIcon = document.createElement("div");
+            hometeamIcon.classList.add("hometeamIcon");
+
+            const hometeamImg = document.createElement("img");
+            hometeamImg.classList.add("homeTeamIconSize"); // Add this class
+            hometeamImg.src = "team_Logo/nba-los-angeles-lakers-logo.png";
+            hometeamImg.alt = ""; // Add the alt attribute to match
+
+            hometeamIcon.appendChild(hometeamImg);
+            homeheaderLeft.appendChild(hometeamIcon);
+            const homeTeamFont = document.createElement("div");
+            homeTeamFont.classList.add("homeTeamFont");
+
+            const homeTeamName = document.createElement("div");
+            homeTeamName.style.fontWeight = "bold";
+            homeTeamName.textContent = "LA Laker";
+
+            const homeTeamStats = document.createElement("div");
+            homeTeamStats.textContent = "8-4, 6th Western";
+
+            homeTeamFont.appendChild(homeTeamName);
+            homeTeamFont.appendChild(homeTeamStats);
+            homeheaderLeft.appendChild(homeTeamFont);
+            parentHomeContainer.appendChild(homeheaderLeft);
+
+            const homeSpreadContainer = document.createElement("div");
+            homeSpreadContainer.classList.add("homeSpreadContainer");
+
+            const hometeamSpreadButton = document.createElement("button");
+            hometeamSpreadButton.classList.add("homeTeamSpreadButton");
+
+            const homeTeamSpreadLine = document.createElement("div");
+            homeTeamSpreadLine.classList.add("homeTeamSpreadLine");
+            homeTeamSpreadLine.textContent = "+1.5";
+
+            const homeTeamSpreadOdds = document.createElement("div");
+            homeTeamSpreadOdds.classList.add("homeTeamSpreadOdds");
+            homeTeamSpreadOdds.textContent = "1.83";
+
+            hometeamSpreadButton.appendChild(homeTeamSpreadLine);
+            hometeamSpreadButton.appendChild(homeTeamSpreadOdds);
+            homeSpreadContainer.appendChild(hometeamSpreadButton);
+            parentHomeContainer.append(homeSpreadContainer);
+
+            const homeOUContainer = document.createElement("div");
+            homeOUContainer.classList.add("homeOUContainer");
+
+            const homeTeamOUButton = document.createElement("button");
+            homeTeamOUButton.classList.add("homeTeamOUButton");
+
+            const homeTeamOULine = document.createElement("div");
+            homeTeamOULine.classList.add("homeTeamOULine");
+            homeTeamOULine.textContent = "Under 246.5";
+
+            const homeTeamOUodds = document.createElement("div");
+            homeTeamOUodds.classList.add("homeTeamOUodds");
+            homeTeamOUodds.textContent = "2.1";
+            homeTeamOUButton.appendChild(homeTeamOULine);
+            homeTeamOUButton.appendChild(homeTeamOUodds);
+            homeOUContainer.appendChild(homeTeamOUButton);
+            parentHomeContainer.appendChild(homeOUContainer);
+
+            const homeMoneyContainer = document.createElement("div");
+            homeMoneyContainer.classList.add("homeMoneyContainer");
+
+            const homeTeamMLButton = document.createElement("button");
+            homeTeamMLButton.classList.add("homeTeamMLButton");
+
+            const homeTeamMLodds = document.createElement("div");
+            homeTeamMLodds.classList.add("homeTeamMLodds");
+            homeTeamMLodds.textContent = "2.1";
+            homeTeamMLButton.appendChild(homeTeamMLodds);
+            homeMoneyContainer.appendChild(homeTeamMLButton);
+            parentHomeContainer.appendChild(homeMoneyContainer);
 
             gameWrapper.appendChild(parentAwayContainer);
+            gameWrapper.appendChild(parentHomeContainer);
             gameWrapper.appendChild(homeTeamDiv);
             gameWrapper.appendChild(awayTeamDiv);
             //Ended off here working on the away team container

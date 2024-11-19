@@ -16,7 +16,8 @@
   font-family: sans-serif;
   padding-top: 7px;
 }
-.headerLeft {
+.awayheaderLeft,
+.homeheaderLeft {
   display: flex;
   width: 377px;
   align-items: center;
@@ -83,7 +84,6 @@
 
 .parentAwayContainer {
   display: flex;
-  background-color: lightblue;
 }
 
 .awayTeam {
@@ -98,7 +98,8 @@
   justify-content: center;
 }
 
-.awayTeamIconSize {
+.awayTeamIconSize,
+.homeTeamIconSize {
   width: 28px;
   height: 28px;
 }
@@ -139,7 +140,8 @@
 .awayTeamOULineOdds,
 .awayTeamMLOdds,
 .homeTeamSpreadOdds,
-.homeTeamOUodds {
+.homeTeamOUodds,
+.homeTeamMLodds {
   color: rgb(255, 222, 0);
   font-weight: bold;
   font-family: sans-serif;
@@ -152,6 +154,14 @@
 }
 
 .awayTeamSpreadButtonContainer,
-.awayTeamOUButtonContainer {
+.awayTeamOUButtonContainer,
+.homeSpreadContainer,
+.homeOUContainer {
   flex: 1;
 }
+
+.parentHomeContainer {
+  display: flex;
+  margin-top: 10px;
+}
+
