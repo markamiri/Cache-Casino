@@ -35,6 +35,7 @@ onAuthStateChanged(auth, (user) => {
         // Fix: Added parentheses around the function parameter
         if (docSnap.exists()) {
           const userData = docSnap.data();
+          console.log(userData.username);
           document.getElementById("loggedUserFName").innerText =
             userData.firstName;
           document.getElementById("loggedUserEmail").innerText = userData.email;
@@ -67,4 +68,3 @@ logoutButton.addEventListener("click", () => {
       console.error("Error Signing out:", error);
     });
 });
-

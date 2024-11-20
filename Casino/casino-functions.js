@@ -304,7 +304,6 @@ export function getUserBalance() {
 }
 
 // Import axios
-import axios from "axios";
 
 // Replace with your actual API key
 const API_KEY = "476e4e29camsh75537a1cd930f5cp1fff3fjsnec1b55d737cb";
@@ -335,4 +334,4 @@ async function fetchPlayerData() {
 }
 
 // Call the function
-fetchPlayerData();
+//fetchPlayerData();
