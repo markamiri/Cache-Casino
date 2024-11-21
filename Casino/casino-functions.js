@@ -80,17 +80,23 @@ export function AddData(userId, betName, odds, wagered) {
             typeof betName === "string" ? JSON.parse(betName) : [betName];
           const oddsArray =
             typeof odds === "string" ? JSON.parse(odds) : [odds];
+          
           const betOddsObj = Object.fromEntries(
             betNames.map((bet, index) => [bet, oddsArray[index]])
           );
+          
+          
           const totalBetOdds = oddsArray.reduce(
             (acc, current) => acc * current,
             1
           );
+          
 
           const betData = {
             name: userId,
             betObject: betOddsObj,
+            betNamesOBJ: betNames,
+            oddsArrayOBJ: oddsArray,
             amtwagered: wageredAmount,
             transactionNum: nextTransactionNumber,
             unsettled: true,

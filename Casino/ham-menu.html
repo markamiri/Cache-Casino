@@ -8,6 +8,7 @@
 
     <link rel="stylesheet" href="static/gamelog.css" />
     <link rel="stylesheet" href="static/betboost.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   </head>
   <body style="background-color: #31313c">
     <div class="header">
@@ -730,6 +731,7 @@
       </div>
     </div>
 
+    <div class="gameSchedule" id="gameSchedule">hello</div>
     <div style="margin-left: 90px; margin-top: 40px; display: none">
       <div class="boost_grid">
         <div class="boost-box">
@@ -1339,6 +1341,17 @@
               alert("Error: " + error.message);
             });
         });
+    </script>
+
+    <script type="module">
+      import {
+        filterGameData,
+        appendGameDataToDOM,
+        fetchNBAData,
+      } from "./apitesting.js";
+
+      // Now you can use the functions in this script
+      fetchNBAData(); // Calls the function from functions.js
     </script>
 
     <script type="module">

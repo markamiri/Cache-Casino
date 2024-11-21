@@ -2,8 +2,7 @@
   width: 755px;
   height: 164px;
   background-color: rgba(27, 28, 30, 255);
-  margin-top: 150px;
-  margin-left: 250px;
+  margin-top: 30px;
   padding: 16px;
   border-radius: 8px;
 }
@@ -165,3 +164,9 @@
   margin-top: 10px;
 }
 
+.gameSchedule {
+  margin-top: 40px;
+
+  background-color: lightblue;
+  margin-left: 250px;
+}
