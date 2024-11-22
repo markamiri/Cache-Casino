@@ -285,7 +285,7 @@ input::placeholder {
 }
 
 .channel-tooltip {
-  background-color: rgb(17, 18, 19);
+  background-color: rgb(28, 28, 31);
   width: 210px;
   padding: 12px 12px;
   padding-right: 30px;
@@ -293,7 +293,7 @@ input::placeholder {
   border-radius: 6px;
   position: absolute;
   top: 80px;
-  height: 468px;
+  height: 365px;
   right: 100px;
   z-index: 300;
   opacity: 1;
@@ -356,4 +356,24 @@ input::placeholder {
 }
 .refer-friend-link:hover {
   background-color: #31313c;
+}
+
+.betCart-tooltip {
+  background-color: rgb(28, 28, 31);
+  width: 300px;
+
+  box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  position: absolute;
+  top: 80px;
+  height: 430px;
+  right: 100px;
+  z-index: 300;
+  opacity: 1;
+  pointer-events: auto;
+
+  transition: opacity 0.15s;
+  border-style: solid;
+  border-width: 1.5px;
+  border-color: rgb(79, 80, 81);
 }

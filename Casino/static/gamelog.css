@@ -2,7 +2,7 @@
   width: 755px;
   height: 164px;
   background-color: rgba(27, 28, 30, 255);
-  margin-top: 30px;
+  margin-top: 15px;
   padding: 16px;
   border-radius: 8px;
 }
@@ -169,4 +169,5 @@
 
   background-color: lightblue;
   margin-left: 250px;
+  width: 771px;
 }

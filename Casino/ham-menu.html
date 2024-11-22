@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="static/sidebar2.css" />
     <script type="module" src="./homepage.js"></script>
     <script type="module" src="./firebaseauth.js"></script>
-
+    <link rel="stylesheet" href="static/betcart.css" />
     <link rel="stylesheet" href="static/gamelog.css" />
     <link rel="stylesheet" href="static/betboost.css" />
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -56,7 +56,114 @@
         </button>
       </div>
 
-      <div style="color: white" class="channel-tooltip hidden" id="tooltip">
+      <!-- To make the bet cart not overlap with the game schedule we can it so when the button is clicked the margin left on the game schedule is changed like a toggle -->
+      <div class="betCart-tooltip" id="betCart-tooltip">
+        <div
+          style="
+            display: flex;
+            position: absolute;
+            margin-bottom: 15px;
+            align-items: center;
+            top: 5px;
+            left: 100px;
+            background-color: #c1c1bc;
+            border-radius: 10px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 7px;
+            padding-right: 7px;
+          "
+        >
+          <div
+            style="
+              font-size: 18px;
+              font-family: sans-serif;
+              color: black;
+              margin-right: 10px;
+              font-weight: bold;
+            "
+          >
+            BetCart
+          </div>
+          <button
+            style="
+              border-radius: 40%;
+              background-color: rgb(36, 38, 41);
+              border: none;
+              width: 30px;
+              color: #ffde00;
+              font-size: 18px;
+              font-weight: 700;
+            "
+          >
+            0
+          </button>
+        </div>
+        <div
+          style="
+            width: 260px;
+            height: 380px;
+            background-color: rgb(36, 38, 41);
+            margin-left: 20px;
+            margin-top: 25px;
+          "
+        >
+          <div style="display: flex; width: 100%; height: 40px">
+            <button
+              style="margin-top: 20px"
+              id="straightButton"
+              class="toggleButton"
+            >
+              STRAIGHT
+            </button>
+            <button
+              style="margin-top: 20px"
+              id="parlayButton"
+              class="toggleButton"
+            >
+              PARLAY
+            </button>
+          </div>
+
+          <div style="margin-top: 10px; height: 280px">
+            container for the betslips
+          </div>
+          <div
+            style="display: flex; align-items: center; justify-content: center"
+          >
+            <button
+              style="
+                width: 90%;
+                height: 40px;
+                background-color: rgb(232, 234, 237);
+                border: none;
+                border-radius: 10px;
+              "
+            >
+              <div style="font-family: sans-serif; font-size: 12px">
+                Place one bet for $
+              </div>
+              <div style="font-family: sans-serif; font-size: 12px">
+                TO PAYOUT $
+              </div>
+            </button>
+          </div>
+          <div style="position: absolute; right: 0; top: 0">
+            <button
+              id="betCartCloseButton"
+              style="background-color: transparent; border: none"
+            >
+              <img
+                style="width: 25px; height: 25px"
+                src="static/sidebar-icons/close.png"
+                alt=""
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div style="color: white" class="channel-tooltip hidden;" id="tooltip">
         <div style="position: absolute; right: 0; top: 0">
           <button
             id="closeButton"
@@ -112,7 +219,6 @@
                 justify-content: space-between;
               "
             >
-              <div id="loggedUsername"></div>
               <div>Balance:</div>
               <div>$<span id="loggedUserBalance"></span></div>
             </div>
@@ -142,7 +248,7 @@
                   border: none;
                   border-radius: 6px;
                   background-color: #ffde00;
-                  color: white;
+                  color: black;
                 "
               >
                 Deposit
@@ -150,7 +256,14 @@
             </div>
           </div>
         </div>
-        <div class="refer-friend-link" style="margin-top: 10px">
+        <div
+          class="refer-friend-link"
+          style="
+            margin-top: 10px;
+            border: 1.5px solid rgb(79, 80, 81);
+            margin-bottom: 15px;
+          "
+        >
           <img
             style="height: 53px"
             src="static/sidebar-icons/refer-a-friend.png"
@@ -173,17 +286,19 @@
         </div>
         <div
           style="
-            height: 195px; /* Set a height for the scrollable area */
+            height: 80px; /* Set a height for the scrollable area */
             overflow-y: auto; /* Enables vertical scrolling when content exceeds height */
             width: 100%; /* Optional: sets width of the scrollable area */
             margin-top: 10px;
+            margin-left: -12px;
             overflow-x: hidden;
-            width: 235px;
-            border-top: 1px solid #e8eaed;
+            width: 252px;
+            padding-top: 5px;
+            border-top: 1.5px solid rgb(79, 80, 81);
           "
           class="custom-scrollbar"
         >
-          <div class="profile-link">
+          <div class="profile-link" style="margin-left: 12px">
             <img src="static/sidebar-icons/my-bets-logo.png" />
             <div
               style="font-size: 14px; color: #e8eaed; font-family: sans-serif"
@@ -191,7 +306,7 @@
               My Bets
             </div>
           </div>
-          <div class="profile-link">
+          <div class="profile-link" style="margin-left: 12px">
             <img src="static/sidebar-icons/settings.png" />
             <div
               style="font-size: 14px; color: #e8eaed; font-family: sans-serif"
@@ -207,7 +322,7 @@
               Wallet
             </div>
           </div>
-          <div class="profile-link">
+          <div class="profile-link" style="margin-left: 12px">
             <img src="static/icons/responsible-gambling.png" />
             <div
               style="font-size: 14px; color: #e8eaed; font-family: sans-serif"
@@ -215,7 +330,7 @@
               Responsible Gaming
             </div>
           </div>
-          <div class="profile-link">
+          <div class="profile-link" style="margin-left: 12px">
             <img src="static/sidebar-icons/help.png" />
             <div
               style="font-size: 14px; color: #e8eaed; font-family: sans-serif"
@@ -223,7 +338,7 @@
               Help
             </div>
           </div>
-          <div class="profile-link">
+          <div class="profile-link" style="margin-left: 12px">
             <img src="static/sidebar-icons/logout.png" />
             <div
               style="font-size: 14px; color: #e8eaed; font-family: sans-serif"
@@ -603,134 +718,6 @@
       </button>
     </nav>
 
-    <div class="container">
-      <div class="gameHeader">
-        <div class="awayheaderLeft">
-          <button class="sgpButton">SGP</button>
-          <div class="commenceTime">Today · 10:00PM</div>
-        </div>
-
-        <div class="headerSpread">Spread</div>
-        <div class="headerTotal">Total</div>
-        <div class="headerMoney">Money</div>
-      </div>
-
-      <div>
-        <div class="parentAwayContainer">
-          <div class="awayTeam">
-            <div class="awayTeamIcon">
-              <img
-                class="awayTeamIconSize"
-                src="team_Logo/nba-memphis-grizzlies-logo.png"
-                alt=""
-              />
-            </div>
-            <div class="awayTeamFont">
-              <div style="font-weight: bold">MEM Grizzlies</div>
-              <div>7-4, 6th Western</div>
-            </div>
-          </div>
-
-          <div class="awayTeamSpreadButtonContainer">
-            <button
-              class="add awayTeamSpreadButton"
-              data-user-id="markamiri1"
-              data-bet-name='["MEM Grizzlies spread -1dot5 Nov 13 2024"]'
-              data-odds="[1.91]"
-              data-wagered="20"
-              data-transnumb="1"
-            >
-              <div class="awayTeamSpreadLine">-1.5</div>
-              <div class="awayTeamSpreadLineOdds">1.91</div>
-            </button>
-          </div>
-          <div class="awayTeamOUButtonContainer">
-            <button
-              class="add awayTeamOUButton"
-              data-user-id="markamiri1"
-              data-bet-name='["MEM Grizzlies over 246dot5 Nov 13 2024"]'
-              data-odds="[1.71]"
-              data-wagered="20"
-              data-transnumb="1"
-            >
-              <div class="awayTeamOULine">Over 246.5</div>
-              <div class="awayTeamOULineOdds">1.71</div>
-            </button>
-          </div>
-          <div class="awayMoneyContainer">
-            <button
-              class="add awayTeamMLButton"
-              data-user-id="markamiri1"
-              data-bet-name='["MEM Grizzlies moneyline Nov 13 2024"]'
-              data-odds="[1.71]"
-              data-wagered="20"
-              data-transnumb="1"
-            >
-              <div class="awayTeamMLOdds">1.71</div>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="parentHomeContainer">
-          <div class="homeheaderLeft">
-            <div class="hometeamIcon">
-              <img
-                class="homeTeamIconSize"
-                src="team_Logo/nba-los-angeles-lakers-logo.png"
-                alt=""
-              />
-            </div>
-            <div class="homeTeamFont">
-              <div class="homeTeam" style="font-weight: bold">LA Lakers</div>
-              <div>7-4, 6th Western</div>
-            </div>
-          </div>
-
-          <div class="homeSpreadContainer">
-            <button
-              class="add homeTeamSpreadButton"
-              data-user-id="markamiri1"
-              data-bet-name='["LA Lakers spread +1dot5 Nov 13 2024"]'
-              data-odds="[1.83]"
-              data-wagered="20"
-              data-transnumb="1"
-            >
-              <div class="homeTeamSpreadLine">+1.5</div>
-              <div class="homeTeamSpreadOdds">1.83</div>
-            </button>
-          </div>
-          <div class="homeOUContainer">
-            <button
-              class="add homeTeamOUButton"
-              data-user-id="markamiri1"
-              data-bet-name='["LA Lakers under 246dot5 Nov 13 2024"]'
-              data-odds="[2.1]"
-              data-wagered="20"
-              data-transnumb="1"
-            >
-              <div class="homeTeamOULine">Under 246.5</div>
-              <div class="homeTeamOUodds">2.1</div>
-            </button>
-          </div>
-          <div class="homeMoneyContainer">
-            <button class="add homeTeamMLButton">
-              <div
-                class="homeTeamMLodds"
-                data-user-id="markamiri1"
-                data-bet-name='["LA Lakers moneyline Nov 13 2024"]'
-                data-odds="[2.1]"
-                data-wagered="20"
-                data-transnumb="1"
-              >
-                2.1
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="gameSchedule" id="gameSchedule">hello</div>
     <div style="margin-left: 90px; margin-top: 40px; display: none">
       <div class="boost_grid">
@@ -967,6 +954,30 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div style="position: fixed; bottom: 30px; right: 30px">
+      <button
+        id="betCartButton"
+        style="
+          background-color: rgb(36, 38, 41);
+          border-radius: 4px;
+          border: none;
+          cursor: pointer;
+          padding-left: 6px;
+          padding-right: 6px;
+          padding-top: 3px;
+          padding-bottom: 3px;
+          width: 50px;
+          height: 50px;
+        "
+      >
+        <img
+          style="width: 40px; height: 40px"
+          src="static/icons/clipboard-icon.png"
+          alt=""
+        />
+      </button>
     </div>
 
     <div style="margin-left: 0px; margin-top: 100px">
@@ -1228,6 +1239,134 @@
       <div id="balance"></div>
     </div>
 
+    <div class="container" style="margin-left: 150px">
+      <div class="gameHeader">
+        <div class="awayheaderLeft">
+          <button class="sgpButton">SGP</button>
+          <div class="commenceTime">Today · 10:00PM</div>
+        </div>
+
+        <div class="headerSpread">Spread</div>
+        <div class="headerTotal">Total</div>
+        <div class="headerMoney">Money</div>
+      </div>
+
+      <div>
+        <div class="parentAwayContainer">
+          <div class="awayTeam">
+            <div class="awayTeamIcon">
+              <img
+                class="awayTeamIconSize"
+                src="team_Logo/nba-memphis-grizzlies-logo.png"
+                alt=""
+              />
+            </div>
+            <div class="awayTeamFont">
+              <div style="font-weight: bold">MEM Grizzlies</div>
+              <div>7-4, 6th Western</div>
+            </div>
+          </div>
+
+          <div class="awayTeamSpreadButtonContainer">
+            <button
+              class="add awayTeamSpreadButton"
+              data-user-id="markamiri1"
+              data-bet-name='["MEM Grizzlies spread -1dot5 Nov 13 2024"]'
+              data-odds="[1.91]"
+              data-wagered="20"
+              data-transnumb="1"
+            >
+              <div class="awayTeamSpreadLine">-1.5</div>
+              <div class="awayTeamSpreadLineOdds">1.91</div>
+            </button>
+          </div>
+          <div class="awayTeamOUButtonContainer">
+            <button
+              class="add awayTeamOUButton"
+              data-user-id="markamiri1"
+              data-bet-name='["MEM Grizzlies over 246dot5 Nov 13 2024"]'
+              data-odds="[1.71]"
+              data-wagered="20"
+              data-transnumb="1"
+            >
+              <div class="awayTeamOULine">Over 246.5</div>
+              <div class="awayTeamOULineOdds">1.71</div>
+            </button>
+          </div>
+          <div class="awayMoneyContainer">
+            <button
+              class="add awayTeamMLButton"
+              data-user-id="markamiri1"
+              data-bet-name='["MEM Grizzlies moneyline Nov 13 2024"]'
+              data-odds="[1.71]"
+              data-wagered="20"
+              data-transnumb="1"
+            >
+              <div class="awayTeamMLOdds">1.71</div>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="parentHomeContainer">
+          <div class="homeheaderLeft">
+            <div class="hometeamIcon">
+              <img
+                class="homeTeamIconSize"
+                src="team_Logo/nba-los-angeles-lakers-logo.png"
+                alt=""
+              />
+            </div>
+            <div class="homeTeamFont">
+              <div class="homeTeam" style="font-weight: bold">LA Lakers</div>
+              <div>7-4, 6th Western</div>
+            </div>
+          </div>
+
+          <div class="homeSpreadContainer">
+            <button
+              class="add homeTeamSpreadButton"
+              data-user-id="markamiri1"
+              data-bet-name='["LA Lakers spread +1dot5 Nov 13 2024"]'
+              data-odds="[1.83]"
+              data-wagered="20"
+              data-transnumb="1"
+            >
+              <div class="homeTeamSpreadLine">+1.5</div>
+              <div class="homeTeamSpreadOdds">1.83</div>
+            </button>
+          </div>
+          <div class="homeOUContainer">
+            <button
+              class="add homeTeamOUButton"
+              data-user-id="markamiri1"
+              data-bet-name='["LA Lakers under 246dot5 Nov 13 2024"]'
+              data-odds="[2.1]"
+              data-wagered="20"
+              data-transnumb="1"
+            >
+              <div class="homeTeamOULine">Under 246.5</div>
+              <div class="homeTeamOUodds">2.1</div>
+            </button>
+          </div>
+          <div class="homeMoneyContainer">
+            <button class="add homeTeamMLButton">
+              <div
+                class="homeTeamMLodds"
+                data-user-id="markamiri1"
+                data-bet-name='["LA Lakers moneyline Nov 13 2024"]'
+                data-odds="[2.1]"
+                data-wagered="20"
+                data-transnumb="1"
+              >
+                2.1
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
       const profileButton = document.getElementById("profileButton");
       const tooltip = document.getElementById("tooltip");
@@ -1238,6 +1377,40 @@
       });
       closeButton.addEventListener("click", () => {
         tooltip.classList.add("hidden");
+      });
+    </script>
+
+    <script>
+      const betCartButton = document.getElementById("betCartButton");
+      const betCarttooltip = document.getElementById("betCart-tooltip");
+      const betCartcloseButton = document.getElementById("betCartCloseButton");
+      const gameScheduleContainer = document.getElementById("gameSchedule");
+
+      betCartButton.addEventListener("click", () => {
+        betCarttooltip.classList.toggle("hidden");
+
+        if (!betCarttooltip.classList.contains("hidden")) {
+          gameScheduleContainer.style.marginLeft = "120px";
+        } else {
+          gameScheduleContainer.style.marginLeft = "250px";
+        }
+      });
+      betCartcloseButton.addEventListener("click", () => {
+        betCarttooltip.classList.add("hidden");
+        gameScheduleContainer.style.marginLeft = "250px";
+      });
+    </script>
+
+    <script>
+      const straightButton = document.getElementById("straightButton");
+      const parlayButton = document.getElementById("parlayButton");
+      straightButton.addEventListener("click", () => {
+        parlayButton.classList.remove("active");
+        straightButton.classList.add("active");
+      });
+      parlayButton.addEventListener("click", () => {
+        straightButton.classList.remove("active");
+        parlayButton.classList.add("active");
       });
     </script>
 
