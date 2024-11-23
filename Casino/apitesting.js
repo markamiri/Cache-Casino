@@ -1,6 +1,7 @@
 const API_KEY = "743ecb6572msh7921b757954e5b6p17850cjsn40bf0515f96d";
 const BASE_URL = "https://api.the-odds-api.com";
 import { AddData } from "./casino-functions.js";
+
 // Function to extract and format the data
 function filterGameData(data) {
   const { commence_time, away_team, home_team, bookmakers } = data;
@@ -27,6 +28,50 @@ function filterGameData(data) {
     spreads, // Spreads market
     totals, // Totals market
   };
+}
+let betsCart = [];
+/**
+ * Appends bet details to the cart array.
+ * @param {string} userId - The ID of the user placing the bet.
+ * @param {string} betName - The name of the bet.
+ * @param {number} odds - The odds for the bet.
+ * @param {string} gameLink - The formatted game link or description.
+ */
+export function appendGameDataToBetCart(
+  userId,
+  betName,
+  odds,
+  gameTeams,
+  gameDate
+) {
+  const exists = betsCart.some((bet) => bet[1] === betName);
+
+  if (!exists) {
+    betsCart.push([userId, betName, odds, gameTeams, gameDate]);
+    console.log("Updated Bets Cart: ", betsCart);
+  } else {
+    console.log("bet already exists");
+  }
+  printBetCart();
+
+  return betsCart.length;
+}
+
+export function printBetCart() {
+  const betCart = document.getElementById("betCart");
+  betCart.innerHTML = "";
+
+  betsCart.forEach((bet) => {
+    const [userId, betName, odds, gameTeams, gameDate] = bet;
+    const betLink = document.createElement("div");
+    betLink.textContent = `Bet: ${betName}, Odds: ${odds}, Teams: ${gameTeams}, Date: ${gameDate}`;
+    const betInput = document.createElement("input");
+    betInput.type = "number";
+    betInput.placeholder = "Enter your wager";
+
+    betLink.appendChild(betInput);
+    betCart.appendChild(betLink);
+  });
 }
 
 // Function to dynamically create and append game data elements
@@ -69,7 +114,17 @@ function appendGameDataToDOM(gameData) {
 
       // Format commence_time for readability
       const commenceDate = new Date(commence_time);
-      commenceTimeDiv.textContent = ` ${commenceDate.toLocaleString()}`;
+
+      const formattedDate = new Intl.DateTimeFormat("en-US", {
+        month: "short", // Abbreviated month (e.g., "Nov")
+        day: "numeric", // Numeric day (e.g., "22")
+        hour: "numeric", // Hour (e.g., "7")
+        minute: "2-digit", // Minute with leading zero (e.g., "10")
+        hour12: true, // Use 12-hour format with AM/PM
+      }).format(commenceDate);
+      const [datePart, timePart] = formattedDate.split(", ");
+      const formattedDateString = `${datePart} • ${timePart}`;
+      commenceTimeDiv.textContent = ` ${formattedDateString}`;
 
       awayheaderLeft.appendChild(commenceTimeDiv);
 
@@ -157,6 +212,7 @@ function appendGameDataToDOM(gameData) {
       );
 
       const awayTeamSpreadButton = document.createElement("button");
+
       awayTeamSpreadButton.classList.add("awayTeamSpreadButton", "add");
       awayTeamSpreadButton.setAttribute("data-user-id", "markamiri1");
       awayTeamSpreadButton.setAttribute(
@@ -167,20 +223,50 @@ function appendGameDataToDOM(gameData) {
         "data-odds",
         `"[${awayTeamSpreadVar.price}]"`
       );
+      awayTeamSpreadButton.setAttribute(
+        "data-game-teams",
+        `${awayTeamSpreadVar.name} @ ${homeTeamSpreadVar.name}`
+      );
+
+      awayTeamSpreadButton.setAttribute(
+        "data-game-date",
+        ` ${formattedDateString}`
+      );
+
+      //temporary testing button
       awayTeamSpreadButton.setAttribute("data-wagered", "20");
       console.log();
       awayTeamSpreadButton.addEventListener("click", function () {
-        console.log("Button attributes:");
-        console.log("user-id:", this.getAttribute("data-user-id"));
-        console.log("bet-name:", this.getAttribute("data-bet-name"));
-        console.log("odds:", this.getAttribute("data-odds"));
-        console.log("wagered:", this.getAttribute("data-wagered"));
+        //console.log("Button attributes:");
+        //console.log("user-id:", this.getAttribute("data-user-id"));
+        //console.log("bet-name:", this.getAttribute("data-bet-name"));
+        //console.log("odds:", this.getAttribute("data-odds"));
+        //console.log("wagered:", this.getAttribute("data-wagered"));
+        console.log("game Link", this.getAttribute("data-game-link"));
         const userId = this.getAttribute("data-user-id");
         const betName = this.getAttribute("data-bet-name");
         const odds = this.getAttribute("data-odds");
         const wagered = this.getAttribute("data-wagered");
-
-        AddData(userId, betName, odds, wagered); // Call AddData function
+        const gameTeams = this.getAttribute("data-game-teams");
+        const gameDate = this.getAttribute("data-game-date");
+        //addData(userId, betName, odds, wagered);
+        const cartLen = appendGameDataToBetCart(
+          userId,
+          betName,
+          odds,
+          gameTeams,
+          gameDate
+        ); // Call AddData function
+        itemsInCart.textContent = cartLen;
+        if (cartLen > 1) {
+          straightButton.classList.remove("active");
+          parlayButton.classList.add("active");
+          toggleInputVisibility(true);
+        } else if (cartLen === 1) {
+          parlayButton.classList.remove("active");
+          straightButton.classList.add("active");
+          toggleInputVisibility(false);
+        }
       });
       const awayTeamSpreadLine = document.createElement("div");
       awayTeamSpreadLine.classList.add("awayTeamSpreadLine");
@@ -482,7 +568,68 @@ async function fetchNBAData() {
     console.error(error);
   }
 }
-export { appendGameDataToDOM, filterGameData, fetchNBAData };
+
+async function fetchOdds() {
+  const options = {
+    method: "GET",
+    url: "https://odds.p.rapidapi.com/v4/sports/basketball_nba/odds",
+    params: {
+      regions: "us",
+      oddsFormat: "decimal",
+      markets: "h2h,spreads,totals",
+    },
+    headers: {
+      "x-rapidapi-key": "c90a3cc54fmsh5fa28b05ff28b82p15b212jsn2308fcc24e55",
+      "x-rapidapi-host": "odds.p.rapidapi.com",
+    },
+  };
+  try {
+    // Make the API request
+    const response = await axios.request(options);
+
+    // Save the response data to a variable
+    const apiData = response.data;
+
+    // Log the data
+    console.log("API Data:", apiData);
+
+    // Return the data if needed
+    return apiData;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+}
+
+async function fetchTempNBAData() {
+  try {
+    // Fetch the JSON data from the file
+    const response = await fetch("testingFolder/testingCasinoDataSet.json");
+
+    // Check if the response is successful (status code 200)
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    // Parse the response as JSON
+    const allGameData = await response.json();
+
+    // Log the data to the console
+    console.log(allGameData);
+
+    // Append each game's data to the DOM
+    appendGameDataToDOM(allGameData);
+  } catch (error) {
+    console.error("There was a problem with the fetch operation:", error);
+  }
+}
+
+export {
+  appendGameDataToDOM,
+  filterGameData,
+  fetchNBAData,
+  fetchOdds,
+  fetchTempNBAData,
+};
 
 // Fetch the NBA data
 //fetchNBAData();

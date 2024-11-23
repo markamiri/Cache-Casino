@@ -57,7 +57,7 @@
       </div>
 
       <!-- To make the bet cart not overlap with the game schedule we can it so when the button is clicked the margin left on the game schedule is changed like a toggle -->
-      <div class="betCart-tooltip" id="betCart-tooltip">
+      <div class="betCart-tooltip hidden" id="betCart-tooltip">
         <div
           style="
             display: flex;
@@ -86,6 +86,7 @@
             BetCart
           </div>
           <button
+            id="itemsInCart"
             style="
               border-radius: 40%;
               background-color: rgb(36, 38, 41);
@@ -125,7 +126,7 @@
             </button>
           </div>
 
-          <div style="margin-top: 10px; height: 280px">
+          <div id="betCart" style="margin-top: 10px; height: 280px">
             container for the betslips
           </div>
           <div
@@ -138,6 +139,7 @@
                 background-color: rgb(232, 234, 237);
                 border: none;
                 border-radius: 10px;
+                cursor: pointer;
               "
             >
               <div style="font-family: sans-serif; font-size: 12px">
@@ -163,7 +165,7 @@
         </div>
       </div>
 
-      <div style="color: white" class="channel-tooltip hidden;" id="tooltip">
+      <div style="color: white" class="channel-tooltip hidden" id="tooltip">
         <div style="position: absolute; right: 0; top: 0">
           <button
             id="closeButton"
@@ -1380,7 +1382,8 @@
       });
     </script>
 
-    <script>
+    <script type="module">
+      import { printBetCart } from "./apitesting.js";
       const betCartButton = document.getElementById("betCartButton");
       const betCarttooltip = document.getElementById("betCart-tooltip");
       const betCartcloseButton = document.getElementById("betCartCloseButton");
@@ -1388,7 +1391,6 @@
 
       betCartButton.addEventListener("click", () => {
         betCarttooltip.classList.toggle("hidden");
-
         if (!betCarttooltip.classList.contains("hidden")) {
           gameScheduleContainer.style.marginLeft = "120px";
         } else {
@@ -1450,7 +1452,7 @@
         AddParlayData(legs);
       }; 
     </script>-->
-
+    <!-- MAIN ADD FUNCTION TEMPORARILY DISABLED
     <script type="module">
       import { AddData } from "./casino-functions.js"; // Import the AddData function
 
@@ -1463,6 +1465,29 @@
             const wagered = this.getAttribute("data-wagered");
 
             AddData(userId, betName, odds, wagered); // Call AddData function
+          });
+        });
+      });
+    </script>
+    -->
+    <script type="module">
+      import { appendGameDataToBetCart } from "./apitesting.js"; // Import the AddData function
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".add").forEach((button) => {
+          button.addEventListener("click", function () {
+            const userId = this.getAttribute("data-user-id");
+            const betName = this.getAttribute("data-bet-name");
+            const odds = this.getAttribute("data-odds");
+            const wagered = this.getAttribute("data-wagered");
+
+            const cartLength = appendGameDataToBetCart(
+              userId,
+              betName,
+              odds,
+              wagered
+            ); // Call AddData function
+            console.log(cartLength);
           });
         });
       });
@@ -1521,10 +1546,16 @@
         filterGameData,
         appendGameDataToDOM,
         fetchNBAData,
+        fetchOdds,
+        fetchTempNBAData,
+        appendGameDataToBetCart,
       } from "./apitesting.js";
 
       // Now you can use the functions in this script
-      fetchNBAData(); // Calls the function from functions.js
+
+      //fetchNBAData(); // Calls the function from functions.js
+      //fetchOdds();
+      fetchTempNBAData();
     </script>
 
     <script type="module">
