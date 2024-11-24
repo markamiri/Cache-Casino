@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="static/gamelog.css" />
     <link rel="stylesheet" href="static/betboost.css" />
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="apiTesting.js"></script>
   </head>
   <body style="background-color: #31313c">
     <div class="header">
@@ -126,13 +127,43 @@
             </button>
           </div>
 
-          <div id="betCart" style="margin-top: 10px; height: 280px">
+          <div
+            id="betCart"
+            style="margin-top: 10px; height: 250px; background-color: lightblue"
+          >
             container for the betslips
+          </div>
+          <div id="parlayInput" class="hidden">
+            <div style="display: flex; justify-content: space-between">
+              <div>Parlay</div>
+              <div>1.48</div>
+            </div>
+            <div style="display: flex; justify-content: space-between">
+              <input style="width: 100px" type="number" placeholder="bet" />
+              <input style="width: 100px" type="number" placeholder="to win" />
+            </div>
+          </div>
+          <div
+            style="
+              height: 26px;
+              padding-top: 10px;
+              padding-left: 10px;
+              padding-right: 10px;
+              color: rgb(232, 234, 237);
+              font-family: sans-serif;
+              font-weight: bold;
+              display: flex;
+              justify-content: space-between;
+            "
+          >
+            <div>PAYOUT</div>
+            <div id="totalPayout">$ 0.00</div>
           </div>
           <div
             style="display: flex; align-items: center; justify-content: center"
           >
             <button
+              id="placeBet"
               style="
                 width: 90%;
                 height: 40px;
@@ -143,10 +174,7 @@
               "
             >
               <div style="font-family: sans-serif; font-size: 12px">
-                Place one bet for $
-              </div>
-              <div style="font-family: sans-serif; font-size: 12px">
-                TO PAYOUT $
+                Place Bet
               </div>
             </button>
           </div>
@@ -1403,6 +1431,7 @@
       });
     </script>
 
+    <!--
     <script>
       const straightButton = document.getElementById("straightButton");
       const parlayButton = document.getElementById("parlayButton");
@@ -1415,7 +1444,7 @@
         parlayButton.classList.add("active");
       });
     </script>
-
+-->
     <script>
       const hamMenu = document.querySelector(".ham-menu");
       const offScreenMenu = document.querySelector(".off-screen-menu");
@@ -1580,6 +1609,143 @@
               console.error("Error fetching balance:", error);
             });
         });
+    </script>
+
+    <script type="module">
+      import { AddData } from "./casino-functions.js";
+
+      // This will now access betsCart directly because it's defined globally in apiTesting.js
+      const placeBet = document.getElementById("placeBet");
+
+      placeBet.addEventListener("click", () => {
+        console.log(betsCart);
+        betsCart.forEach((bet) => {
+          const userId = bet[0];
+          const betName = bet[1]; // E.g., "[Sacramento Kings spread -3]"
+
+          // Remove the square brackets before parsing (if that's the case)
+          const cleanedBetName = betName.replace(/[\[\]"]/g, ""); // Removes '[' and ']' characters
+
+          // Now betName is just a string without square brackets, so no need for JSON.parse
+          const odds = bet[2];
+
+          const cleanedodds = odds.replace(/[\[\]"]/g, ""); // Removes '[' and ']' characters
+
+          const wagered = bet[6];
+
+          console.log(cleanedBetName);
+
+          // Call AddData for each bet
+          AddData(userId, [cleanedBetName], [cleanedodds], wagered); // You can still pass it as an array
+        });
+      });
+    </script>
+
+    <script>
+      const strButton = document.getElementById("straightButton");
+      const parButton = document.getElementById("parlayButton");
+      function hideInputsInBetCart() {
+        const divs = betCart.querySelectorAll("div[item-number]"); // Select all divs with "item-number"
+        divs.forEach((div) => {
+          const input = div.querySelector("input"); // Find the input inside the div
+          if (input) {
+            input.style.display = "none"; // Hide the input
+          }
+        });
+        function showInputsInBetCart() {
+          const divs = betCart.querySelectorAll("div[item-number]"); // Select all divs with "item-number"
+          divs.forEach((div) => {
+            const input = div.querySelector("input"); // Find the input inside the div
+            if (input) {
+              input.style.display = "block"; // Show the input
+            }
+          });
+        }
+      }
+    </script>
+
+    <script>
+      const sButton = document.getElementById("straightButton");
+      const pButton = document.getElementById("parlayButton");
+      const betCart = document.getElementById("betCart");
+      const parlayInput = document.getElementById("parlayInput");
+
+      let firstParlayTrigger = true; // Flag to check if it's the first time with 2 inputs
+
+      // Function to hide inputs in dynamically loaded divs
+      function hideInputsInBetCart() {
+        const divs = betCart.querySelectorAll("div[item-number]");
+        divs.forEach((div) => {
+          const input = div.querySelector("input");
+          if (input) {
+            input.style.display = "none";
+          }
+        });
+      }
+
+      // Function to show inputs in dynamically loaded divs
+      function showInputsInBetCart() {
+        const divs = betCart.querySelectorAll("div[item-number]");
+        divs.forEach((div) => {
+          const input = div.querySelector("input");
+          if (input) {
+            input.style.display = "block";
+          }
+        });
+      }
+
+      // Function to check the number of inputs and set the appropriate button state
+      function updateButtonState() {
+        const inputs = betCart.querySelectorAll("div[item-number] input"); // Select all inputs inside divs
+        const inputCount = inputs.length;
+
+        if (inputCount === 1) {
+          // Set "Straight" button active when there's only 1 input
+          pButton.classList.remove("active");
+          sButton.classList.add("active");
+          showInputsInBetCart();
+        } else if (inputCount === 2 && firstParlayTrigger) {
+          // Set "Parlay" button active the first time there are 2 inputs
+          sButton.classList.remove("active");
+          pButton.classList.add("active");
+          parlayInput.classList.remove("hidden");
+          betCart.style.height = "200px";
+          hideInputsInBetCart();
+          firstParlayTrigger = false; // Ensure this runs only the first time
+        }
+      }
+
+      // Event listeners for the buttons
+      sButton.addEventListener("click", () => {
+        pButton.classList.remove("active");
+        sButton.classList.add("active");
+        parlayInput.classList.add("hidden");
+        betCart.style.height = "250px";
+        // Show inputs when "Straight" is active
+        showInputsInBetCart();
+      });
+
+      pButton.addEventListener("click", () => {
+        const items = betCart.querySelectorAll("div[item-number]");
+        const inputCount = items.length;
+
+        if (inputCount < 2) {
+          return;
+        }
+        sButton.classList.remove("active");
+        pButton.classList.add("active");
+        parlayInput.classList.remove("hidden");
+        // Hide inputs when "Parlay" is active
+        betCart.style.height = "200px";
+        hideInputsInBetCart();
+      });
+
+      // Example: Update the button state when the cart changes (this could be tied to a mutation observer or cart update function)
+      // Call `updateButtonState()` whenever items are added or removed from the cart
+      const observer = new MutationObserver(updateButtonState);
+
+      // Observe changes to the betCart element
+      observer.observe(betCart, { childList: true, subtree: true });
     </script>
   </body>
 </html>

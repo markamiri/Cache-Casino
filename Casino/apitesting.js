@@ -29,7 +29,7 @@ function filterGameData(data) {
     totals, // Totals market
   };
 }
-let betsCart = [];
+window.betsCart = [];
 /**
  * Appends bet details to the cart array.
  * @param {string} userId - The ID of the user placing the bet.
@@ -47,7 +47,8 @@ export function appendGameDataToBetCart(
   const exists = betsCart.some((bet) => bet[1] === betName);
 
   if (!exists) {
-    betsCart.push([userId, betName, odds, gameTeams, gameDate]);
+    const cartItems = betsCart.length;
+    betsCart.push([userId, betName, odds, gameTeams, gameDate, cartItems]);
     console.log("Updated Bets Cart: ", betsCart);
   } else {
     console.log("bet already exists");
@@ -59,19 +60,71 @@ export function appendGameDataToBetCart(
 
 export function printBetCart() {
   const betCart = document.getElementById("betCart");
-  betCart.innerHTML = "";
+  const totalPayoutDiv = document.getElementById("totalPayout"); // Create a div for the total payout
 
-  betsCart.forEach((bet) => {
-    const [userId, betName, odds, gameTeams, gameDate] = bet;
+  totalPayoutDiv.textContent = "$0.00";
+  betCart.innerHTML = ""; // Clear the cart
+
+  function calculatePayout() {
+    const payout = betsCart.reduce((total, bet) => total + (bet[7] || 0), 0);
+    totalPayoutDiv.textContent = `$${payout.toFixed(2)}`; // Update the payout display
+  }
+
+  betsCart.forEach((bet, index) => {
+    const [
+      userId,
+      betName,
+      odds,
+      gameTeams,
+      gameDate,
+      cartItems,
+      wager = 0,
+      potentialReturn = 0,
+    ] = bet; // Default wager and potentialReturn to 0
+
     const betLink = document.createElement("div");
-    betLink.textContent = `Bet: ${betName}, Odds: ${odds}, Teams: ${gameTeams}, Date: ${gameDate}`;
+    betLink.setAttribute("item-number", `${cartItems}`);
+    betLink.textContent = `Bet: ${betName}, Odds: ${odds}, Teams: ${gameTeams}, Date: ${gameDate}, item ${cartItems}`;
+
     const betInput = document.createElement("input");
     betInput.type = "number";
     betInput.placeholder = "Enter your wager";
+    betInput.value = wager; // Set the value from the array
+
+    const betOutput = document.createElement("input");
+    betOutput.type = "number";
+    betOutput.placeholder = "$0.00";
+    betOutput.readOnly = true;
+
+    const oddsNum = odds.replace(/[\[\]"]/g, "");
+    const numericOdds = parseFloat(oddsNum);
+
+    // Update the output value dynamically
+    betInput.addEventListener("input", () => {
+      const inputValue = parseFloat(betInput.value); // Get the user's input
+      const calculatedValue = isNaN(inputValue) ? 0 : inputValue * numericOdds; // Multiply input by odds
+      const roundedValue = parseFloat(calculatedValue.toFixed(2));
+      betOutput.value = roundedValue; // Update the output field
+
+      // Update the wager and potential return in the array
+      betsCart[index][6] = inputValue; // Update wager value
+      betsCart[index][7] = roundedValue; // Update potential return value
+
+      calculatePayout(); // Recalculate and update total payout
+    });
+
+    // Update the output field on initial render
+    const calculatedValue = isNaN(wager) ? 0 : wager * numericOdds;
+    const roundedValue = parseFloat(calculatedValue.toFixed(2)); // Round to two decimals
+    betOutput.value = roundedValue; // Update the output field
+    betsCart[index][7] = roundedValue;
 
     betLink.appendChild(betInput);
+    betLink.appendChild(betOutput);
     betCart.appendChild(betLink);
   });
+
+  calculatePayout(); // Initial calculation of total payout
 }
 
 // Function to dynamically create and append game data elements
@@ -221,7 +274,7 @@ function appendGameDataToDOM(gameData) {
       );
       awayTeamSpreadButton.setAttribute(
         "data-odds",
-        `"[${awayTeamSpreadVar.price}]"`
+        `"${awayTeamSpreadVar.price}"`
       );
       awayTeamSpreadButton.setAttribute(
         "data-game-teams",
@@ -257,7 +310,9 @@ function appendGameDataToDOM(gameData) {
           gameTeams,
           gameDate
         ); // Call AddData function
+
         itemsInCart.textContent = cartLen;
+        /*
         if (cartLen > 1) {
           straightButton.classList.remove("active");
           parlayButton.classList.add("active");
@@ -267,6 +322,7 @@ function appendGameDataToDOM(gameData) {
           straightButton.classList.add("active");
           toggleInputVisibility(false);
         }
+        */
       });
       const awayTeamSpreadLine = document.createElement("div");
       awayTeamSpreadLine.classList.add("awayTeamSpreadLine");
