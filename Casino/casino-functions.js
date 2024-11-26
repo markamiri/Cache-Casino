@@ -7,6 +7,7 @@ import {
   get,
   update,
   push,
+  runTransaction,
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 import {
   getFirestore,
@@ -33,100 +34,199 @@ const firestore = getFirestore(app);
 
 export function AddData(userId, betName, odds, wagered) {
   const wageredAmount = parseFloat(wagered);
-  const userRef = ref(db, "betslipSet/" + userId);
-  const userBalanceRef = ref(db, "betslipSet/" + userId + "/balance");
-  const transRef = ref(db, "unsettled/");
+  const userRef = ref(db, `betslipSet/${userId}`);
+  const userBalanceRef = ref(db, `betslipSet/${userId}/balance`);
+  const unsettledRef = ref(db, "unsettled/");
 
   let currentBalance = 500;
-  let nextTransactionNumber = 1;
 
+  // Retrieve the user's balance
   get(userBalanceRef)
     .then((balanceSnapshot) => {
       if (balanceSnapshot.exists()) {
         currentBalance = balanceSnapshot.val();
       } else {
+        // Initialize the balance if it doesn't exist
         return set(userBalanceRef, currentBalance);
       }
     })
     .then(() => {
-      return get(userRef);
-    })
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        // If there are existing transactions, get the highest transaction number and increment it.
-        const allTransactions = snapshot.val();
-        const transactionKeys = Object.keys(allTransactions).filter(
-          (key) => key !== "balance"
-        );
-
-        // If there are transaction keys, find the highest one and increment it by 1.
-        if (transactionKeys.length > 0) {
-          nextTransactionNumber = Math.max(...transactionKeys.map(Number)) + 1;
-        }
-      }
-
-      // If wagered amount is more than current balance, alert the user.
+      // Check if the user has sufficient funds
       if (wageredAmount > currentBalance) {
         alert(
           "Insufficient funds. Your current balance is: $" + currentBalance
         );
         return;
-      } else {
-        const newBalance = currentBalance - wageredAmount;
-        return set(userBalanceRef, newBalance).then(() => {
-          console.log("User balance has been successfully updated.");
-
-          const betNames =
-            typeof betName === "string" ? JSON.parse(betName) : [betName];
-          const oddsArray =
-            typeof odds === "string" ? JSON.parse(odds) : [odds];
-          
-          const betOddsObj = Object.fromEntries(
-            betNames.map((bet, index) => [bet, oddsArray[index]])
-          );
-          
-          
-          const totalBetOdds = oddsArray.reduce(
-            (acc, current) => acc * current,
-            1
-          );
-          
-
-          const betData = {
-            name: userId,
-            betObject: betOddsObj,
-            betNamesOBJ: betNames,
-            oddsArrayOBJ: oddsArray,
-            amtwagered: wageredAmount,
-            transactionNum: nextTransactionNumber,
-            unsettled: true,
-            WorL: "None",
-            totalReturn: 0,
-            totalbetodds: totalBetOdds,
-          };
-
-          // Create the new bet slip entry with the next transaction number.
-          return set(
-            ref(db, "betslipSet/" + userId + "/" + nextTransactionNumber),
-            betData
-          )
-            .then(() => {
-              alert("Bet added successfully. New Balance is: $" + newBalance);
-              const unsettledRef = ref(db, "unsettled/");
-              return push(unsettledRef, betData);
-            })
-            .then(() => {
-              const loggedInUserId = localStorage.getItem("loggedInUserId");
-              const userDocRef = doc(firestore, "users", loggedInUserId);
-              return updateDoc(userDocRef, { balance: newBalance });
-            });
-        });
       }
+
+      const newBalance = currentBalance - wageredAmount;
+
+      // Update the user's balance
+      return set(userBalanceRef, newBalance).then(() => {
+        console.log("User balance has been successfully updated.");
+
+        const betNames =
+          typeof betName === "string" ? JSON.parse(betName) : [betName];
+        const oddsArray = typeof odds === "string" ? JSON.parse(odds) : [odds];
+
+        const betOddsObj = Object.fromEntries(
+          betNames.map((bet, index) => [
+            `bet_${index + 1}`, // Use a safe key format
+            {
+              "bet name": bet, // Nested key-value for the bet name
+              odds: oddsArray[index],
+              status: "unsettled", // Default status
+            },
+          ])
+        );
+
+        const totalBetOdds = oddsArray.reduce(
+          (acc, current) => acc * current,
+          1
+        );
+
+        const betData = {
+          name: userId,
+          betObject: betOddsObj,
+          amtwagered: wageredAmount,
+          unsettled: true,
+          WorL: "None",
+          totalReturn: 0,
+          totalbetodds: totalBetOdds,
+        };
+
+        // Add the bet slip to the user's folder with a unique ID
+        const betSlipRef = push(ref(db, `betslipSet/${userId}/betslips`));
+        const uniqueKey = betSlipRef.key;
+        return set(betSlipRef, betData)
+          .then(() => {
+            alert("Bet added successfully. New Balance is: $" + newBalance);
+
+            // Add the bet slip to the 'unsettled' section
+            return set(ref(db, `unsettled/${uniqueKey}`), betData);
+          })
+          .then(() => {
+            // Update Firestore balance
+            const loggedInUserId = localStorage.getItem("loggedInUserId");
+            const userDocRef = doc(firestore, "users", loggedInUserId);
+            return updateDoc(userDocRef, { balance: newBalance });
+          });
+      });
     })
     .catch((error) => {
-      console.log("error processing bet slip:", error);
+      console.log("Error processing bet slip:", error);
     });
 }
+
+/*
+export function AddData(userId, betName, odds, wagered) {
+  const wageredAmount = parseFloat(wagered);
+  const userRef = ref(db, `betslipSet/${userId}`);
+  const userBalanceRef = ref(db, `betslipSet/${userId}/balance`);
+  const nextTransactionNumRef = ref(
+    db,
+    `betslipSet/${userId}/nextTransactionNum`
+  );
+  const unsettledRef = ref(db, "unsettled/");
+
+  let currentBalance = 500;
+  let nextTransactionNumber = 1;
+
+  // Retrieve the user's balance
+  get(userBalanceRef)
+    .then((balanceSnapshot) => {
+      if (balanceSnapshot.exists()) {
+        currentBalance = balanceSnapshot.val();
+      } else {
+        // Initialize the balance if it doesn't exist
+        return set(userBalanceRef, currentBalance);
+      }
+    })
+    .then(() => {
+      // Retrieve the next transaction number
+      return runTransaction(nextTransactionNumRef, (currentNumber) => {
+        return currentNumber || 1;
+      });
+    })
+    .then((transactionNum) => {
+      const nextTransactionNumber = transactionNum;
+    })
+    .then(() => {
+      // Check if the user has sufficient funds
+      if (wageredAmount > currentBalance) {
+        alert(
+          "Insufficient funds. Your current balance is: $" + currentBalance
+        );
+        return;
+      }
+
+      const newBalance = currentBalance - wageredAmount;
+
+      // Update the user's balance
+      return set(userBalanceRef, newBalance).then(() => {
+        console.log("User balance has been successfully updated.");
+
+        const betNames =
+          typeof betName === "string" ? JSON.parse(betName) : [betName];
+        const oddsArray = typeof odds === "string" ? JSON.parse(odds) : [odds];
+
+        const betOddsObj = Object.fromEntries(
+          betNames.map((bet, index) => [
+            `bet_${index + 1}`, // Use a safe key format
+            {
+              "bet name": bet, // Nested key-value for the bet name
+              odds: oddsArray[index],
+              status: "unsettled", // Default status
+            },
+          ])
+        );
+
+        const totalBetOdds = oddsArray.reduce(
+          (acc, current) => acc * current,
+          1
+        );
+
+        const betData = {
+          name: userId,
+          betObject: betOddsObj,
+          amtwagered: wageredAmount,
+          transactionNum: nextTransactionNumber,
+          unsettled: true,
+          WorL: "None",
+          totalReturn: 0,
+          totalbetodds: totalBetOdds,
+        };
+
+        // Add a new transaction folder named after the transaction number
+        const transactionRef = ref(
+          db,
+          `betslipSet/${userId}/transactions/${nextTransactionNumber}`
+        );
+
+        return set(transactionRef, betData)
+          .then(() => {
+            alert("Bet added successfully. New Balance is: $" + newBalance);
+
+            // Add the bet slip to the 'unsettled' section
+            return push(unsettledRef, betData);
+          })
+          .then(() => {
+            // Increment the transaction number for the next bet
+            return set(nextTransactionNumRef, nextTransactionNumber + 1);
+          })
+          .then(() => {
+            // Update Firestore balance
+            const loggedInUserId = localStorage.getItem("loggedInUserId");
+            const userDocRef = doc(firestore, "users", loggedInUserId);
+            return updateDoc(userDocRef, { balance: newBalance });
+          });
+      });
+    })
+    .catch((error) => {
+      console.log("Error processing bet slip:", error);
+    });
+}
+*/
 
 export function FindOccurrencesOfBet(userId, targetBetName) {
   const userRef = ref(db, "betslipSet/" + userId);
@@ -341,3 +441,44 @@ async function fetchPlayerData() {
 
 // Call the function
 //fetchPlayerData();
+
+
+// casino-functions.js
+
+export function combineBets(betsCart) {
+  if (!betsCart || betsCart.length === 0) {
+    return [];
+  }
+
+  // Initialize arrays to hold combined data
+  const userId = betsCart[0][0]; // Assuming all bets have the same user ID
+  const betDescriptions = [];
+  const odds = [];
+  const games = [];
+  const times = [];
+  const restOfData = [];
+
+  betsCart.forEach((bet) => {
+    betDescriptions.push(bet[1]); // E.g., "[Sacramento Kings spread -3]"
+    odds.push(parseFloat(bet[2])); // Convert odds to number
+    games.push(bet[3]); // E.g., 'Sacramento Kings @ Boston Celtics'
+    times.push(bet[4]); // E.g., 'Nov 22 • 7:10 PM'
+
+    // Handle any additional data fields (indices 5 and onward)
+    for (let i = 5; i < bet.length; i++) {
+      if (!restOfData[i - 5]) {
+        restOfData[i - 5] = [];
+      }
+      restOfData[i - 5].push(bet[i]);
+    }
+  });
+
+  return [
+    userId,
+    betDescriptions,
+    odds,
+    games,
+    times,
+    ...restOfData
+  ];
+}

@@ -1,6 +1,6 @@
 const API_KEY = "743ecb6572msh7921b757954e5b6p17850cjsn40bf0515f96d";
 const BASE_URL = "https://api.the-odds-api.com";
-import { AddData } from "./casino-functions.js";
+//import { AddData } from "./casino-functions.js";
 
 // Function to extract and format the data
 function filterGameData(data) {

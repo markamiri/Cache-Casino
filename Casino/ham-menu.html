@@ -139,8 +139,18 @@
               <div>1.48</div>
             </div>
             <div style="display: flex; justify-content: space-between">
-              <input style="width: 100px" type="number" placeholder="bet" />
-              <input style="width: 100px" type="number" placeholder="to win" />
+              <input
+                id="parlayWager"
+                style="width: 100px"
+                type="number"
+                placeholder="bet"
+              />
+              <input
+                id="parlayReturn"
+                style="width: 100px"
+                type="number"
+                placeholder="to win"
+              />
             </div>
           </div>
           <div
@@ -1588,56 +1598,106 @@
     </script>
 
     <script type="module">
-      import { getUserBalance } from "./casino-functions.js"; // Adjust path as needed
+      import { getUserBalance } from "./casino-functions.js"; // Adjust the path as needed
 
-      // Event listener for button click
-      document
-        .querySelector("#get-balance-btn")
-        .addEventListener("click", function () {
-          getUserBalance()
-            .then((balance) => {
-              if (balance !== null) {
-                document.querySelector(
-                  "#balance"
-                ).textContent = `User Balance: $${balance}`;
-              } else {
-                document.querySelector("#balance").textContent =
-                  "Unable to retrieve user balance.";
+      const parlayButton = document.getElementById("parlayButton");
+
+      parlayButton.addEventListener("click", () => {
+        // Define the combineBets function inside the event listener
+        function combineBets(betsCart) {
+          // Check if betsCart is empty
+          if (!betsCart || betsCart.length === 0) {
+            console.log("Bets cart is empty.");
+            return [];
+          }
+
+          // Initialize arrays to hold combined data
+          const userId = betsCart[0][0]; // Assume all bets have the same user ID
+          const betDescriptions = [];
+          const odds = [];
+          const games = [];
+          const times = [];
+          const restOfData = []; // Placeholder for any remaining data
+          let totalOdds = 1; // Initialize total odds as 1 for multiplication
+
+          // Iterate through each bet in the cart
+          betsCart.forEach((bet) => {
+            betDescriptions.push(JSON.parse(bet[1])); // Parse JSON strings into arrays
+            totalOdds *= parseFloat(JSON.parse(bet[2]));
+            games.push(bet[3]);
+            times.push(bet[4]);
+
+            // Collect any additional data (indices 5 onwards)
+            for (let i = 5; i < bet.length; i++) {
+              if (!restOfData[i - 5]) {
+                restOfData[i - 5] = [];
               }
-            })
-            .catch((error) => {
-              console.error("Error fetching balance:", error);
-            });
-        });
+              restOfData[i - 5].push(bet[i]);
+            }
+          });
+          totalOdds = Math.round(totalOdds * 100) / 100;
+
+          // Combine into a single array
+          const combinedData = [
+            userId,
+            betDescriptions,
+            totalOdds,
+            games,
+            times,
+            ...restOfData,
+          ];
+
+          console.log("Combined Bets Data:", combinedData);
+          return combinedData;
+        }
+        combineBets(betsCart);
+        console.log(betsCart);
+        // You can pass the actual `betsCart` data here.
+        // For example: combineBets(yourBetsCartVariable);
+      });
     </script>
 
     <script type="module">
       import { AddData } from "./casino-functions.js";
+      import { combineBets } from "./casino-functions.js"; // Ensure the path is correct
 
       // This will now access betsCart directly because it's defined globally in apiTesting.js
       const placeBet = document.getElementById("placeBet");
+      const parlaySlip = document.getElementById("parlayButton");
+      const straightSlip = document.getElementById("straightButton");
 
-      placeBet.addEventListener("click", () => {
-        console.log(betsCart);
-        betsCart.forEach((bet) => {
-          const userId = bet[0];
-          const betName = bet[1]; // E.g., "[Sacramento Kings spread -3]"
-
-          // Remove the square brackets before parsing (if that's the case)
-          const cleanedBetName = betName.replace(/[\[\]"]/g, ""); // Removes '[' and ']' characters
-
-          // Now betName is just a string without square brackets, so no need for JSON.parse
-          const odds = bet[2];
-
-          const cleanedodds = odds.replace(/[\[\]"]/g, ""); // Removes '[' and ']' characters
-
-          const wagered = bet[6];
-
-          console.log(cleanedBetName);
-
-          // Call AddData for each bet
-          AddData(userId, [cleanedBetName], [cleanedodds], wagered); // You can still pass it as an array
+      if (parlayWager && parlayReturn) {
+        parlayWager.addEventListener("input", () => {
+          const wagerValue = parseFloat(parlayWager.value) || 0; // Default to 0 if input is invalid
+          parlayReturn.value = wagerValue.toFixed(2); // Update value to match wager
         });
+      }
+      placeBet.addEventListener("click", () => {
+        if (straightSlip.classList.contains("active")) {
+          console.log(betsCart);
+          betsCart.forEach((bet) => {
+            const userId = bet[0];
+            const betName = bet[1]; // E.g., "[Sacramento Kings spread -3]"
+
+            // Remove the square brackets before parsing (if that's the case)
+            const cleanedBetName = betName.replace(/[\[\]"]/g, ""); // Removes '[' and ']' characters
+
+            // Now betName is just a string without square brackets, so no need for JSON.parse
+            const odds = bet[2];
+
+            const cleanedodds = odds.replace(/[\[\]"]/g, ""); // Removes '[' and ']' characters
+
+            const wagered = bet[6];
+
+            console.log(cleanedBetName);
+
+            // Call AddData for each bet
+            AddData(userId, [cleanedBetName], [cleanedodds], wagered); // You can still pass it as an array
+          });
+        } else if (parlaySlip.classList.contains("active")) {
+          console.log("Parlay cart testing:", betsCart);
+          console.log(combineBets(betsCart));
+        }
       });
     </script>
 
@@ -1676,10 +1736,10 @@
       function hideInputsInBetCart() {
         const divs = betCart.querySelectorAll("div[item-number]");
         divs.forEach((div) => {
-          const input = div.querySelector("input");
-          if (input) {
+          const input = div.querySelectorAll("input");
+          input.forEach((input) => {
             input.style.display = "none";
-          }
+          });
         });
       }
 
