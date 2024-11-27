@@ -1659,8 +1659,9 @@
 
     <script type="module">
       import { AddData } from "./casino-functions.js";
+      import { AddParlayData } from "./casino-functions.js";
       import { combineBets } from "./casino-functions.js"; // Ensure the path is correct
-
+      import { parlayCombine } from "./casino-functions.js"; // Ensure the path is correct
       // This will now access betsCart directly because it's defined globally in apiTesting.js
       const placeBet = document.getElementById("placeBet");
       const parlaySlip = document.getElementById("parlayButton");
@@ -1695,8 +1696,24 @@
             AddData(userId, [cleanedBetName], [cleanedodds], wagered); // You can still pass it as an array
           });
         } else if (parlaySlip.classList.contains("active")) {
-          console.log("Parlay cart testing:", betsCart);
-          console.log(combineBets(betsCart));
+          const parlayCart = parlayCombine(betsCart);
+          console.log("Full parlayCart:", parlayCart);
+
+          const userId = parlayCart[0];
+          const betNames = parlayCart[1];
+          console.log("betsCart 1", parlayCart[1]); // Check the actual value
+          console.log("typeof ", typeof parlayCart[1]); // Check its type
+          const cleanedBetName = betNames.map((bet) =>
+            bet.replace(/[\[\]"]/g, "").trim()
+          );
+          console.log(cleanedBetName);
+          const betOdds = parlayCart[2];
+          console.log("bets odds", parlayCart[2]);
+
+          const wagerValue = parseFloat(parlayWager.value) || 0; // Default to 0 if input is invalid
+          const wagered = wagerValue.toFixed(2); // Update value to match wager
+
+          AddParlayData(userId, [cleanedBetName], [betOdds], wagered);
         }
       });
     </script>
