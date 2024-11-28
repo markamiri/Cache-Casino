@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="static/betcart.css" />
+    <link rel="stylesheet" href="static/gamelog.css" />
+    <link rel="stylesheet" href="static/betboost.css" />
+    <link rel="stylesheet" href="static/sidebar2.css" />
+  </head>
+  <body style="background-color: #31313c">
+    <div style="margin-left: 500px; margin-top: 300px">
+      <button id="cashUsers" class="signup">Cash Users</button>
+    </div>
+    <div class="header">
+      <div>
+        <img
+          style="height: 175px; object-fit: contain; align-items: center"
+          src="static/icons/cache_logo.png"
+          alt=""
+        />
+      </div>
+      <div class="middle-section">
+        <button class="button-search">
+          <img class="search-icon" src="static/icons/search.svg" />
+        </button>
+        <input
+          class="search-box"
+          type="text"
+          placeholder=" Search Sportsbook and Casino"
+        />
+      </div>
+      <div class="buttons">
+        <a
+          href="https://igamingontario.ca/en/player/new-igaming-igaming-101"
+          target="_blank"
+          ><img
+            class="responsible-gambling-icon"
+            src="static/icons/responsible-gambling.png"
+        /></a>
+
+        <button onclick="redirect_login()" class="login">Log In</button>
+        <button
+          onclick="redirect_signup()"
+          style="margin-right: 20px"
+          class="signup"
+        >
+          Sign Up
+        </button>
+
+        <button
+          style="margin-right: 100px"
+          class="profile-icon"
+          id="profileButton"
+        >
+          <img class="profile-color" src="static/icons/Profile-icon.png" />
+        </button>
+      </div>
+
+      <!-- To make the bet cart not overlap with the game schedule we can it so when the button is clicked the margin left on the game schedule is changed like a toggle -->
+
+      <nav>
+        <!-- Hamburger Menu -->
+        <div class="ham-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <!-- Buttons Section -->
+        <button
+          style="
+            background-color: #31313c;
+            margin-top: 35px;
+            height: 63px;
+            border-radius: 6px 6px 0 0;
+            border: none;
+            outline: none;
+            width: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          "
+        >
+          <img
+            style="
+              object-fit: contain;
+              width: 15px;
+              height: 15px;
+              transform: scale(2);
+            "
+            src="static/sidebar-icons/football-logo.png"
+            alt=""
+          />
+        </button>
+
+        <button
+          style="
+            background-color: #1c1c1f;
+            height: 63px;
+            width: 50px;
+            border-radius: 0 0 6px 6px;
+            border: solid 2px #31313c;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          "
+        >
+          <img
+            style="
+              object-fit: contain;
+              width: 15px;
+              height: 15px;
+              transform: scale(2);
+            "
+            src="static/sidebar-icons/Casino-logo.png"
+            alt=""
+          />
+        </button>
+
+        <!-- Additional Buttons -->
+        <button
+          style="
+            background-color: #1c1c1f;
+            height: 63px;
+            width: 50px;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            margin-top: 35px;
+            color: #e8eaed;
+          "
+        >
+          <img
+            style="
+              object-fit: contain;
+              width: 15px;
+              height: 15px;
+              transform: scale(2);
+              padding-bottom: 5px;
+            "
+            src="static/sidebar-icons/home-logo.png"
+            alt=""
+          />
+          <div style="color: #e8eaed; font-size: 10px">Home</div>
+        </button>
+        <button
+          style="
+            background-color: #1c1c1f;
+            height: 63px;
+            width: 50px;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            margin-top: 10px;
+            color: #e8eaed;
+            margin-top: 20px;
+          "
+        >
+          <img
+            style="
+              object-fit: contain;
+              width: 15px;
+              height: 15px;
+              transform: scale(2);
+              padding-bottom: 5px;
+            "
+            src="static/sidebar-icons/live-now-logo.png"
+            alt=""
+          />
+          <div style="color: #e8eaed; font-size: 10px">Live Now</div>
+        </button>
+        <button
+          style="
+            background-color: #1c1c1f;
+            height: 63px;
+            width: 50px;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            margin-top: 10px;
+            color: #e8eaed;
+            margin-top: 20px;
+          "
+        >
+          <img
+            style="
+              object-fit: contain;
+              width: 15px;
+              height: 15px;
+              transform: scale(2);
+              padding-bottom: 5px;
+            "
+            src="static/sidebar-icons/Promo-logo.png"
+            alt=""
+          />
+          <div style="color: #e8eaed; font-size: 10px">Promos</div>
+        </button>
+        <button
+          style="
+            background-color: #1c1c1f;
+            height: 63px;
+            width: 50px;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            margin-top: 20px;
+          "
+        >
+          <img
+            style="
+              object-fit: contain;
+              width: 15px;
+              height: 15px;
+              transform: scale(2);
+              padding-bottom: 5px;
+            "
+            src="static/sidebar-icons/my-bets-logo.png"
+            alt=""
+          />
+          <div style="color: #e8eaed; font-size: 10px">My Bets</div>
+        </button>
+      </nav>
+    </div>
+
+    <script type="module">
+      import { fetchGamesByDate } from "./apiNba.js";
+      //fetchGamesByDate();
+    </script>
+
+    <script type="module">
+      import { getUnsettled } from "./casino-functions.js";
+      import { filterGameDetails } from "./apiNba.js";
+      const cashUsers = document.getElementById("cashUsers");
+      cashUsers.addEventListener("click", async () => {
+        try {
+          const unsettledData = await getUnsettled();
+        } catch (error) {
+          console.error("error fetching unsettled data:", error);
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -32,6 +32,156 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 const firestore = getFirestore(app);
 
+export async function getUnsettled() {
+  const unsettledRef = ref(db, "unsettled/");
+  try {
+    const snapshot = await get(unsettledRef);
+    if (snapshot.exists()) {
+      const unsettledData = snapshot.val();
+
+      const fetchGameResults = async () => {
+        try {
+          const response = await fetch("testingFolder/gameResults.json");
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const gameResults = await response.json(); // Store the fetched data in a variable
+          console.log("Game Results:", gameResults); // Log the data
+          return gameResults; // Return the data for further use
+        } catch (error) {
+          console.error("Error fetching the JSON file:", error);
+          return null;
+        }
+      };
+
+      const gameResults = await fetchGameResults(); // Call the function and store the data
+
+      // Loop through each bet slip in unsettledData
+      for (const key in unsettledData) {
+        if (unsettledData.hasOwnProperty(key)) {
+          const betSlip = unsettledData[key]; // Individual bet slip object
+          console.log(`Bet Slip ID: ${key}`);
+
+          const betName = betSlip.betObject?.bet_1?.["bet name"]?.[0]; // Extract bet name[0]
+
+          if (betName) {
+            console.log(`Bet Name[0]: ${betName}`);
+
+            // Split the bet name into words
+            const betWords = betName.split(" "); // ['Denver', 'Nuggets', 'spread', '-3']
+            const firsttwoIndex = betWords.slice(0, 2).join(" "); // 'Denver Nuggets'
+            const thirdIndex = betWords[2]; // spread
+            const fourthIndex = betWords[3]; // -3
+            console.log(`Third Index: ${thirdIndex}`);
+            console.log(`Fourth Index: ${fourthIndex}`);
+            console.log(`First Two Index: ${firsttwoIndex}`);
+
+            // Find the index in gameResults where the homeTeam or visitorTeam matches firsttwoIndex
+            const matchingIndex = gameResults.findIndex(
+              (game) =>
+                game.homeTeam === firsttwoIndex ||
+                game.visitorTeam === firsttwoIndex
+            );
+
+            if (matchingIndex !== -1) {
+              const matchingGame = gameResults[matchingIndex];
+              console.log(`Matching Game Found at Index: ${matchingIndex}`);
+              console.log("Matching Game Details:", matchingGame);
+
+              // Check if it's homeTeam or visitorTeam
+              if (matchingGame.homeTeam === firsttwoIndex) {
+                console.log(`${firsttwoIndex} is the Home Team`);
+                if (thirdIndex === "spread") {
+                  const visitorPoints = matchingGame.visitorPoints; // Access visitor points
+                  const homePoints = matchingGame.homePoints; // Access home points
+                  const fourthIndexInt = parseInt(fourthIndex, 10);
+                  const newHomePoints = homePoints + fourthIndexInt;
+                  console.log("new home points", newHomePoints);
+                  console.log("visitor pts", visitorPoints);
+                  if (newHomePoints > visitorPoints) {
+                    console.log("bet cashed ");
+                    await update(ref(db, `unsettled/${key}/betObject/bet_1`), {
+                      status: "cashed",
+                    });
+                    await update(ref(db, `unsettled/${key}`), {
+                      unsettled: "false",
+                    });
+                  } else if (newHomePoints < visitorPoints) {
+                    console.log("bet failed ");
+                    await update(ref(db, `unsettled/${key}/betObject/bet_1`), {
+                      status: "failed",
+                    });
+                    await update(ref(db, `unsettled/${key}`), {
+                      unsettled: "false",
+                    });
+                  } else {
+                    console.log("bet pushed ");
+                    await update(ref(db, `unsettled/${key}/betObject/bet_1`), {
+                      status: "push",
+                    });
+                    await update(ref(db, `unsettled/${key}`), {
+                      unsettled: "false",
+                    });
+                  }
+                }
+              } else if (matchingGame.visitorTeam === firsttwoIndex) {
+                console.log(`${firsttwoIndex} is the Visitor Team`);
+                if (thirdIndex === "spread") {
+                  const visitorPoints = matchingGame.visitorPoints; // Access visitor points
+                  const homePoints = matchingGame.homePoints; // Access home points
+                  const fourthIndexInt = parseInt(fourthIndex, 10);
+                  const newvisitorPoints = visitorPoints + fourthIndexInt;
+                  console.log("new visitor points", newvisitorPoints);
+                  console.log("home pts", homePoints);
+                  if (newvisitorPoints > homePoints) {
+                    console.log("bet cashed ");
+                    await update(ref(db, `unsettled/${key}/betObject/bet_1`), {
+                      status: "cashed",
+                    });
+                    await update(ref(db, `unsettled/${key}`), {
+                      unsettled: "false",
+                    });
+                  } else if (newvisitorPoints < homePoints) {
+                    console.log("bet failed ");
+                    await update(ref(db, `unsettled/${key}/betObject/bet_1`), {
+                      status: "failed",
+                    });
+                    await update(ref(db, `unsettled/${key}`), {
+                      unsettled: "false",
+                    });
+                  } else {
+                    console.log("bet pushed ");
+                    await update(ref(db, `unsettled/${key}/betObject/bet_1`), {
+                      status: "push",
+                    });
+                    await update(ref(db, `unsettled/${key}`), {
+                      unsettled: "false",
+                    });
+                  }
+                }
+              }
+            } else {
+              console.log(`No matching game found for: ${firsttwoIndex}`);
+            }
+
+            // Log other variables for reference
+          } else {
+            console.log("No bet name found for this slip.");
+          }
+        }
+      }
+
+      return unsettledData;
+    } else {
+      console.log("No unsettled data found.");
+      return null;
+    }
+  } catch (error) {
+    console.log("Error getting unsettled data:", error);
+    throw error;
+  }
+}
+
 export function AddParlayData(userId, betName, odds, wagered) {
   const wageredAmount = parseFloat(wagered);
   const userRef = ref(db, `betslipSet/${userId}`);
