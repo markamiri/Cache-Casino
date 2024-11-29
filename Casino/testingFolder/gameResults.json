@@ -1,114 +1,114 @@
 [
-    {
-        "homeTeam": "Charlotte Hornets",
-        "visitorTeam": "Miami Heat",
-        "homePoints": 94,
-        "visitorPoints": 98,
-        "totalPoints": 192,
-        "winningTeam": "visitor ML"
-    },
-    {
-        "homeTeam": "Cleveland Cavaliers",
-        "visitorTeam": "Atlanta Hawks",
-        "homePoints": 124,
-        "visitorPoints": 135,
-        "totalPoints": 259,
-        "winningTeam": "visitor ML"
-    },
-    {
-        "homeTeam": "Indiana Pacers",
-        "visitorTeam": "Portland Trail Blazers",
-        "homePoints": 121,
-        "visitorPoints": 114,
-        "totalPoints": 235,
-        "winningTeam": "home ML"
-    },
-    {
-        "homeTeam": "Orlando Magic",
-        "visitorTeam": "Chicago Bulls",
-        "homePoints": 133,
-        "visitorPoints": 119,
-        "totalPoints": 252,
-        "winningTeam": "home ML"
-    },
-    {
-        "homeTeam": "Philadelphia 76ers",
-        "visitorTeam": "Houston Rockets",
-        "homePoints": 115,
-        "visitorPoints": 122,
-        "totalPoints": 237,
-        "winningTeam": "visitor ML"
-    },
-    {
-        "homeTeam": "Washington Wizards",
-        "visitorTeam": "LA Clippers",
-        "homePoints": 96,
-        "visitorPoints": 121,
-        "totalPoints": 217,
-        "winningTeam": "visitor ML"
-    },
-    {
-        "homeTeam": "Dallas Mavericks",
-        "visitorTeam": "New York Knicks",
-        "homePoints": 129,
-        "visitorPoints": 114,
-        "totalPoints": 243,
-        "winningTeam": "home ML"
-    },
-    {
-        "homeTeam": "Memphis Grizzlies",
-        "visitorTeam": "Detroit Pistons",
-        "homePoints": 131,
-        "visitorPoints": 111,
-        "totalPoints": 242,
-        "winningTeam": "home ML"
-    },
-    {
-        "homeTeam": "Minnesota Timberwolves",
-        "visitorTeam": "Sacramento Kings",
-        "homePoints": 104,
-        "visitorPoints": 115,
-        "totalPoints": 219,
-        "winningTeam": "visitor ML"
-    },
-    {
-        "homeTeam": "New Orleans Pelicans",
-        "visitorTeam": "Toronto Raptors",
-        "homePoints": 93,
-        "visitorPoints": 119,
-        "totalPoints": 212,
-        "winningTeam": "visitor ML"
-    },
-    {
-        "homeTeam": "San Antonio Spurs",
-        "visitorTeam": "Los Angeles Lakers",
-        "homePoints": 101,
-        "visitorPoints": 119,
-        "totalPoints": 220,
-        "winningTeam": "visitor ML"
-    },
-    {
-        "homeTeam": "Phoenix Suns",
-        "visitorTeam": "Brooklyn Nets",
-        "homePoints": 117,
-        "visitorPoints": 127,
-        "totalPoints": 244,
-        "winningTeam": "visitor ML"
-    },
-    {
-        "homeTeam": "Utah Jazz",
-        "visitorTeam": "Denver Nuggets",
-        "homePoints": 103,
-        "visitorPoints": 122,
-        "totalPoints": 225,
-        "winningTeam": "visitor ML"
-    },
-    {
-        "homeTeam": "Golden State Warriors",
-        "visitorTeam": "Oklahoma City Thunder",
-        "homePoints": 101,
-        "visitorPoints": 105,
-        "totalPoints": 206,
-        "winningTeam": "visitor ML"
-    }
+  {
+    "homeTeam": "Charlotte Hornets",
+    "visitorTeam": "Miami Heat",
+    "homePoints": 94,
+    "visitorPoints": 98,
+    "totalPoints": 192,
+    "winningTeam": "visitor ML"
+  },
+  {
+    "homeTeam": "Cleveland Cavaliers",
+    "visitorTeam": "Atlanta Hawks",
+    "homePoints": 124,
+    "visitorPoints": 135,
+    "totalPoints": 259,
+    "winningTeam": "visitor ML"
+  },
+  {
+    "homeTeam": "Indiana Pacers",
+    "visitorTeam": "Portland Trail Blazers",
+    "homePoints": 121,
+    "visitorPoints": 114,
+    "totalPoints": 235,
+    "winningTeam": "home ML"
+  },
+  {
+    "homeTeam": "Orlando Magic",
+    "visitorTeam": "Chicago Bulls",
+    "homePoints": 133,
+    "visitorPoints": 119,
+    "totalPoints": 252,
+    "winningTeam": "home ML"
+  },
+  {
+    "homeTeam": "Philadelphia 76ers",
+    "visitorTeam": "Houston Rockets",
+    "homePoints": 115,
+    "visitorPoints": 122,
+    "totalPoints": 237,
+    "winningTeam": "visitor ML"
+  },
+  {
+    "homeTeam": "Washington Wizards",
+    "visitorTeam": "LA Clippers",
+    "homePoints": 96,
+    "visitorPoints": 121,
+    "totalPoints": 217,
+    "winningTeam": "visitor ML"
+  },
+  {
+    "homeTeam": "Dallas Mavericks",
+    "visitorTeam": "New York Knicks",
+    "homePoints": 129,
+    "visitorPoints": 114,
+    "totalPoints": 243,
+    "winningTeam": "home ML"
+  },
+  {
+    "homeTeam": "Memphis Grizzlies",
+    "visitorTeam": "Detroit Pistons",
+    "homePoints": 131,
+    "visitorPoints": 111,
+    "totalPoints": 242,
+    "winningTeam": "home ML"
+  },
+  {
+    "homeTeam": "Minnesota Timberwolves",
+    "visitorTeam": "Sacramento Kings",
+    "homePoints": 104,
+    "visitorPoints": 115,
+    "totalPoints": 219,
+    "winningTeam": "visitor ML"
+  },
+  {
+    "homeTeam": "New Orleans Pelicans",
+    "visitorTeam": "Toronto Raptors",
+    "homePoints": 93,
+    "visitorPoints": 119,
+    "totalPoints": 212,
+    "winningTeam": "visitor ML"
+  },
+  {
+    "homeTeam": "San Antonio Spurs",
+    "visitorTeam": "Los Angeles Lakers",
+    "homePoints": 101,
+    "visitorPoints": 119,
+    "totalPoints": 220,
+    "winningTeam": "visitor ML"
+  },
+  {
+    "homeTeam": "Phoenix Suns",
+    "visitorTeam": "Brooklyn Nets",
+    "homePoints": 117,
+    "visitorPoints": 127,
+    "totalPoints": 244,
+    "winningTeam": "visitor ML"
+  },
+  {
+    "homeTeam": "Utah Jazz",
+    "visitorTeam": "Denver Nuggets",
+    "homePoints": 103,
+    "visitorPoints": 122,
+    "totalPoints": 225,
+    "winningTeam": "visitor ML"
+  },
+  {
+    "homeTeam": "Golden State Warriors",
+    "visitorTeam": "Oklahoma City Thunder",
+    "homePoints": 101,
+    "visitorPoints": 105,
+    "totalPoints": 206,
+    "winningTeam": "visitor ML"
+  }
 ]

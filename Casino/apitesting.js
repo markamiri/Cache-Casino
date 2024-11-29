@@ -344,17 +344,35 @@ function appendGameDataToDOM(gameData) {
       awayTeamOUButton.setAttribute("data-user-id", "markamiri1");
       awayTeamOUButton.setAttribute(
         "data-bet-name",
-        `[${awayTeamTotalVar.name} O/U ${awayTeamTotalVar.point}]`
+        `"[${awayTeamH2hVar.name} ${awayTeamTotalVar.name}  ${awayTeamTotalVar.point}]"`
       );
-      awayTeamOUButton.setAttribute("data-odds", `[${awayTeamTotalVar.price}]`);
+      awayTeamOUButton.setAttribute("data-odds", `"${awayTeamTotalVar.price}"`);
       awayTeamOUButton.setAttribute("data-wagered", "20");
+      awayTeamOUButton.setAttribute(
+        "data-game-teams",
+        `${awayTeamH2hVar.name} @ ${homeTeamH2hVar.name}`
+      );
+      awayTeamOUButton.setAttribute(
+        "data-game-date",
+        ` ${formattedDateString}`
+      );
       awayTeamOUButton.addEventListener("click", function () {
-        // Log all attributes of the button
-        console.log("Button attributes:");
-        console.log("user-id:", this.getAttribute("data-user-id"));
-        console.log("bet-name:", this.getAttribute("data-bet-name"));
-        console.log("odds:", this.getAttribute("data-odds"));
-        console.log("wagered:", this.getAttribute("data-wagered"));
+        console.log("game Link", this.getAttribute("data-game-link"));
+        const userId = this.getAttribute("data-user-id");
+        const betName = this.getAttribute("data-bet-name");
+        const odds = this.getAttribute("data-odds");
+        const wagered = this.getAttribute("data-wagered");
+        const gameTeams = this.getAttribute("data-game-teams");
+        const gameDate = this.getAttribute("data-game-date");
+        //addData(userId, betName, odds, wagered);
+        const cartLen = appendGameDataToBetCart(
+          userId,
+          betName,
+          odds,
+          gameTeams,
+          gameDate
+        );
+        itemsInCart.textContent = cartLen;
       });
 
       const awayTeamOULine = document.createElement("div");
@@ -379,17 +397,35 @@ function appendGameDataToDOM(gameData) {
       awayTeamMLButton.setAttribute("data-user-id", "markamiri1");
       awayTeamMLButton.setAttribute(
         "data-bet-name",
-        `[${awayTeamH2hVar.name} MoneyLine]`
+        `"[${awayTeamH2hVar.name} MoneyLine]"`
       );
-      awayTeamMLButton.setAttribute("data-odds", `[${awayTeamH2hVar.price}]`);
+      awayTeamMLButton.setAttribute("data-odds", `"${awayTeamH2hVar.price}"`);
       awayTeamMLButton.setAttribute("data-wagered", "20");
+      awayTeamMLButton.setAttribute(
+        "data-game-teams",
+        `${awayTeamH2hVar.name} @ ${homeTeamH2hVar.name}`
+      );
+      awayTeamMLButton.setAttribute(
+        "data-game-date",
+        ` ${formattedDateString}`
+      );
       awayTeamMLButton.addEventListener("click", function () {
-        // Log all attributes of the button
-        console.log("Button attributes:");
-        console.log("user-id:", this.getAttribute("data-user-id"));
-        console.log("bet-name:", this.getAttribute("data-bet-name"));
-        console.log("odds:", this.getAttribute("data-odds"));
-        console.log("wagered:", this.getAttribute("data-wagered"));
+        console.log("game Link", this.getAttribute("data-game-link"));
+        const userId = this.getAttribute("data-user-id");
+        const betName = this.getAttribute("data-bet-name");
+        const odds = this.getAttribute("data-odds");
+        const wagered = this.getAttribute("data-wagered");
+        const gameTeams = this.getAttribute("data-game-teams");
+        const gameDate = this.getAttribute("data-game-date");
+        //addData(userId, betName, odds, wagered);
+        const cartLen = appendGameDataToBetCart(
+          userId,
+          betName,
+          odds,
+          gameTeams,
+          gameDate
+        );
+        itemsInCart.textContent = cartLen;
       });
 
       const awayTeamMLOdds = document.createElement("div");
@@ -461,20 +497,51 @@ function appendGameDataToDOM(gameData) {
       hometeamSpreadButton.setAttribute("data-user-id", "markamiri1");
       hometeamSpreadButton.setAttribute(
         "data-bet-name",
-        `[${homeTeamSpreadVar.name} Spread ${homeTeamSpreadVar.point}]`
+        `"[${homeTeamSpreadVar.name} spread ${homeTeamSpreadVar.point}]"`
       );
       hometeamSpreadButton.setAttribute(
         "data-odds",
-        `[${homeTeamSpreadVar.price}]`
+        `"${homeTeamSpreadVar.price}"`
       );
+      hometeamSpreadButton.setAttribute(
+        "data-game-teams",
+        `${awayTeamSpreadVar.name} @ ${homeTeamSpreadVar.name}`
+      );
+      hometeamSpreadButton.setAttribute(
+        "data-game-date",
+        ` ${formattedDateString}`
+      );
+
       hometeamSpreadButton.setAttribute("data-wagered", "20");
       hometeamSpreadButton.addEventListener("click", function () {
-        // Log all attributes of the button
-        console.log("Button attributes:");
-        console.log("user-id:", this.getAttribute("data-user-id"));
-        console.log("bet-name:", this.getAttribute("data-bet-name"));
-        console.log("odds:", this.getAttribute("data-odds"));
-        console.log("wagered:", this.getAttribute("data-wagered"));
+        console.log("game Link", this.getAttribute("data-game-link"));
+        const userId = this.getAttribute("data-user-id");
+        const betName = this.getAttribute("data-bet-name");
+        const odds = this.getAttribute("data-odds");
+        const wagered = this.getAttribute("data-wagered");
+        const gameTeams = this.getAttribute("data-game-teams");
+        const gameDate = this.getAttribute("data-game-date");
+        //addData(userId, betName, odds, wagered);
+        const cartLen = appendGameDataToBetCart(
+          userId,
+          betName,
+          odds,
+          gameTeams,
+          gameDate
+        ); // Call AddData function
+
+        itemsInCart.textContent = cartLen;
+        /*
+        if (cartLen > 1) {
+          straightButton.classList.remove("active");
+          parlayButton.classList.add("active");
+          toggleInputVisibility(true);
+        } else if (cartLen === 1) {
+          parlayButton.classList.remove("active");
+          straightButton.classList.add("active");
+          toggleInputVisibility(false);
+        }
+        */
       });
 
       const homeTeamSpreadLine = document.createElement("div");
@@ -499,17 +566,35 @@ function appendGameDataToDOM(gameData) {
       homeTeamOUButton.setAttribute("data-user-id", "markamiri1");
       homeTeamOUButton.setAttribute(
         "data-bet-name",
-        `[${homeTeamTotalVar.name} Total ${homeTeamTotalVar.point}]`
+        `"[${awayTeamH2hVar.name} ${homeTeamTotalVar.name}  ${homeTeamTotalVar.point}]"`
       );
-      homeTeamOUButton.setAttribute("data-odds", `[${homeTeamTotalVar.price}]`);
+      homeTeamOUButton.setAttribute("data-odds", `"${homeTeamTotalVar.price}"`);
       homeTeamOUButton.setAttribute("data-wagered", "20");
+      homeTeamOUButton.setAttribute(
+        "data-game-teams",
+        `${awayTeamH2hVar.name} @ ${homeTeamH2hVar.name}`
+      );
+      homeTeamOUButton.setAttribute(
+        "data-game-date",
+        ` ${formattedDateString}`
+      );
       homeTeamOUButton.addEventListener("click", function () {
-        // Log all attributes of the button
-        console.log("Button attributes:");
-        console.log("user-id:", this.getAttribute("data-user-id"));
-        console.log("bet-name:", this.getAttribute("data-bet-name"));
-        console.log("odds:", this.getAttribute("data-odds"));
-        console.log("wagered:", this.getAttribute("data-wagered"));
+        console.log("game Link", this.getAttribute("data-game-link"));
+        const userId = this.getAttribute("data-user-id");
+        const betName = this.getAttribute("data-bet-name");
+        const odds = this.getAttribute("data-odds");
+        const wagered = this.getAttribute("data-wagered");
+        const gameTeams = this.getAttribute("data-game-teams");
+        const gameDate = this.getAttribute("data-game-date");
+        //addData(userId, betName, odds, wagered);
+        const cartLen = appendGameDataToBetCart(
+          userId,
+          betName,
+          odds,
+          gameTeams,
+          gameDate
+        );
+        itemsInCart.textContent = cartLen;
       });
 
       const homeTeamOULine = document.createElement("div");
@@ -534,17 +619,35 @@ function appendGameDataToDOM(gameData) {
       homeTeamMLButton.setAttribute("data-user-id", "markamiri1");
       homeTeamMLButton.setAttribute(
         "data-bet-name",
-        `[${homeTeamH2hVar.name} MoneyLine]`
+        `"[${homeTeamH2hVar.name} MoneyLine]"`
       );
-      homeTeamMLButton.setAttribute("data-odds", `[${homeTeamH2hVar.price}]`);
+      homeTeamMLButton.setAttribute("data-odds", `"${homeTeamH2hVar.price}"`);
       homeTeamMLButton.setAttribute("data-wagered", "20");
+      homeTeamMLButton.setAttribute(
+        "data-game-teams",
+        `${awayTeamH2hVar.name} @ ${homeTeamH2hVar.name}`
+      );
+      homeTeamMLButton.setAttribute(
+        "data-game-date",
+        ` ${formattedDateString}`
+      );
       homeTeamMLButton.addEventListener("click", function () {
-        // Log all attributes of the button
-        console.log("Button attributes:");
-        console.log("user-id:", this.getAttribute("data-user-id"));
-        console.log("bet-name:", this.getAttribute("data-bet-name"));
-        console.log("odds:", this.getAttribute("data-odds"));
-        console.log("wagered:", this.getAttribute("data-wagered"));
+        console.log("game Link", this.getAttribute("data-game-link"));
+        const userId = this.getAttribute("data-user-id");
+        const betName = this.getAttribute("data-bet-name");
+        const odds = this.getAttribute("data-odds");
+        const wagered = this.getAttribute("data-wagered");
+        const gameTeams = this.getAttribute("data-game-teams");
+        const gameDate = this.getAttribute("data-game-date");
+        //addData(userId, betName, odds, wagered);
+        const cartLen = appendGameDataToBetCart(
+          userId,
+          betName,
+          odds,
+          gameTeams,
+          gameDate
+        );
+        itemsInCart.textContent = cartLen;
       });
 
       const homeTeamMLodds = document.createElement("div");
