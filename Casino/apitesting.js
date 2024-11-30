@@ -344,7 +344,7 @@ function appendGameDataToDOM(gameData) {
       awayTeamOUButton.setAttribute("data-user-id", "markamiri1");
       awayTeamOUButton.setAttribute(
         "data-bet-name",
-        `"[${awayTeamH2hVar.name} ${awayTeamTotalVar.name}  ${awayTeamTotalVar.point}]"`
+        `"[${awayTeamH2hVar.name} ${awayTeamTotalVar.name} ${awayTeamTotalVar.point}]"`
       );
       awayTeamOUButton.setAttribute("data-odds", `"${awayTeamTotalVar.price}"`);
       awayTeamOUButton.setAttribute("data-wagered", "20");
@@ -566,7 +566,7 @@ function appendGameDataToDOM(gameData) {
       homeTeamOUButton.setAttribute("data-user-id", "markamiri1");
       homeTeamOUButton.setAttribute(
         "data-bet-name",
-        `"[${awayTeamH2hVar.name} ${homeTeamTotalVar.name}  ${homeTeamTotalVar.point}]"`
+        `"[${awayTeamH2hVar.name} ${homeTeamTotalVar.name} ${homeTeamTotalVar.point}]"`
       );
       homeTeamOUButton.setAttribute("data-odds", `"${homeTeamTotalVar.price}"`);
       homeTeamOUButton.setAttribute("data-wagered", "20");
