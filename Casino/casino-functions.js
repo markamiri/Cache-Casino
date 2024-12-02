@@ -63,11 +63,10 @@ export async function getUnsettled() {
           const betSlip = unsettledData[key]; // Individual bet slip object
           console.log(`Bet Slip ID: ${key}`);
 
-          const betName = betSlip.betObject?.bet_1?.["bet name"]?.[0]; // Extract bet name[0]
+          const betNames = betSlip.betObject?.bet_1?.["bet name"]?.[0]; // Access the nested array
           const betUser = betSlip.name;
           const betWager = betSlip.amtwagered;
           const totalbetodds = betSlip.totalbetodds;
-          //get user balance var
           const userBalanceRef = ref(db, `betslipSet/${betUser}/balance`);
           let currentBalance = 0;
           try {
@@ -81,7 +80,6 @@ export async function getUnsettled() {
           } catch (error) {
             console.error("Error fetching values:", error);
           }
-
           const totalre = (betWager * totalbetodds).toFixed(2);
           console.log("totalre ", totalre);
           console.log("curr balance ", currentBalance);
@@ -92,141 +90,24 @@ export async function getUnsettled() {
             parseFloat(currentBalance) + parseFloat(betWager)
           ).toFixed(2);
           console.log("potentialReturn ", potentialReturn);
+          console.log("Type of betNames:", typeof betNames);
+          console.log("Value of betNames:", betNames);
+          if (Array.isArray(betNames)) {
+            console.log("is this working?>");
+            for (const [index, betName] of betNames.entries()) {
+              console.log(`Bet Name ${index}:`, betName); // Adding 1 to index for 1-based numbering
+              //split the bet name into words
+              const betWords = betName.split(" ");
+              // check if the last word is moneyline
+              const lastIndex = betWords[betWords.length - 2];
+              if (lastIndex === "MoneyLine") {
+                let status = betWords.pop();
+                console.log("testing status", status);
+                const removedWord = betWords.pop();
+                console.log("removed word", removedWord);
+                const teamName = betWords.join(" ");
+                console.log("team Name", teamName);
 
-          //new implemented code to work for team names with 3 words
-          if (betName) {
-            console.log(`Bet Name[0]: ${betName}`);
-            //split the bet name into words
-            const betWords = betName.split(" ");
-            // check if the last word is moneyline
-            const lastIndex = betWords[betWords.length - 1];
-            if (lastIndex === "MoneyLine") {
-              const removedWord = betWords.pop();
-              console.log("removed word", removedWord);
-              const teamName = betWords.join(" ");
-              console.log("team Name", teamName);
-
-              // find the game log with the team in the bet slip
-
-              const matchingIndex = gameResults.findIndex(
-                (game) =>
-                  game.homeTeam === teamName || game.visitorTeam === teamName
-              );
-
-              if (matchingIndex !== -1) {
-                const matchingGame = gameResults[matchingIndex];
-                console.log("Matching Game logs:", matchingGame);
-
-                //check if its the visitor team
-                if (matchingGame.visitorTeam === teamName) {
-                  console.log(`${teamName} is the away team`);
-                  const winningTeam = matchingGame.winningTeam;
-                  const winningTeamVar = winningTeam.split(" ")[0];
-                  // if the user bet visitor team ML and they won
-                  if (winningTeamVar === "visitor") {
-                    // update the betslip in unsettled first
-                    console.log("bet cashed");
-                    await update(ref(db, `unsettled/${key}`), {
-                      "betObject/bet_1/status": "cashed",
-                      unsettled: "false",
-                    });
-                    // update the betslip in the users folder
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        unsettled: "false",
-                        totalReturn: totalre,
-                        "betObject/bet_1/status": "cashed",
-                      }
-                    );
-                    //update the users balance
-                    await set(
-                      ref(db, `betslipSet/${betUser}/balance`),
-                      potentialReturn
-                    );
-                    //remove betslip from the unsettled folder
-                    await remove(ref(db, `unsettled/${key}`));
-                  }
-                  // if the user bet visitor team ML and they lost
-                  else {
-                    console.log("bet failed");
-                    //update bet in the unsettled folder
-                    await update(ref(db, `unsettled/${key}`), {
-                      unsettled: "false",
-                      "betObject/bet_1/status": "failed",
-                    });
-                    // update in the user folder
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        unsettled: "false",
-                        "betObject/bet_1/status": "failed",
-                      }
-                    );
-                    await remove(ref(db, `unsettled/${key}`));
-                  }
-                } else if (matchingGame.homeTeam === teamName) {
-                  console.log(`${teamName} is the home team`);
-                  const winningTeam = matchingGame.winningTeam;
-                  const winningTeamVar = winningTeam.split(" ")[0];
-                  if (winningTeamVar === "home") {
-                    console.log("bet cashed");
-                    // update the betslip in unsettled first
-
-                    await update(ref(db, `unsettled/${key}`), {
-                      "betObject/bet_1/status": "cashed",
-                      unsettled: "false",
-                    });
-
-                    // update the betslip in the users folder
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        unsettled: "false",
-                        totalReturn: totalre,
-                        "betObject/bet_1/status": "cashed",
-                      }
-                    );
-                    //update the users balance
-                    await set(
-                      ref(db, `betslipSet/${betUser}/balance`),
-                      potentialReturn
-                    );
-                    //remove betslip from the unsettled folder
-                    await remove(ref(db, `unsettled/${key}`));
-                  } else {
-                    console.log("bet failed");
-                    //update bet in the unsettled folder
-                    await update(ref(db, `unsettled/${key}`), {
-                      unsettled: "false",
-                      "betObject/bet_1/status": "failed",
-                    });
-                    // update in the user folder
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        unsettled: "false",
-                        "betObject/bet_1/status": "failed",
-                      }
-                    );
-                    await remove(ref(db, `unsettled/${key}`));
-                  }
-                }
-              }
-            }
-            // Determined that the bet is either total or spread
-            else {
-              //work on spread first
-              console.log("Bet Words Array:", betWords); // Log the array
-
-              const numberLine = betWords.pop();
-              console.log("number for total/spread:", numberLine);
-              const prop = betWords.pop();
-              console.log("type of prop:", prop);
-              const teamName = betWords.join(" ");
-              console.log("team Name", teamName);
-
-              if (prop === "spread") {
                 // find the game log with the team in the bet slip
 
                 const matchingIndex = gameResults.findIndex(
@@ -236,20 +117,689 @@ export async function getUnsettled() {
                 if (matchingIndex !== -1) {
                   const matchingGame = gameResults[matchingIndex];
                   console.log("Matching Game logs:", matchingGame);
+
+                  //check if its the visitor team
                   if (matchingGame.visitorTeam === teamName) {
-                    console.log(`${teamName} is the Visitor Team`);
-                    const visitorPoints = matchingGame.visitorPoints; // Access visitor points
-                    const homePoints = matchingGame.homePoints; // Access home points
-                    const lineInt = parseInt(numberLine, 10);
-                    const newvisitorPoints = lineInt + visitorPoints;
-                    console.log("new visitor points", newvisitorPoints);
-                    console.log("home pts", homePoints);
-                    if (newvisitorPoints > homePoints) {
-                      console.log("bet cashed ");
+                    console.log(`${teamName} is the away team`);
+                    const winningTeam = matchingGame.winningTeam;
+                    const winningTeamVar = winningTeam.split(" ")[0];
+                    // if the user bet visitor team ML and they won
+                    if (winningTeamVar === "visitor") {
+                      // update the betslip in unsettled first
+                      console.log("bet cashed");
+
+                      status = "cache";
+                      const newBetName =
+                        teamName + " " + removedWord + " " + status;
+                      console.log(newBetName);
+
+                      await update(ref(db, `unsettled/${key}`), {
+                        [`betObject/bet_1/bet name/${index}`]: newBetName,
+                        "betObject/bet_1/status": "cashed",
+                        unsettled: "false",
+                      });
+                      // update the betslip in the users folder
+                      await update(
+                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                        {
+                          unsettled: "false",
+                          totalReturn: totalre,
+                          "betObject/bet_1/status": "cashed",
+                          [`betObject/bet_1/bet name/${index}`]: newBetName,
+                        }
+                      );
+                      /*
+                      //update the users balance
+                      await set(
+                        ref(db, `betslipSet/${betUser}/balance`),
+                        potentialReturn
+                      );
+                      //remove betslip from the unsettled folder
+                      await remove(ref(db, `unsettled/${key}`));
+                      */
+                    }
+                    // if the user bet visitor team ML and they lost
+                    else {
+                      console.log("bet failed");
+                      //update bet in the unsettled folder
+                      status = "failed";
+                      const newBetName =
+                        teamName + " " + removedWord + " " + status;
+                      console.log(newBetName);
+                      await update(ref(db, `unsettled/${key}`), {
+                        unsettled: "false",
+                        [`betObject/bet_1/bet name/${index}`]: newBetName,
+                      });
+                      // update in the user folder
+                      await update(
+                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                        {
+                          unsettled: "false",
+                          "betObject/bet_1/status": "failed",
+                          [`betObject/bet_1/bet name/${index}`]: newBetName,
+                        }
+                      );
+                      //await remove(ref(db, `unsettled/${key}`));
+                    }
+                  } else if (matchingGame.homeTeam === teamName) {
+                    console.log(`${teamName} is the home team`);
+                    const winningTeam = matchingGame.winningTeam;
+                    const winningTeamVar = winningTeam.split(" ")[0];
+                    if (winningTeamVar === "home") {
+                      console.log("bet cashed");
+                      status = "cache";
+                      const newBetName =
+                        teamName + " " + removedWord + " " + status;
+                      console.log(newBetName);
+
+                      // update the betslip in unsettled first
+
+                      await update(ref(db, `unsettled/${key}`), {
+                        "betObject/bet_1/status": "cashed",
+                        unsettled: "false",
+                        [`betObject/bet_1/bet name/${index}`]: newBetName,
+                      });
+
+                      // update the betslip in the users folder
+                      await update(
+                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                        {
+                          unsettled: "false",
+                          totalReturn: totalre,
+                          "betObject/bet_1/status": "cashed",
+                          [`betObject/bet_1/bet name/${index}`]: newBetName,
+                        }
+                      );
+                      /*
+                      //update the users balance
+                      await set(
+                        ref(db, `betslipSet/${betUser}/balance`),
+                        potentialReturn
+                      );
+                      //remove betslip from the unsettled folder
+                      await remove(ref(db, `unsettled/${key}`));
+                      */
+                    } else {
+                      console.log("bet failed");
+                      //update bet in the unsettled folder
+                      status = "failed";
+                      const newBetName =
+                        teamName + " " + removedWord + " " + status;
+                      console.log(newBetName);
+                      await update(ref(db, `unsettled/${key}`), {
+                        unsettled: "false",
+                        [`betObject/bet_1/bet name/${index}`]: newBetName,
+                      });
+                      // update in the user folder
+                      await update(
+                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                        {
+                          unsettled: "false",
+                          "betObject/bet_1/status": "failed",
+                          [`betObject/bet_1/bet name/${index}`]: newBetName,
+                        }
+                      );
+                      //await remove(ref(db, `unsettled/${key}`));
+                    }
+                  }
+                }
+              } else {
+                //work on spread first
+                console.log("Bet Words Array:", betWords); // Log the array
+                let status = betWords.pop();
+                console.log("testing status", status);
+                const numberLine = betWords.pop();
+                console.log("number for total/spread:", numberLine);
+                const prop = betWords.pop();
+                const removedWord = prop;
+                console.log("type of prop:", prop);
+                const teamName = betWords.join(" ");
+                console.log("team Name", teamName);
+
+                if (prop === "spread") {
+                  // find the game log with the team in the bet slip
+
+                  const matchingIndex = gameResults.findIndex(
+                    (game) =>
+                      game.homeTeam === teamName ||
+                      game.visitorTeam === teamName
+                  );
+                  if (matchingIndex !== -1) {
+                    const matchingGame = gameResults[matchingIndex];
+                    console.log("Matching Game logs:", matchingGame);
+                    if (matchingGame.visitorTeam === teamName) {
+                      console.log(`${teamName} is the Visitor Team`);
+                      const visitorPoints = matchingGame.visitorPoints; // Access visitor points
+                      const homePoints = matchingGame.homePoints; // Access home points
+                      const lineInt = parseInt(numberLine, 10);
+                      const newvisitorPoints = lineInt + visitorPoints;
+                      console.log("new visitor points", newvisitorPoints);
+                      console.log("home pts", homePoints);
+                      if (newvisitorPoints > homePoints) {
+                        console.log("bet cashed ");
+                        status = "cache";
+                        const newBetName =
+                          teamName + " " + removedWord + " " + status;
+                        console.log(newBetName);
+
+                        await update(ref(db, `unsettled/${key}`), {
+                          "betObject/bet_1/status": "cashed",
+                          unsettled: "false",
+                          [`betObject/bet_1/bet name/${index}`]: newBetName,
+                        });
+                        // update the betslip in the users folder
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            totalReturn: totalre,
+                            "betObject/bet_1/status": "cashed",
+                            [`betObject/bet_1/bet name/${index}`]: newBetName,
+                          }
+                        );
+                        /*
+                        //update the users balance
+                        await set(
+                          ref(db, `betslipSet/${betUser}/balance`),
+                          potentialReturn
+                        );
+                        //remove betslip from the unsettled folder
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log("new spread cash worked Nice job ");
+                        */
+                      } else if (newvisitorPoints < homePoints) {
+                        console.log("bet failed");
+                        status = "failed";
+                        const newBetName =
+                          teamName + " " + removedWord + " " + status;
+                        console.log(newBetName);
+                        //update bet in the unsettled folder
+                        await update(ref(db, `unsettled/${key}`), {
+                          unsettled: "false",
+                          [`betObject/bet_1/bet name/${index}`]: newBetName,
+                        });
+                        // update in the user folder
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            "betObject/bet_1/status": "failed",
+                            [`betObject/bet_1/bet name/${index}`]: newBetName,
+                          }
+                        );
+                        //await remove(ref(db, `unsettled/${key}`));
+                        //console.log("new spread fail worked Nice job ");
+                      } else if (newvisitorPoints === homePoints) {
+                        console.log("bet pushed");
+                        status = "push";
+                        const newBetName =
+                          teamName + " " + removedWord + " " + status;
+                        console.log(newBetName);
+                        //update bet in the unsettled folder
+                        await update(ref(db, `unsettled/${key}`), {
+                          unsettled: "false",
+                          "betObject/bet_1/status": "push",
+                          totalReturn: betWager,
+                          [`betObject/bet_1/bet name/${index}`]: newBetName,
+                        });
+
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            "betObject/bet_1/status": "push",
+                            totalReturn: betWager,
+                            [`betObject/bet_1/bet name/${index}`]: newBetName,
+                          }
+                        );
+                        /*
+                        await set(
+                          ref(db, `betslipSet/${betUser}/balance`),
+                          pushReturnBalance
+                          //After its been added to the user transactions, should delete from unsettled
+                        );
+                        //await remove(ref(db, `unsettled/${key}`));
+                        console.log(
+                          `Key ${key} has been successfully removed from unsettled.`
+                        );
+                        console.log("new spread push worked Nice job ");
+                        */
+                      }
+                    }
+                    if (matchingGame.homeTeam === teamName) {
+                      console.log(`${teamName} is the Home Team`);
+                      const visitorPoints = matchingGame.visitorPoints; // Access visitor points
+                      const homePoints = matchingGame.homePoints; // Access home points
+                      const lineInt = parseInt(numberLine, 10);
+                      const newhomePoints = lineInt + homePoints;
+                      console.log("new home points", newhomePoints);
+                      console.log("visitor pts", visitorPoints);
+                      if (newhomePoints > visitorPoints) {
+                        console.log("bet cashed ");
+                        status = "cache";
+                        const newBetName =
+                          teamName + " " + removedWord + " " + status;
+                        console.log(newBetName);
+                        await update(ref(db, `unsettled/${key}`), {
+                          [`betObject/bet_1/bet name/${index}`]: newBetName,
+
+                          "betObject/bet_1/status": "cashed",
+                          unsettled: "false",
+                        });
+                        // update the betslip in the users folder
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            [`betObject/bet_1/bet name/${index}`]: newBetName,
+
+                            unsettled: "false",
+                            totalReturn: totalre,
+                            "betObject/bet_1/status": "cashed",
+                          }
+                        );
+                        /*
+                        //update the users balance
+                        await set(
+                          ref(db, `betslipSet/${betUser}/balance`),
+                          potentialReturn
+                        );
+                        //remove betslip from the unsettled folder
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log("new spread cash worked Nice job ");
+                        */
+                      } else if (newhomePoints < visitorPoints) {
+                        console.log("bet failed");
+                        status = "failed";
+                        const newBetName =
+                          teamName + " " + removedWord + " " + status;
+                        console.log(newBetName);
+                        //update bet in the unsettled folder
+                        await update(ref(db, `unsettled/${key}`), {
+                          unsettled: "false",
+                          "betObject/bet_1/status": "failed",
+                          [`betObject/bet_1/bet name/${index}`]: newBetName,
+                        });
+                        // update in the user folder
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            "betObject/bet_1/status": "failed",
+                            [`betObject/bet_1/bet name/${index}`]: newBetName,
+                          }
+                        );
+                        /*
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log("new spread fail worked Nice job ");
+                        */
+                      } else if (newhomePoints === visitorPoints) {
+                        console.log("bet pushed");
+                        status = "push";
+                        const newBetName =
+                          teamName + " " + removedWord + " " + status;
+                        console.log(newBetName);
+                        //update bet in the unsettled folder
+                        await update(ref(db, `unsettled/${key}`), {
+                          unsettled: "false",
+                          "betObject/bet_1/status": "push",
+                          totalReturn: betWager,
+                          [`betObject/bet_1/bet name/${index}`]: newBetName,
+                        });
+
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            "betObject/bet_1/status": "push",
+                            totalReturn: betWager,
+                            [`betObject/bet_1/bet name/${index}`]: newBetName,
+                          }
+                        );
+                        /*
+                        await set(
+                          ref(db, `betslipSet/${betUser}/balance`),
+                          pushReturnBalance
+                          //After its been added to the user transactions, should delete from unsettled
+                        );
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log(
+                          `Key ${key} has been successfully removed from unsettled.`
+                        );
+                        console.log("new spread push worked Nice job ");
+                        */
+                      }
+                    }
+                  }
+                } else if (prop === "Over" || prop === "Under") {
+                  const matchingIndex = gameResults.findIndex(
+                    (game) =>
+                      game.homeTeam === teamName ||
+                      game.visitorTeam === teamName
+                  );
+                  const matchingGame = gameResults[matchingIndex];
+                  console.log("Matching Game logs:", matchingGame);
+                  if (prop === "Over") {
+                    if (
+                      matchingGame.visitorTeam === teamName ||
+                      matchingGame.homeTeam === teamName
+                    ) {
+                      console.log(`${teamName} is the team`);
+                      const gameTotal = matchingGame.totalPoints;
+                      console.log("actual game total", gameTotal);
+
+                      const betLine = parseFloat(numberLine);
+                      console.log("vegas total", betLine);
+                      if (betLine < gameTotal) {
+                        console.log("bet cashed");
+
+                        status = "cache";
+                        const newBetName =
+                          teamName + " " + removedWord + " " + status;
+                        console.log(newBetName);
+                        // update the betslip in unsettled first
+                        await update(ref(db, `unsettled/${key}`), {
+                          [`betObject/bet_1/bet name/${index}`]: newBetName,
+
+                          "betObject/bet_1/status": "cashed",
+                          unsettled: "false",
+                        });
+                        // update the betslip in the users folder
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            [`betObject/bet_1/bet name/${index}`]: newBetName,
+
+                            unsettled: "false",
+                            totalReturn: totalre,
+                            "betObject/bet_1/status": "cashed",
+                          }
+                        );
+                        //update the users balance
+                        /*
+                        await set(
+                          ref(db, `betslipSet/${betUser}/balance`),
+                          potentialReturn
+                        );
+                        //remove betslip from the unsettled folder
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log("bet cashed !");
+                        */
+                      } else if (betLine > gameTotal) {
+                        console.log("bet failed");
+                        //update bet in the unsettled folder
+                        status = "failed";
+                        const newBetName =
+                          teamName + " " + removedWord + " " + status;
+                        console.log(newBetName);
+                        await update(ref(db, `unsettled/${key}`), {
+                          unsettled: "false",
+                          "betObject/bet_1/status": "failed",
+                          [`betObject/bet_1/bet name/${index}`]: newBetName,
+                        });
+                        // update in the user folder
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            "betObject/bet_1/status": "failed",
+                            [`betObject/bet_1/bet name/${index}`]: newBetName,
+                          }
+                        );
+                        /*
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log("bet total failed worked!");
+                        */
+                      } else if (betLine === gameTotal) {
+                        console.log("bet pushed");
+                        status = "push";
+                        const newBetName =
+                          teamName + " " + removedWord + " " + status;
+                        console.log(newBetName);
+                        //update bet in the unsettled folder
+                        await update(ref(db, `unsettled/${key}`), {
+                          unsettled: "false",
+                          "betObject/bet_1/status": "push",
+                          totalReturn: betWager,
+                          [`betObject/bet_1/bet name/${index}`]: newBetName,
+                        });
+
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            "betObject/bet_1/status": "push",
+                            totalReturn: betWager,
+                            [`betObject/bet_1/bet name/${index}`]: newBetName,
+                          }
+                        );
+                        /*
+                        await set(
+                          ref(db, `betslipSet/${betUser}/balance`),
+                          pushReturnBalance
+                          //After its been added to the user transactions, should delete from unsettled
+                        );
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log(
+                          `Key ${key} has been successfully removed from unsettled.`
+                        );
+                        console.log("new total push worked Nice job ");
+                        */
+                      }
+                    }
+                  } else if (prop === "Under") {
+                    if (
+                      matchingGame.visitorTeam === teamName ||
+                      matchingGame.homeTeam === teamName
+                    ) {
+                      console.log(`${teamName} is the  team`);
+                      const gameTotal = matchingGame.totalPoints;
+                      console.log("actual game total", gameTotal);
+
+                      const betLine = parseFloat(numberLine);
+                      console.log("vegas total", betLine);
+                      if (betLine > gameTotal) {
+                        // update the betslip in unsettled first
+                        console.log("bet cashed");
+                        status = "cache";
+                        const newBetName =
+                          teamName + " " + removedWord + " " + status;
+                        console.log(newBetName);
+                        await update(ref(db, `unsettled/${key}`), {
+                          "betObject/bet_1/status": "cashed",
+                          unsettled: "false",
+                          [`betObject/bet_1/bet name/${index}`]: newBetName,
+                        });
+                        // update the betslip in the users folder
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            [`betObject/bet_1/bet name/${index}`]: newBetName,
+
+                            unsettled: "false",
+                            totalReturn: totalre,
+                            "betObject/bet_1/status": "cashed",
+                          }
+                        );
+                        /*
+                        //update the users balance
+                        await set(
+                          ref(db, `betslipSet/${betUser}/balance`),
+                          potentialReturn
+                        );
+                        //remove betslip from the unsettled folder
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log("bet cashed !");
+                        */
+                      } else if (betLine < gameTotal) {
+                        console.log("bet failed");
+                        status = "failed";
+                        const newBetName =
+                          teamName + " " + removedWord + " " + status;
+                        console.log(newBetName);
+                        //update bet in the unsettled folder
+                        await update(ref(db, `unsettled/${key}`), {
+                          unsettled: "false",
+                          "betObject/bet_1/status": "failed",
+                          [`betObject/bet_1/bet name/${index}`]: newBetName,
+                        });
+                        // update in the user folder
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            "betObject/bet_1/status": "failed",
+                            [`betObject/bet_1/bet name/${index}`]: newBetName,
+                          }
+                        );
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log("bet total failed worked!");
+                      } else if (betLine === gameTotal) {
+                        console.log("bet pushed");
+                        status = "push";
+                        const newBetName =
+                          teamName + " " + removedWord + " " + status;
+                        console.log(newBetName);
+                        //update bet in the unsettled folder
+                        await update(ref(db, `unsettled/${key}`), {
+                          unsettled: "false",
+                          "betObject/bet_1/status": "push",
+                          totalReturn: betWager,
+                          [`betObject/bet_1/bet name/${index}`]: newBetName,
+                        });
+
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            "betObject/bet_1/status": "push",
+                            totalReturn: betWager,
+                            [`betObject/bet_1/bet name/${index}`]: newBetName,
+                          }
+                        );
+                        /*
+                        await set(
+                          ref(db, `betslipSet/${betUser}/balance`),
+                          pushReturnBalance
+                          //After its been added to the user transactions, should delete from unsettled
+                        );
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log(
+                          `Key ${key} has been successfully removed from unsettled.`
+                        );
+                        console.log("new total push worked Nice job ");
+                        */
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            //here
+          } else {
+            const betName = betSlip.betObject?.bet_1?.["bet name"]?.[0]; // Extract bet name[0]
+
+            //get user balance var
+
+            //new implemented code to work for team names with 3 words
+            if (betName) {
+              console.log(`Bet Name[0]: ${betName}`);
+              //split the bet name into words
+              const betWords = betName.split(" ");
+              // check if the last word is moneyline
+              const lastIndex = betWords[betWords.length - 2];
+              if (lastIndex === "MoneyLine") {
+                let status = betWords.pop();
+                console.log("testing status", status);
+                const removedWord = betWords.pop();
+                console.log("removed word", removedWord);
+                const teamName = betWords.join(" ");
+                console.log("team Name", teamName);
+
+                // find the game log with the team in the bet slip
+
+                const matchingIndex = gameResults.findIndex(
+                  (game) =>
+                    game.homeTeam === teamName || game.visitorTeam === teamName
+                );
+
+                if (matchingIndex !== -1) {
+                  const matchingGame = gameResults[matchingIndex];
+                  console.log("Matching Game logs:", matchingGame);
+
+                  //check if its the visitor team
+                  if (matchingGame.visitorTeam === teamName) {
+                    console.log(`${teamName} is the away team`);
+                    const winningTeam = matchingGame.winningTeam;
+                    const winningTeamVar = winningTeam.split(" ")[0];
+                    // if the user bet visitor team ML and they won
+                    if (winningTeamVar === "visitor") {
+                      // update the betslip in unsettled first
+                      console.log("bet cashed");
+
+                      status = "cache";
+                      const newBetName =
+                        teamName + " " + removedWord + " " + status;
+                      console.log(newBetName);
+
+                      await update(ref(db, `unsettled/${key}`), {
+                        "betObject/bet_1/bet name/0": newBetName,
+                        "betObject/bet_1/status": "cashed",
+                        unsettled: "false",
+                      });
+                      // update the betslip in the users folder
+                      await update(
+                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                        {
+                          unsettled: "false",
+                          totalReturn: totalre,
+                          "betObject/bet_1/status": "cashed",
+                          "betObject/bet_1/bet name/0": newBetName,
+                        }
+                      );
+                      //update the users balance
+                      await set(
+                        ref(db, `betslipSet/${betUser}/balance`),
+                        potentialReturn
+                      );
+                      //remove betslip from the unsettled folder
+                      await remove(ref(db, `unsettled/${key}`));
+                    }
+                    // if the user bet visitor team ML and they lost
+                    else {
+                      console.log("bet failed");
+                      //update bet in the unsettled folder
+                      status = "failed";
+                      const newBetName =
+                        teamName + " " + removedWord + " " + status;
+                      console.log(newBetName);
+                      await update(ref(db, `unsettled/${key}`), {
+                        "betObject/bet_1/bet name/0": newBetName,
+                        unsettled: "false",
+                      });
+                      // update in the user folder
+                      await update(
+                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                        {
+                          unsettled: "false",
+                          "betObject/bet_1/status": "failed",
+                          "betObject/bet_1/bet name/0": newBetName,
+                        }
+                      );
+                      await remove(ref(db, `unsettled/${key}`));
+                    }
+                  } else if (matchingGame.homeTeam === teamName) {
+                    console.log(`${teamName} is the home team`);
+                    const winningTeam = matchingGame.winningTeam;
+                    const winningTeamVar = winningTeam.split(" ")[0];
+                    if (winningTeamVar === "home") {
+                      console.log("bet cashed");
+                      // update the betslip in unsettled first
+
                       await update(ref(db, `unsettled/${key}`), {
                         "betObject/bet_1/status": "cashed",
                         unsettled: "false",
                       });
+
                       // update the betslip in the users folder
                       await update(
                         ref(db, `betslipSet/${betUser}/betslips/${key}`),
@@ -266,8 +816,7 @@ export async function getUnsettled() {
                       );
                       //remove betslip from the unsettled folder
                       await remove(ref(db, `unsettled/${key}`));
-                      console.log("new spread cash worked Nice job ");
-                    } else if (newvisitorPoints < homePoints) {
+                    } else {
                       console.log("bet failed");
                       //update bet in the unsettled folder
                       await update(ref(db, `unsettled/${key}`), {
@@ -283,1000 +832,366 @@ export async function getUnsettled() {
                         }
                       );
                       await remove(ref(db, `unsettled/${key}`));
-                      console.log("new spread fail worked Nice job ");
-                    } else if (newvisitorPoints === homePoints) {
-                      console.log("bet pushed");
-                      //update bet in the unsettled folder
-                      await update(ref(db, `unsettled/${key}`), {
-                        unsettled: "false",
-                        "betObject/bet_1/status": "push",
-                        totalReturn: betWager,
-                      });
+                    }
+                  }
+                }
+              }
+              // Determined that the bet is either total or spread
+              else {
+                //work on spread first
+                console.log("Bet Words Array:", betWords); // Log the array
+                const status = betWords.pop();
+                console.log("testing status", status);
+                const numberLine = betWords.pop();
+                console.log("number for total/spread:", numberLine);
+                const prop = betWords.pop();
+                console.log("type of prop:", prop);
+                const teamName = betWords.join(" ");
+                console.log("team Name", teamName);
 
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
+                if (prop === "spread") {
+                  // find the game log with the team in the bet slip
+
+                  const matchingIndex = gameResults.findIndex(
+                    (game) =>
+                      game.homeTeam === teamName ||
+                      game.visitorTeam === teamName
+                  );
+                  if (matchingIndex !== -1) {
+                    const matchingGame = gameResults[matchingIndex];
+                    console.log("Matching Game logs:", matchingGame);
+                    if (matchingGame.visitorTeam === teamName) {
+                      console.log(`${teamName} is the Visitor Team`);
+                      const visitorPoints = matchingGame.visitorPoints; // Access visitor points
+                      const homePoints = matchingGame.homePoints; // Access home points
+                      const lineInt = parseInt(numberLine, 10);
+                      const newvisitorPoints = lineInt + visitorPoints;
+                      console.log("new visitor points", newvisitorPoints);
+                      console.log("home pts", homePoints);
+                      if (newvisitorPoints > homePoints) {
+                        console.log("bet cashed ");
+                        await update(ref(db, `unsettled/${key}`), {
+                          "betObject/bet_1/status": "cashed",
+                          unsettled: "false",
+                        });
+                        // update the betslip in the users folder
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            totalReturn: totalre,
+                            "betObject/bet_1/status": "cashed",
+                          }
+                        );
+                        //update the users balance
+                        await set(
+                          ref(db, `betslipSet/${betUser}/balance`),
+                          potentialReturn
+                        );
+                        //remove betslip from the unsettled folder
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log("new spread cash worked Nice job ");
+                      } else if (newvisitorPoints < homePoints) {
+                        console.log("bet failed");
+                        //update bet in the unsettled folder
+                        await update(ref(db, `unsettled/${key}`), {
+                          unsettled: "false",
+                          "betObject/bet_1/status": "failed",
+                        });
+                        // update in the user folder
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            "betObject/bet_1/status": "failed",
+                          }
+                        );
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log("new spread fail worked Nice job ");
+                      } else if (newvisitorPoints === homePoints) {
+                        console.log("bet pushed");
+                        //update bet in the unsettled folder
+                        await update(ref(db, `unsettled/${key}`), {
                           unsettled: "false",
                           "betObject/bet_1/status": "push",
                           totalReturn: betWager,
-                        }
-                      );
-                      await set(
-                        ref(db, `betslipSet/${betUser}/balance`),
-                        pushReturnBalance
-                        //After its been added to the user transactions, should delete from unsettled
-                      );
-                      //await remove(ref(db, `unsettled/${key}`));
-                      console.log(
-                        `Key ${key} has been successfully removed from unsettled.`
-                      );
-                      console.log("new spread push worked Nice job ");
+                        });
+
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            "betObject/bet_1/status": "push",
+                            totalReturn: betWager,
+                          }
+                        );
+                        await set(
+                          ref(db, `betslipSet/${betUser}/balance`),
+                          pushReturnBalance
+                          //After its been added to the user transactions, should delete from unsettled
+                        );
+                        //await remove(ref(db, `unsettled/${key}`));
+                        console.log(
+                          `Key ${key} has been successfully removed from unsettled.`
+                        );
+                        console.log("new spread push worked Nice job ");
+                      }
+                    }
+                    if (matchingGame.homeTeam === teamName) {
+                      console.log(`${teamName} is the Home Team`);
+                      const visitorPoints = matchingGame.visitorPoints; // Access visitor points
+                      const homePoints = matchingGame.homePoints; // Access home points
+                      const lineInt = parseInt(numberLine, 10);
+                      const newhomePoints = lineInt + homePoints;
+                      console.log("new home points", newhomePoints);
+                      console.log("visitor pts", visitorPoints);
+                      if (newhomePoints > visitorPoints) {
+                        console.log("bet cashed ");
+                        await update(ref(db, `unsettled/${key}`), {
+                          "betObject/bet_1/status": "cashed",
+                          unsettled: "false",
+                        });
+                        // update the betslip in the users folder
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            totalReturn: totalre,
+                            "betObject/bet_1/status": "cashed",
+                          }
+                        );
+                        //update the users balance
+                        await set(
+                          ref(db, `betslipSet/${betUser}/balance`),
+                          potentialReturn
+                        );
+                        //remove betslip from the unsettled folder
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log("new spread cash worked Nice job ");
+                      } else if (newhomePoints < visitorPoints) {
+                        console.log("bet failed");
+                        //update bet in the unsettled folder
+                        await update(ref(db, `unsettled/${key}`), {
+                          unsettled: "false",
+                          "betObject/bet_1/status": "failed",
+                        });
+                        // update in the user folder
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            "betObject/bet_1/status": "failed",
+                          }
+                        );
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log("new spread fail worked Nice job ");
+                      } else if (newhomePoints === visitorPoints) {
+                        console.log("bet pushed");
+                        //update bet in the unsettled folder
+                        await update(ref(db, `unsettled/${key}`), {
+                          unsettled: "false",
+                          "betObject/bet_1/status": "push",
+                          totalReturn: betWager,
+                        });
+
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            "betObject/bet_1/status": "push",
+                            totalReturn: betWager,
+                          }
+                        );
+                        await set(
+                          ref(db, `betslipSet/${betUser}/balance`),
+                          pushReturnBalance
+                          //After its been added to the user transactions, should delete from unsettled
+                        );
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log(
+                          `Key ${key} has been successfully removed from unsettled.`
+                        );
+                        console.log("new spread push worked Nice job ");
+                      }
+                    }
+                  }
+                } else if (prop === "Over" || prop === "Under") {
+                  const matchingIndex = gameResults.findIndex(
+                    (game) =>
+                      game.homeTeam === teamName ||
+                      game.visitorTeam === teamName
+                  );
+                  const matchingGame = gameResults[matchingIndex];
+                  console.log("Matching Game logs:", matchingGame);
+                  if (prop === "Over") {
+                    if (
+                      matchingGame.visitorTeam === teamName ||
+                      matchingGame.homeTeam === teamName
+                    ) {
+                      console.log(`${teamName} is the team`);
+                      const gameTotal = matchingGame.totalPoints;
+                      console.log("actual game total", gameTotal);
+
+                      const betLine = parseFloat(numberLine);
+                      console.log("vegas total", betLine);
+                      if (betLine < gameTotal) {
+                        // update the betslip in unsettled first
+                        await update(ref(db, `unsettled/${key}`), {
+                          "betObject/bet_1/status": "cashed",
+                          unsettled: "false",
+                        });
+                        // update the betslip in the users folder
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            totalReturn: totalre,
+                            "betObject/bet_1/status": "cashed",
+                          }
+                        );
+                        //update the users balance
+                        await set(
+                          ref(db, `betslipSet/${betUser}/balance`),
+                          potentialReturn
+                        );
+                        //remove betslip from the unsettled folder
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log("bet cashed !");
+                      } else if (betLine > gameTotal) {
+                        console.log("bet failed");
+                        //update bet in the unsettled folder
+                        await update(ref(db, `unsettled/${key}`), {
+                          unsettled: "false",
+                          "betObject/bet_1/status": "failed",
+                        });
+                        // update in the user folder
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            "betObject/bet_1/status": "failed",
+                          }
+                        );
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log("bet total failed worked!");
+                      } else if (betLine === gameTotal) {
+                        console.log("bet pushed");
+                        //update bet in the unsettled folder
+                        await update(ref(db, `unsettled/${key}`), {
+                          unsettled: "false",
+                          "betObject/bet_1/status": "push",
+                          totalReturn: betWager,
+                        });
+
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            "betObject/bet_1/status": "push",
+                            totalReturn: betWager,
+                          }
+                        );
+                        await set(
+                          ref(db, `betslipSet/${betUser}/balance`),
+                          pushReturnBalance
+                          //After its been added to the user transactions, should delete from unsettled
+                        );
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log(
+                          `Key ${key} has been successfully removed from unsettled.`
+                        );
+                        console.log("new total push worked Nice job ");
+                      }
+                    }
+                  } else if (prop === "Under") {
+                    if (
+                      matchingGame.visitorTeam === teamName ||
+                      matchingGame.homeTeam === teamName
+                    ) {
+                      console.log(`${teamName} is the  team`);
+                      const gameTotal = matchingGame.totalPoints;
+                      console.log("actual game total", gameTotal);
+
+                      const betLine = parseFloat(numberLine);
+                      console.log("vegas total", betLine);
+                      if (betLine > gameTotal) {
+                        // update the betslip in unsettled first
+                        console.log("bet cashed");
+                        await update(ref(db, `unsettled/${key}`), {
+                          "betObject/bet_1/status": "cashed",
+                          unsettled: "false",
+                        });
+                        // update the betslip in the users folder
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            totalReturn: totalre,
+                            "betObject/bet_1/status": "cashed",
+                          }
+                        );
+                        //update the users balance
+                        await set(
+                          ref(db, `betslipSet/${betUser}/balance`),
+                          potentialReturn
+                        );
+                        //remove betslip from the unsettled folder
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log("bet cashed !");
+                      } else if (betLine < gameTotal) {
+                        console.log("bet failed");
+                        //update bet in the unsettled folder
+                        await update(ref(db, `unsettled/${key}`), {
+                          unsettled: "false",
+                          "betObject/bet_1/status": "failed",
+                        });
+                        // update in the user folder
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            "betObject/bet_1/status": "failed",
+                          }
+                        );
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log("bet total failed worked!");
+                      } else if (betLine === gameTotal) {
+                        console.log("bet pushed");
+
+                        //update bet in the unsettled folder
+                        await update(ref(db, `unsettled/${key}`), {
+                          unsettled: "false",
+                          "betObject/bet_1/status": "push",
+                          totalReturn: betWager,
+                        });
+
+                        await update(
+                          ref(db, `betslipSet/${betUser}/betslips/${key}`),
+                          {
+                            unsettled: "false",
+                            "betObject/bet_1/status": "push",
+                            totalReturn: betWager,
+                          }
+                        );
+                        await set(
+                          ref(db, `betslipSet/${betUser}/balance`),
+                          pushReturnBalance
+                          //After its been added to the user transactions, should delete from unsettled
+                        );
+                        await remove(ref(db, `unsettled/${key}`));
+                        console.log(
+                          `Key ${key} has been successfully removed from unsettled.`
+                        );
+                        console.log("new total push worked Nice job ");
+                      }
                     }
                   }
                 }
-              } else if (prop === "Over" || prop === "Under") {
               }
             }
           }
+
           //continue
-
-          if (betName) {
-            console.log(`Bet Name[0]: ${betName}`);
-
-            // Split the bet name into words
-            const betWords = betName.split(" "); // ['Denver', 'Nuggets', 'spread', '-3']
-            const firsttwoIndex = betWords.slice(0, 2).join(" "); // 'Denver Nuggets'
-            const thirdIndex = betWords[2]; // spread
-            const fourthIndex = betWords[3]; // -3
-            console.log(`Third Index: ${thirdIndex}`);
-            console.log(`Fourth Index: ${fourthIndex}`);
-            console.log(`First Two Index: ${firsttwoIndex}`);
-
-            /*
-            else {
-              const betWords = betName.split(" "); // ['golden', 'state', 'warriors, 'spread', '-3']
-              const firsttwoIndex = betWords.slice(0, 3).join(" "); // 'Denver Nuggets'
-              const thirdIndex = betWords[2]; // spread
-              const fourthIndex = betWords[3]; // -3
-              console.log(`Third Index: ${thirdIndex}`);
-              console.log(`Fourth Index: ${fourthIndex}`);
-              console.log(`First Two Index: ${firsttwoIndex}`);
-            }
-            // Split the bet name into words
-            */
-            // Find the index in gameResults where the homeTeam or visitorTeam matches firsttwoIndex
-            const matchingIndex = gameResults.findIndex(
-              (game) =>
-                game.homeTeam === firsttwoIndex ||
-                game.visitorTeam === firsttwoIndex
-            );
-
-            if (matchingIndex !== -1) {
-              const matchingGame = gameResults[matchingIndex];
-              console.log(`Matching Game Found at Index: ${matchingIndex}`);
-              console.log("Matching Game Details:", matchingGame);
-
-              // Check if it's homeTeam or visitorTeam
-              if (matchingGame.homeTeam === firsttwoIndex) {
-                console.log(`${firsttwoIndex} is the Home Team`);
-                if (thirdIndex === "spread") {
-                  const visitorPoints = matchingGame.visitorPoints; // Access visitor points
-                  const homePoints = matchingGame.homePoints; // Access home points
-                  const fourthIndexInt = parseInt(fourthIndex, 10);
-                  const newHomePoints = homePoints + fourthIndexInt;
-                  console.log("new home points", newHomePoints);
-                  console.log("visitor pts", visitorPoints);
-                  if (newHomePoints > visitorPoints) {
-                    const wager = get(ref(db));
-                    console.log("bet cashed  ");
-
-                    await update(ref(db, `unsettled/${key}/betObject/bet_1`), {
-                      status: "cashed",
-                    });
-                    await update(ref(db, `unsettled/${key}`), {
-                      unsettled: "false",
-                    });
-                    await update(ref(db, `unsettled/${key}`), {
-                      totalReturn: totalre,
-                    });
-                    //update under the users transactions
-                    await update(
-                      ref(
-                        db,
-                        `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                      ),
-                      {
-                        status: "cashed",
-                      }
-                    );
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        totalReturn: totalre,
-                      }
-                    );
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        unsettled: "false",
-                      }
-                    );
-
-                    //update user balance
-                    await set(
-                      ref(db, `betslipSet/${betUser}/balance`),
-                      potentialReturn
-                    );
-
-                    await remove(ref(db, `unsettled/${key}`));
-                    console.log(
-                      `Key ${key} has been successfully removed from unsettled.`
-                    );
-                  } else if (newHomePoints < visitorPoints) {
-                    console.log("bet failed ");
-                    await update(ref(db, `unsettled/${key}/betObject/bet_1`), {
-                      status: "failed",
-                    });
-                    await update(ref(db, `unsettled/${key}`), {
-                      unsettled: "false",
-                    });
-
-                    await update(
-                      ref(
-                        db,
-                        `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                      ),
-                      {
-                        status: "failed",
-                      }
-                    );
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        unsettled: "false",
-                      }
-                    );
-                    await remove(ref(db, `unsettled/${key}`));
-                    console.log(
-                      `Key ${key} has been successfully removed from unsettled.`
-                    );
-                  } else {
-                    console.log("bet pushed ");
-                    await update(ref(db, `unsettled/${key}/betObject/bet_1`), {
-                      status: "push",
-                    });
-                    await update(ref(db, `unsettled/${key}`), {
-                      unsettled: "false",
-                    });
-
-                    await update(
-                      ref(
-                        db,
-                        `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                      ),
-                      {
-                        status: "push",
-                      }
-                    );
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        unsettled: "false",
-                      }
-                    );
-                    // update user balance, and update return for push under user transaction
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        totalReturn: betWager,
-                      }
-                    );
-                    await set(
-                      ref(db, `betslipSet/${betUser}/balance`),
-                      pushReturnBalance
-                      //After its been added to the user transactions, should delete from unsettled
-                    );
-
-                    await update(ref(db, `unsettled/${key}`), {
-                      totalReturn: betWager,
-                    });
-
-                    await remove(ref(db, `unsettled/${key}`));
-                    console.log(
-                      `Key ${key} has been successfully removed from unsettled.`
-                    );
-                  }
-                } else if (thirdIndex === "MoneyLine") {
-                  const winningTeam = matchingGame.winningTeam;
-                  const winningTeamVar = winningTeam.split(" ")[0];
-                  if (winningTeamVar === "home") {
-                    console.log("bet cashed ");
-                    await update(ref(db, `unsettled/${key}/betObject/bet_1`), {
-                      status: "cashed",
-                    });
-                    await update(ref(db, `unsettled/${key}`), {
-                      unsettled: "false",
-                    });
-                    //Update in user transaction
-                    await update(
-                      ref(
-                        db,
-                        `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                      ),
-                      {
-                        status: "cashed",
-                      }
-                    );
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        unsettled: "false",
-                      }
-                    );
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        totalReturn: totalre,
-                      }
-                    );
-                    await set(
-                      ref(db, `betslipSet/${betUser}/balance`),
-                      potentialReturn
-                    );
-
-                    await remove(ref(db, `unsettled/${key}`));
-                    console.log(
-                      `Key ${key} has been successfully removed from unsettled.`
-                    );
-                    //update the balance and then remove from unsettled
-                  } else {
-                    console.log("bet failed ");
-                    await update(ref(db, `unsettled/${key}/betObject/bet_1`), {
-                      status: "failed",
-                    });
-                    await update(ref(db, `unsettled/${key}`), {
-                      unsettled: "false",
-                    });
-
-                    await update(
-                      ref(
-                        db,
-                        `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                      ),
-                      {
-                        status: "failed",
-                      }
-                    );
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        unsettled: "false",
-                      }
-                    );
-                    await remove(ref(db, `unsettled/${key}`));
-                    console.log(
-                      `Key ${key} has been successfully removed from unsettled.`
-                    );
-                  }
-                } else {
-                  if (thirdIndex === "Over") {
-                    console.log("testing if this is working", matchingGame);
-                    const totalPoints = matchingGame.totalPoints;
-                    const totalLine = fourthIndex;
-                    if (totalPoints > totalLine) {
-                      console.log("bet cashed ");
-                      await update(
-                        ref(db, `unsettled/${key}/betObject/bet_1`),
-                        {
-                          status: "cashed",
-                        }
-                      );
-                      await update(ref(db, `unsettled/${key}`), {
-                        unsettled: "false",
-                      });
-
-                      await update(
-                        ref(
-                          db,
-                          `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                        ),
-                        {
-                          status: "cashed",
-                        }
-                      );
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          unsettled: "false",
-                        }
-                      );
-
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          totalReturn: totalre,
-                        }
-                      );
-
-                      //update user balance
-                      await set(
-                        ref(db, `betslipSet/${betUser}/balance`),
-                        potentialReturn
-                      );
-
-                      await remove(ref(db, `unsettled/${key}`));
-                      console.log(
-                        `Key ${key} has been successfully removed from unsettled.`
-                      );
-                    } else if (totalPoints < totalLine) {
-                      console.log("bet failed ");
-                      await update(
-                        ref(db, `unsettled/${key}/betObject/bet_1`),
-                        {
-                          status: "failed",
-                        }
-                      );
-                      await update(ref(db, `unsettled/${key}`), {
-                        unsettled: "false",
-                      });
-
-                      await update(
-                        ref(
-                          db,
-                          `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                        ),
-                        {
-                          status: "failed",
-                        }
-                      );
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          unsettled: "false",
-                        }
-                      );
-                      await remove(ref(db, `unsettled/${key}`));
-                      console.log(
-                        `Key ${key} has been successfully removed from unsettled.`
-                      );
-                    } else {
-                      console.log("bet pushed ");
-                      await update(
-                        ref(db, `unsettled/${key}/betObject/bet_1`),
-                        {
-                          status: "push",
-                        }
-                      );
-                      await update(ref(db, `unsettled/${key}`), {
-                        unsettled: "false",
-                      });
-                      await update(
-                        ref(
-                          db,
-                          `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                        ),
-                        {
-                          status: "push",
-                        }
-                      );
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          unsettled: "false",
-                        }
-                      );
-                      // update user balance, and update return for push on user transaction
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          totalReturn: betWager,
-                        }
-                      );
-                      await set(
-                        ref(db, `betslipSet/${betUser}/balance`),
-                        pushReturnBalance
-                      );
-                    }
-                  }
-                  if (thirdIndex === "Under") {
-                    const totalPoints = matchingGame.totalPoints;
-
-                    const totalLine = fourthIndex;
-
-                    console.log(totalPoints, "total pts");
-                    console.log(totalLine, "vegas line");
-                    if (totalPoints < totalLine) {
-                      console.log("bet cashed ");
-                      await update(
-                        ref(db, `unsettled/${key}/betObject/bet_1`),
-                        {
-                          status: "cashed",
-                        }
-                      );
-                      await update(ref(db, `unsettled/${key}`), {
-                        unsettled: "false",
-                      });
-                      await update(
-                        ref(
-                          db,
-                          `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                        ),
-                        {
-                          status: "cashed",
-                        }
-                      );
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          unsettled: "false",
-                        }
-                      );
-                      await update(ref(db, `unsettled/${key}`), {
-                        totalReturn: totalre,
-                      });
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          totalReturn: totalre,
-                        }
-                      );
-
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          unsettled: "false",
-                        }
-                      );
-
-                      //update user balance
-                      await set(
-                        ref(db, `betslipSet/${betUser}/balance`),
-                        potentialReturn
-                      );
-
-                      await remove(ref(db, `unsettled/${key}`));
-                      console.log(
-                        `Key ${key} has been successfully removed from unsettled.`
-                      );
-                    } else if (totalPoints > totalLine) {
-                      console.log("bet failed ");
-                      await update(
-                        ref(db, `unsettled/${key}/betObject/bet_1`),
-                        {
-                          status: "failed",
-                        }
-                      );
-                      await update(ref(db, `unsettled/${key}`), {
-                        unsettled: "false",
-                      });
-                      await update(
-                        ref(
-                          db,
-                          `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                        ),
-                        {
-                          status: "failed",
-                        }
-                      );
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          unsettled: "false",
-                        }
-                      );
-                      await remove(ref(db, `unsettled/${key}`));
-                      console.log(
-                        `Key ${key} has been successfully removed from unsettled.`
-                      );
-                    } else {
-                      console.log("bet pushed ");
-                      await update(
-                        ref(db, `unsettled/${key}/betObject/bet_1`),
-                        {
-                          status: "push",
-                        }
-                      );
-                      await update(ref(db, `unsettled/${key}`), {
-                        unsettled: "false",
-                      });
-                      await update(
-                        ref(
-                          db,
-                          `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                        ),
-                        {
-                          status: "push",
-                        }
-                      );
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          unsettled: "false",
-                        }
-                      );
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          totalReturn: betWager,
-                        }
-                      );
-                      await set(
-                        ref(db, `betslipSet/${betUser}/balance`),
-                        pushReturnBalance
-                        //After its been added to the user transactions, should delete from unsettled
-                      );
-
-                      await update(ref(db, `unsettled/${key}`), {
-                        totalReturn: betWager,
-                      });
-
-                      await remove(ref(db, `unsettled/${key}`));
-                      console.log(
-                        `Key ${key} has been successfully removed from unsettled.`
-                      );
-                    }
-                  }
-                }
-              } else if (matchingGame.visitorTeam === firsttwoIndex) {
-                console.log(`${firsttwoIndex} is the Visitor Team`);
-                if (thirdIndex === "spread") {
-                  const visitorPoints = matchingGame.visitorPoints; // Access visitor points
-                  const homePoints = matchingGame.homePoints; // Access home points
-                  const fourthIndexInt = parseInt(fourthIndex, 10);
-                  const newvisitorPoints = visitorPoints + fourthIndexInt;
-                  console.log("new visitor points", newvisitorPoints);
-                  console.log("home pts", homePoints);
-                  if (newvisitorPoints > homePoints) {
-                    console.log("bet cashed ");
-
-                    await update(ref(db, `unsettled/${key}/betObject/bet_1`), {
-                      status: "cashed",
-                    });
-                    await update(ref(db, `unsettled/${key}`), {
-                      unsettled: "false",
-                    });
-
-                    //update for user transaction
-                    await update(
-                      ref(
-                        db,
-                        `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                      ),
-                      {
-                        status: "cashed",
-                      }
-                    );
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        unsettled: "false",
-                      }
-                    );
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        totalReturn: totalre,
-                      }
-                    );
-                    //update user balance
-                    await set(
-                      ref(db, `betslipSet/${betUser}/balance`),
-                      potentialReturn
-                    );
-
-                    await remove(ref(db, `unsettled/${key}`));
-                    console.log(
-                      `Key ${key} has been successfully removed from unsettled.`
-                    );
-                  } else if (newvisitorPoints < homePoints) {
-                    console.log("bet failed ");
-                    await update(ref(db, `unsettled/${key}/betObject/bet_1`), {
-                      status: "failed",
-                    });
-                    await update(ref(db, `unsettled/${key}`), {
-                      unsettled: "false",
-                    });
-
-                    await update(
-                      ref(
-                        db,
-                        `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                      ),
-                      {
-                        status: "failed",
-                      }
-                    );
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        unsettled: "false",
-                      }
-                    );
-                    await remove(ref(db, `unsettled/${key}`));
-                    console.log(
-                      `Key ${key} has been successfully removed from unsettled.`
-                    );
-                  } else {
-                    console.log("bet pushed ");
-                    await update(ref(db, `unsettled/${key}/betObject/bet_1`), {
-                      status: "push",
-                    });
-                    await update(ref(db, `unsettled/${key}`), {
-                      unsettled: "false",
-                    });
-
-                    await update(
-                      ref(
-                        db,
-                        `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                      ),
-                      {
-                        status: "push",
-                      }
-                    );
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        unsettled: "false",
-                      }
-                    );
-
-                    // update user balance, and update return for push under user transaction
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        totalReturn: betWager,
-                      }
-                    );
-                    await set(
-                      ref(db, `betslipSet/${betUser}/balance`),
-                      pushReturnBalance
-                      //After its been added to the user transactions, should delete from unsettled
-                    );
-
-                    await update(ref(db, `unsettled/${key}`), {
-                      totalReturn: betWager,
-                    });
-
-                    await remove(ref(db, `unsettled/${key}`));
-                    console.log(
-                      `Key ${key} has been successfully removed from unsettled.`
-                    );
-                  }
-                } else if (thirdIndex === "MoneyLine") {
-                  const winningTeam = matchingGame.winningTeam;
-                  const winningTeamVar = winningTeam.split(" ")[0];
-                  if (winningTeamVar === "visitor") {
-                    console.log("bet cashed ");
-                    await update(ref(db, `unsettled/${key}/betObject/bet_1`), {
-                      status: "cashed",
-                    });
-                    await update(ref(db, `unsettled/${key}`), {
-                      unsettled: "false",
-                    });
-                    await update(
-                      ref(
-                        db,
-                        `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                      ),
-                      {
-                        status: "cashed",
-                      }
-                    );
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        unsettled: "false",
-                      }
-                    );
-
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        totalReturn: totalre,
-                      }
-                    );
-                    await set(
-                      ref(db, `betslipSet/${betUser}/balance`),
-                      potentialReturn
-                    );
-
-                    await remove(ref(db, `unsettled/${key}`));
-                    console.log(
-                      `Key ${key} has been successfully removed from unsettled.`
-                    );
-                  } else {
-                    console.log("bet failed ");
-                    await update(ref(db, `unsettled/${key}/betObject/bet_1`), {
-                      status: "failed",
-                    });
-                    await update(ref(db, `unsettled/${key}`), {
-                      unsettled: "false",
-                    });
-                    await update(
-                      ref(
-                        db,
-                        `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                      ),
-                      {
-                        status: "failed",
-                      }
-                    );
-                    await update(
-                      ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                      {
-                        unsettled: "false",
-                      }
-                    );
-                    await remove(ref(db, `unsettled/${key}`));
-                    console.log(
-                      `Key ${key} has been successfully removed from unsettled.`
-                    );
-                  }
-                } else {
-                  if (thirdIndex === "Over") {
-                    console.log("testing if this is working", matchingGame);
-                    const totalPoints = matchingGame.totalPoints;
-                    const totalLine = fourthIndex;
-                    if (totalPoints > totalLine) {
-                      console.log("bet cashed ");
-                      await update(
-                        ref(db, `unsettled/${key}/betObject/bet_1`),
-                        {
-                          status: "cashed",
-                        }
-                      );
-                      await update(ref(db, `unsettled/${key}`), {
-                        unsettled: "false",
-                      });
-
-                      await update(
-                        ref(
-                          db,
-                          `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                        ),
-                        {
-                          status: "cashed",
-                        }
-                      );
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          unsettled: "false",
-                        }
-                      );
-
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          totalReturn: totalre,
-                        }
-                      );
-
-                      //update user balance
-                      await set(
-                        ref(db, `betslipSet/${betUser}/balance`),
-                        potentialReturn
-                      );
-
-                      await remove(ref(db, `unsettled/${key}`));
-                      console.log(
-                        `Key ${key} has been successfully removed from unsettled.`
-                      );
-                    } else if (totalPoints < totalLine) {
-                      console.log("bet failed ");
-                      await update(
-                        ref(db, `unsettled/${key}/betObject/bet_1`),
-                        {
-                          status: "failed",
-                        }
-                      );
-                      await update(ref(db, `unsettled/${key}`), {
-                        unsettled: "false",
-                      });
-
-                      await update(
-                        ref(
-                          db,
-                          `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                        ),
-                        {
-                          status: "failed",
-                        }
-                      );
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          unsettled: "false",
-                        }
-                      );
-                      await remove(ref(db, `unsettled/${key}`));
-                      console.log(
-                        `Key ${key} has been successfully removed from unsettled.`
-                      );
-                    } else {
-                      console.log("bet pushed ");
-                      await update(
-                        ref(db, `unsettled/${key}/betObject/bet_1`),
-                        {
-                          status: "push",
-                        }
-                      );
-                      await update(ref(db, `unsettled/${key}`), {
-                        unsettled: "false",
-                      });
-                      await update(
-                        ref(
-                          db,
-                          `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                        ),
-                        {
-                          status: "push",
-                        }
-                      );
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          unsettled: "false",
-                        }
-                      );
-                      // update user balance, and update return for push on user transaction
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          totalReturn: betWager,
-                        }
-                      );
-                      await set(
-                        ref(db, `betslipSet/${betUser}/balance`),
-                        pushReturnBalance
-                      );
-                    }
-                  }
-                  if (thirdIndex === "Under") {
-                    const totalPoints = matchingGame.totalPoints;
-                    const totalLine = fourthIndex;
-                    if (totalPoints < totalLine) {
-                      console.log("bet cashed ");
-                      await update(
-                        ref(db, `unsettled/${key}/betObject/bet_1`),
-                        {
-                          status: "cashed",
-                        }
-                      );
-                      await update(ref(db, `unsettled/${key}`), {
-                        unsettled: "false",
-                      });
-                      await update(
-                        ref(
-                          db,
-                          `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                        ),
-                        {
-                          status: "cashed",
-                        }
-                      );
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          unsettled: "false",
-                        }
-                      );
-                      await update(ref(db, `unsettled/${key}`), {
-                        totalReturn: totalre,
-                      });
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          totalReturn: totalre,
-                        }
-                      );
-
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          unsettled: "false",
-                        }
-                      );
-
-                      //update user balance
-                      await set(
-                        ref(db, `betslipSet/${betUser}/balance`),
-                        potentialReturn
-                      );
-
-                      await remove(ref(db, `unsettled/${key}`));
-                      console.log(
-                        `Key ${key} has been successfully removed from unsettled.`
-                      );
-                    } else if (totalPoints > totalLine) {
-                      console.log("bet failed ");
-                      await update(
-                        ref(db, `unsettled/${key}/betObject/bet_1`),
-                        {
-                          status: "failed",
-                        }
-                      );
-                      await update(ref(db, `unsettled/${key}`), {
-                        unsettled: "false",
-                      });
-                      await update(
-                        ref(
-                          db,
-                          `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                        ),
-                        {
-                          status: "failed",
-                        }
-                      );
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          unsettled: "false",
-                        }
-                      );
-                      await remove(ref(db, `unsettled/${key}`));
-                      console.log(
-                        `Key ${key} has been successfully removed from unsettled.`
-                      );
-                    } else {
-                      console.log("bet pushed ");
-                      await update(
-                        ref(db, `unsettled/${key}/betObject/bet_1`),
-                        {
-                          status: "push",
-                        }
-                      );
-                      await update(ref(db, `unsettled/${key}`), {
-                        unsettled: "false",
-                      });
-                      await update(
-                        ref(
-                          db,
-                          `betslipSet/${betUser}/betslips/${key}/betObject/bet_1`
-                        ),
-                        {
-                          status: "push",
-                        }
-                      );
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          unsettled: "false",
-                        }
-                      );
-                      await update(
-                        ref(db, `betslipSet/${betUser}/betslips/${key}`),
-                        {
-                          totalReturn: betWager,
-                        }
-                      );
-                      await set(
-                        ref(db, `betslipSet/${betUser}/balance`),
-                        pushReturnBalance
-                        //After its been added to the user transactions, should delete from unsettled
-                      );
-
-                      await update(ref(db, `unsettled/${key}`), {
-                        totalReturn: betWager,
-                      });
-
-                      await remove(ref(db, `unsettled/${key}`));
-                      console.log(
-                        `Key ${key} has been successfully removed from unsettled.`
-                      );
-                    }
-                  }
-                }
-              }
-            } else {
-              console.log(`No matching game found for: ${firsttwoIndex}`);
-            }
-
-            // Log other variables for reference
-          } else {
-            console.log("No bet name found for this slip.");
-          }
         }
       }
 

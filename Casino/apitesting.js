@@ -270,7 +270,7 @@ function appendGameDataToDOM(gameData) {
       awayTeamSpreadButton.setAttribute("data-user-id", "markamiri1");
       awayTeamSpreadButton.setAttribute(
         "data-bet-name",
-        `"[${awayTeamSpreadVar.name} spread ${awayTeamSpreadVar.point}]"`
+        `"[${awayTeamSpreadVar.name} spread ${awayTeamSpreadVar.point} unsettled]"`
       );
       awayTeamSpreadButton.setAttribute(
         "data-odds",
@@ -344,7 +344,7 @@ function appendGameDataToDOM(gameData) {
       awayTeamOUButton.setAttribute("data-user-id", "markamiri1");
       awayTeamOUButton.setAttribute(
         "data-bet-name",
-        `"[${awayTeamH2hVar.name} ${awayTeamTotalVar.name} ${awayTeamTotalVar.point}]"`
+        `"[${awayTeamH2hVar.name} ${awayTeamTotalVar.name} ${awayTeamTotalVar.point} unsettled]"`
       );
       awayTeamOUButton.setAttribute("data-odds", `"${awayTeamTotalVar.price}"`);
       awayTeamOUButton.setAttribute("data-wagered", "20");
@@ -397,7 +397,7 @@ function appendGameDataToDOM(gameData) {
       awayTeamMLButton.setAttribute("data-user-id", "markamiri1");
       awayTeamMLButton.setAttribute(
         "data-bet-name",
-        `"[${awayTeamH2hVar.name} MoneyLine]"`
+        `"[${awayTeamH2hVar.name} MoneyLine unsettled]"`
       );
       awayTeamMLButton.setAttribute("data-odds", `"${awayTeamH2hVar.price}"`);
       awayTeamMLButton.setAttribute("data-wagered", "20");
@@ -497,7 +497,7 @@ function appendGameDataToDOM(gameData) {
       hometeamSpreadButton.setAttribute("data-user-id", "markamiri1");
       hometeamSpreadButton.setAttribute(
         "data-bet-name",
-        `"[${homeTeamSpreadVar.name} spread ${homeTeamSpreadVar.point}]"`
+        `"[${homeTeamSpreadVar.name} spread ${homeTeamSpreadVar.point} unsettled]"`
       );
       hometeamSpreadButton.setAttribute(
         "data-odds",
@@ -566,7 +566,7 @@ function appendGameDataToDOM(gameData) {
       homeTeamOUButton.setAttribute("data-user-id", "markamiri1");
       homeTeamOUButton.setAttribute(
         "data-bet-name",
-        `"[${awayTeamH2hVar.name} ${homeTeamTotalVar.name} ${homeTeamTotalVar.point}]"`
+        `"[${awayTeamH2hVar.name} ${homeTeamTotalVar.name} ${homeTeamTotalVar.point} unsettled]"`
       );
       homeTeamOUButton.setAttribute("data-odds", `"${homeTeamTotalVar.price}"`);
       homeTeamOUButton.setAttribute("data-wagered", "20");
@@ -619,7 +619,7 @@ function appendGameDataToDOM(gameData) {
       homeTeamMLButton.setAttribute("data-user-id", "markamiri1");
       homeTeamMLButton.setAttribute(
         "data-bet-name",
-        `"[${homeTeamH2hVar.name} MoneyLine]"`
+        `"[${homeTeamH2hVar.name} MoneyLine unsettled]"`
       );
       homeTeamMLButton.setAttribute("data-odds", `"${homeTeamH2hVar.price}"`);
       homeTeamMLButton.setAttribute("data-wagered", "20");
