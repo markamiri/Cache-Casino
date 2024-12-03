@@ -33,6 +33,215 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 const firestore = getFirestore(app);
 
+async function getUpdateBetNames(key) {
+  let betUser = "";
+  const userSnapshot = await get(ref(db, `unsettled/${key}`));
+  if (userSnapshot.exists()) {
+    const betSlip = userSnapshot.val(); // Extract the data
+    betUser = betSlip?.name; // Access the name field
+  } else {
+    console.log("Bet slip not found for key:", key);
+  }
+
+  console.log("the bet user name", betUser);
+  console.log("Fetching the updated bet names...");
+  const snapshot = await get(
+    ref(db, `unsettled/${key}/betObject/bet_1/bet name`)
+  );
+  if (snapshot.exists()) {
+    const updatedBetNames = snapshot.val(); // Fetch the updated bet names
+    console.log("Updated Bet Names:", updatedBetNames);
+    //parlay bet slip update
+
+    const hasFailed = updatedBetNames.some((betName) => {
+      const betWords = betName.split(" "); // Split the bet name into words
+      const status = betWords.pop(); // Extract the last word (status)
+      return status === "failed"; // Check if the status is "failed"
+    });
+    const hasOnlyCache = updatedBetNames.every((betName) => {
+      const betWords = betName.split(" "); // Split the bet name into words
+      const status = betWords[betWords.length - 1]; // Get the last word (status)
+      return status === "cache"; // Check if the status is "cache"
+    });
+    const hasCache = updatedBetNames.some((betName) => {
+      const betWords = betName.split(" "); // Split the bet name into words
+      const status = betWords[betWords.length - 1]; // Get the last word (status)
+      return status === "cache";
+    });
+
+    const hasPush = updatedBetNames.some((betName) => {
+      const betWords = betName.split(" "); // Split the bet name into words
+      const status = betWords[betWords.length - 1]; // Get the last word (status)
+      return status === "push";
+    });
+    const totalRe = 0;
+    //parlay has one failed leg
+    if (hasFailed) {
+      console.log("There is at least one bet slip with a status of 'failed'.");
+      console.log("Before unsettled update, totalRe:", totalRe);
+
+      await update(ref(db, `unsettled/${key}`), {
+        "betObject/bet_1/status": "failed",
+        unsettled: "false",
+        totalReturn: totalRe,
+      });
+      console.log("Before betslipSet update, totalRe:", totalRe);
+
+      await update(ref(db, `betslipSet/${betUser}/betslips/${key}`), {
+        unsettled: "false",
+        "betObject/bet_1/status": "failed",
+        totalReturn: totalRe,
+      });
+    } else {
+      //parlay has all wins
+      if (hasOnlyCache) {
+        console.log("All bet slips have a status of 'cache'.");
+
+        const snapshot = await get(ref(db, `unsettled/${key}`));
+        if (snapshot.exists()) {
+          const updatedData = snapshot.val(); // Fetch the updated data
+          const odds = updatedData.betObject?.bet_1?.odds || [];
+          const amtwagered = updatedData.amtwagered;
+          const betUser = updatedData.name;
+          console.log("amtwagered", amtwagered);
+          console.log("Odds:", odds);
+
+          const totalOdds = odds.reduce((acc, odd) => acc * parseFloat(odd), 1);
+          const roundedTotalOdds = totalOdds.toFixed(2);
+          const totalRe = (roundedTotalOdds * amtwagered).toFixed(2);
+          console.log(totalRe);
+
+          const userBalanceRef = ref(db, `betslipSet/${betUser}/balance`);
+          let currentBalance = 0;
+
+          try {
+            const snapshot = await get(userBalanceRef); // Fetch the data at this reference
+            if (snapshot.exists()) {
+              currentBalance = snapshot.val();
+            } else {
+              console.log("No data found at userBalanceRef.");
+            }
+          } catch (error) {
+            console.error("Error fetching values:", error);
+          }
+          console.log("new curr balance", currentBalance);
+          let newBalance = parseFloat(currentBalance) + parseFloat(totalRe);
+
+          await update(ref(db, `unsettled/${key}`), {
+            "betObject/bet_1/status": "cache",
+            unsettled: "false",
+            totalReturn: totalRe,
+          });
+
+          await update(ref(db, `betslipSet/${betUser}/betslips/${key}`), {
+            unsettled: "false",
+            totalReturn: totalRe,
+            "betObject/bet_1/status": "cache",
+          });
+
+          await set(ref(db, `betslipSet/${betUser}/balance`), newBalance);
+        } else {
+          console.log("No data found for the key:", key);
+        }
+      }
+      if (hasCache && hasPush) {
+        console.log("The array contains both 'cache' and 'push'.");
+        const betsnapshot = await get(ref(db, `unsettled/${key}`));
+        const betSlipData = betsnapshot.val(); // Fetch the updated data
+        const amtwagered = betSlipData.amtwagered;
+        const betUser = betSlipData.name;
+        console.log("amtwagered", amtwagered);
+        console.log("betUser:", betUser);
+
+        const snapshot = await get(
+          ref(db, `unsettled/${key}/betObject/bet_1/bet name`)
+        );
+        const updatedBetNames = snapshot.val(); // Fetch the updated bet names
+
+        let newOdds = 0;
+        // Fetch the odds from the database
+        const snapshotOdds = await get(
+          ref(db, `unsettled/${key}/betObject/bet_1/odds`)
+        );
+        if (snapshotOdds.exists()) {
+          const oddsArray = snapshotOdds.val(); // Extract odds array
+          console.log("Odds Array:", oddsArray);
+
+          // Get the indexes with "push" status
+          const indexesWithPush = updatedBetNames
+            .map((betName, index) => {
+              const betWords = betName.split(" "); // Split the bet name into words
+              const status = betWords[betWords.length - 1]; // Get the last word (status)
+              return status === "push" ? index : -1; // Return the index if "push", otherwise -1
+            })
+            .filter((index) => index !== -1); // Filter out -1 values
+
+          console.log("Indexes with 'push':", indexesWithPush);
+
+          // Filter the odds to exclude those at "push" indexes
+          const oddsWithoutPush = oddsArray.filter(
+            (_, index) => !indexesWithPush.includes(index)
+          );
+          console.log("Odds without 'push':", oddsWithoutPush);
+
+          // Multiply the odds without "push"
+          const productOfOdds = oddsWithoutPush
+            .reduce((acc, odd) => acc * parseFloat(odd), 1)
+            .toFixed(2);
+          console.log("Product of Odds without 'push':", productOfOdds);
+          newOdds = productOfOdds;
+        } else {
+          console.log("No odds found in the database.");
+        }
+
+        // getting the balance
+        const userBalanceRef = ref(db, `betslipSet/${betUser}/balance`);
+        let currentBalance = 0;
+
+        try {
+          const snapshot = await get(userBalanceRef); // Fetch the data at this reference
+          if (snapshot.exists()) {
+            currentBalance = snapshot.val();
+          } else {
+            console.log("No data found at userBalanceRef.");
+          }
+        } catch (error) {
+          console.error("Error fetching values:", error);
+        }
+        console.log("new curr balance", currentBalance);
+        const newRe = amtwagered * newOdds;
+        let newBalance = parseFloat(currentBalance) + parseFloat(newRe);
+
+        await update(ref(db, `unsettled/${key}`), {
+          "betObject/bet_1/status": "cache with push",
+          unsettled: "false",
+          totalReturn: newRe,
+        });
+        await update(ref(db, `betslipSet/${betUser}/betslips/${key}`), {
+          unsettled: "false",
+          totalReturn: newRe,
+          "betObject/bet_1/status": "cache with push",
+        });
+        await set(ref(db, `betslipSet/${betUser}/balance`), newBalance);
+      } else {
+        console.log("The array does not contain both 'cache' and 'push'.");
+      }
+      // now we need to do it for push
+      // continue
+    }
+    /*
+    for (const [index, betName] of updatedBetNames.entries()) {
+      console.log(`Bet Name ${index}:`, betName);
+      const betWords = betName.split(" ");
+      const status = betName.pop();
+      console.log("status: ", status);
+    }
+    */
+  } else {
+    console.log("No bet names found in the database.");
+  }
+}
+
 export async function getUnsettled() {
   const unsettledRef = ref(db, "unsettled/");
   try {
@@ -66,7 +275,16 @@ export async function getUnsettled() {
           const betNames = betSlip.betObject?.bet_1?.["bet name"]?.[0]; // Access the nested array
           const betUser = betSlip.name;
           const betWager = betSlip.amtwagered;
-          const totalbetodds = betSlip.totalbetodds;
+          let totalbetodds = betSlip.betObject.bet_1?.["odds"];
+          if (Array.isArray(totalbetodds)) {
+            totalbetodds = totalbetodds
+              .reduce((acc, val) => acc * parseFloat(val), 1)
+              .toFixed(2); // Multiply all values and round to 2 decimals
+            console.log("Updated Total Bet Odds:", totalbetodds);
+          } else {
+            console.error("Invalid odds array:", totalbetodds);
+          }
+          console.log(totalbetodds);
           const userBalanceRef = ref(db, `betslipSet/${betUser}/balance`);
           let currentBalance = 0;
           try {
@@ -93,6 +311,7 @@ export async function getUnsettled() {
           console.log("Type of betNames:", typeof betNames);
           console.log("Value of betNames:", betNames);
           if (Array.isArray(betNames)) {
+            //Parlay update bet slips
             console.log("is this working?>");
             for (const [index, betName] of betNames.entries()) {
               console.log(`Bet Name ${index}:`, betName); // Adding 1 to index for 1-based numbering
@@ -148,6 +367,7 @@ export async function getUnsettled() {
                           [`betObject/bet_1/bet name/${index}`]: newBetName,
                         }
                       );
+
                       /*
                       //update the users balance
                       await set(
@@ -694,7 +914,10 @@ export async function getUnsettled() {
                 }
               }
             }
-            //here
+            //update user parlay balance
+
+            console.log("testing the update balance section");
+            getUpdateBetNames(key);
           } else {
             const betName = betSlip.betObject?.bet_1?.["bet name"]?.[0]; // Extract bet name[0]
 
@@ -702,6 +925,7 @@ export async function getUnsettled() {
 
             //new implemented code to work for team names with 3 words
             if (betName) {
+              console.log("is this being called?");
               console.log(`Bet Name[0]: ${betName}`);
               //split the bet name into words
               const betWords = betName.split(" ");
@@ -1190,8 +1414,6 @@ export async function getUnsettled() {
               }
             }
           }
-
-          //continue
         }
       }
 
@@ -1242,13 +1464,15 @@ export function AddParlayData(userId, betName, odds, wagered) {
 
       console.log("betName", betName);
       console.log("Inner betName array:", betName[0]);
+      const oddsArryData = oddsArray[0][0];
+      console.log(oddsArryData[0]);
 
       const betOddsObj = Object.fromEntries(
         betNames.map((bet, index) => [
           `bet_${index + 1}`,
           {
             "bet name": bet,
-            odds: oddsArray[index],
+            odds: oddsArryData,
             status: "unsettled",
           },
         ])
@@ -1272,7 +1496,7 @@ export function AddParlayData(userId, betName, odds, wagered) {
         unsettled: true,
         WorL: "None",
         totalReturn: 0,
-        totalbetodds: totalBetOdds,
+        //totalbetodds: totalBetOdds,
         betTFObj: betTFObj,
       };
 
@@ -1754,12 +1978,15 @@ export function parlayCombine(betsCart) {
   const games = [];
   const times = [];
   const restOfData = []; // Placeholder for any remaining data
-  let totalOdds = 1; // Initialize total odds as 1 for multiplication
+  //let totalOdds = 1; // Initialize total odds as 1 for multiplication
 
   // Iterate through each bet in the cart
   betsCart.forEach((bet) => {
+    console.log("this is bet[2]", bet[2]);
+    console.log("this is bet[1]", bet[1]);
+
     betDescriptions.push(JSON.parse(bet[1])); // Parse JSON strings into arrays
-    totalOdds *= parseFloat(JSON.parse(bet[2]));
+    odds.push(JSON.parse(bet[2])); //*= parseFloat(JSON.parse(bet[2]));
     games.push(bet[3]);
     times.push(bet[4]);
 
@@ -1771,13 +1998,14 @@ export function parlayCombine(betsCart) {
       restOfData[i - 5].push(bet[i]);
     }
   });
-  totalOdds = Math.round(totalOdds * 100) / 100;
+  console.log("testing if odds has NAN", odds);
+  //totalOdds = Math.round(totalOdds * 100) / 100;
 
   // Combine into a single array
   const combinedData = [
     userId,
     betDescriptions,
-    totalOdds,
+    odds,
     games,
     times,
     ...restOfData,
