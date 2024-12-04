@@ -84,7 +84,98 @@ export function printBetCart() {
 
     const betLink = document.createElement("div");
     betLink.setAttribute("item-number", `${cartItems}`);
-    betLink.textContent = `Bet: ${betName}, Odds: ${odds}, Teams: ${gameTeams}, Date: ${gameDate}, item ${cartItems}`;
+
+    betLink.style.borderRadius = "8px";
+    betLink.style.marginLeft = "10px";
+    betLink.style.marginTop = "10px";
+    betLink.style.width = "230px";
+    betLink.style.backgroundColor = "rgb(232, 234, 237)";
+    betLink.style.fontFamily = "sans-serif";
+    betLink.style.padding = "3px";
+    console.log("this is the bet name", betName);
+    let NewbetName = betName.replace(/[\[\]]/g, ""); // Removes "[" and "]"
+    NewbetName = NewbetName.replace(/"/g, ""); // Removes all occurrences of "
+
+    let betNameArray = NewbetName.split(" ");
+    const status = betNameArray.pop();
+    console.log("betNameArray", betNameArray);
+    const propName = betNameArray.pop();
+    const teamName = betNameArray.join(" ");
+    const oddsName = odds.replace(/"/g, "");
+    console.log("teamName", teamName);
+    console.log("propName", propName);
+    const betSlipContainer = document.createElement("div");
+    const gameInfo = document.createElement("div");
+    //gameInfo.style.backgroundColor = "lightpink";
+    gameInfo.style.marginLeft = "5px";
+    gameInfo.style.marginTop = "5px";
+    gameInfo.style.marginBottom = "5px";
+    gameInfo.style.width = "210px";
+    gameInfo.style.borderRadius = "8px";
+    gameInfo.style.border = "solid";
+    gameInfo.style.borderColor = "rgb(95, 96, 97)";
+    gameInfo.style.paddingLeft = "7px";
+    gameInfo.style.paddingTop = "3px";
+    gameInfo.style.paddingBottom = "3px";
+
+    const gameInfoDate = document.createElement("div");
+    gameInfoDate.textContent = `${gameDate}`;
+    gameInfoDate.style.fontSize = "12px";
+    gameInfoDate.style.color = "rgb(36, 38, 41)";
+    const gameInfoTeams = document.createElement("div");
+    gameInfoTeams.textContent = `${gameTeams}`;
+    gameInfoTeams.style.fontSize = "14px";
+    gameInfo.appendChild(gameInfoDate);
+    gameInfo.appendChild(gameInfoTeams);
+    betSlipContainer.appendChild(gameInfo);
+    const betInfo = document.createElement("div");
+    const betInfoData = document.createElement("div");
+    const betInfoProp = document.createElement("div");
+    const betInfoTeam = document.createElement("div");
+    const betInfoOdds = document.createElement("div");
+    const removeBtn = document.createElement("button");
+    const betInfoContainer = document.createElement("div");
+
+    betInfoContainer.classList.add("flex-container");
+
+    betInfoContainer.style.display = "flex";
+    betInfoContainer.style.justifyContent = "space-between";
+    //betInfoContainer.style.backgroundColor = "lightgreen";
+    betInfoContainer.style.marginLeft = "5px";
+    betInfoContainer.style.marginTop = "5px";
+    betInfoContainer.style.marginBottom = "5px";
+
+    betInfoContainer.style.width = "225px";
+    betInfoOdds.textContent = `${oddsName}`;
+    betInfoTeam.textContent = `${teamName}`;
+    betInfoProp.textContent = `${propName}`;
+    betInfoTeam.style.fontSize = "16px";
+    betInfoTeam.style.fontWeight = "550";
+    betInfoProp.style.fontSize = "12px";
+    betInfoOdds.style.fontWeight = "550";
+    betInfoProp.style.color = "rgb(36, 38, 41)";
+    const betInfoTopHeader = document.createElement("div");
+    betInfoTopHeader.style.display = "flex";
+    betInfoTopHeader.style.justifyContent = "space-between";
+    betInfoTopHeader.style.marginBottom = "2px";
+    betInfoTopHeader.appendChild(betInfoTeam);
+    betInfoTopHeader.appendChild(betInfoOdds);
+    const betInfoBotHeader = document.createElement("div");
+    betInfoBotHeader.appendChild(betInfoProp);
+    betInfo.appendChild(betInfoTopHeader);
+    betInfo.appendChild(betInfoBotHeader);
+    betInfo.style.flex = "55"; // BetInfo takes 3 parts of the space
+    betInfo.style.marginLeft = "8px";
+    removeBtn.style.flex = "1"; // RemoveBtn takes 1 part of the space
+    removeBtn.textContent = "X";
+    removeBtn.style.marginLeft = "5px";
+    removeBtn.style.backgroundColor = "transparent";
+    removeBtn.style.border = "none";
+    removeBtn.style.fontSize = "10px";
+    removeBtn.style.fontWeight = "bold";
+    betInfoContainer.style.alignItems = "center";
+    betInfoContainer.appendChild(betInfo);
+    betInfoContainer.appendChild(removeBtn);
 
     const betInput = document.createElement("input");
     betInput.type = "number";
@@ -119,6 +210,8 @@ export function printBetCart() {
     betOutput.value = roundedValue; // Update the output field
     betsCart[index][7] = roundedValue;
 
+    betLink.appendChild(gameInfo);
+    betLink.appendChild(betInfoContainer);
     betLink.appendChild(betInput);
     betLink.appendChild(betOutput);
     betCart.appendChild(betLink);
@@ -130,13 +223,19 @@ export function printBetCart() {
 // Function to dynamically create and append game data elements
 function appendGameDataToDOM(gameData) {
   const gameSchedule = document.getElementById("gameSchedule");
+  const today = new Date().toISOString().split("T")[0]; // Extract only the date part
 
   gameData.forEach((game) => {
     const { commence_time, away_team, home_team, h2h, spreads, totals } =
       filterGameData(game);
-
+    /*
+    console.log(commence_time);
+    const commenceDate = new Date(commence_time).toISOString().split("T")[0]; // Extract the date part
+    console.log("today", today);
+    console.log("commence date", commenceDate);
+    */
     // Proceed only if all markets are available
-    if (h2h && spreads && totals) {
+    if (h2h && spreads && totals /*commenceDate === today*/) {
       // Create a wrapper div for each game
 
       const homeTeamH2hVar = h2h.outcomes[0];

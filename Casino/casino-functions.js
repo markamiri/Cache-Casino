@@ -63,6 +63,11 @@ async function getUpdateBetNames(key) {
       const status = betWords[betWords.length - 1]; // Get the last word (status)
       return status === "cache"; // Check if the status is "cache"
     });
+    const hasOnlyPush = updatedBetNames.every((betName) => {
+      const betWords = betName.split(" "); // Split the bet name into words
+      const status = betWords[betWords.length - 1]; // Get the last word (status)
+      return status === "push"; // Check if the status is "cache"
+    });
     const hasCache = updatedBetNames.some((betName) => {
       const betWords = betName.split(" "); // Split the bet name into words
       const status = betWords[betWords.length - 1]; // Get the last word (status)
@@ -92,6 +97,7 @@ async function getUpdateBetNames(key) {
         "betObject/bet_1/status": "failed",
         totalReturn: totalRe,
       });
+      await remove(ref(db, `unsettled/${key}`));
     } else {
       //parlay has all wins
       if (hasOnlyCache) {
@@ -143,6 +149,7 @@ async function getUpdateBetNames(key) {
         } else {
           console.log("No data found for the key:", key);
         }
+        await remove(ref(db, `unsettled/${key}`));
       }
       if (hasCache && hasPush) {
         console.log("The array contains both 'cache' and 'push'.");
@@ -223,6 +230,57 @@ async function getUpdateBetNames(key) {
           "betObject/bet_1/status": "cache with push",
         });
         await set(ref(db, `betslipSet/${betUser}/balance`), newBalance);
+        await remove(ref(db, `unsettled/${key}`));
+      } else if (hasOnlyPush) {
+        console.log("All bet slips have a status of 'cache'.");
+
+        const snapshot = await get(ref(db, `unsettled/${key}`));
+        if (snapshot.exists()) {
+          const updatedData = snapshot.val(); // Fetch the updated data
+          const odds = updatedData.betObject?.bet_1?.odds || [];
+          const amtwagered = updatedData.amtwagered;
+          const betUser = updatedData.name;
+          console.log("amtwagered", amtwagered);
+          console.log("Odds:", odds);
+
+          const totalOdds = 1;
+          const roundedTotalOdds = totalOdds.toFixed(2);
+          const totalRe = (roundedTotalOdds * amtwagered).toFixed(2);
+          console.log(totalRe);
+
+          const userBalanceRef = ref(db, `betslipSet/${betUser}/balance`);
+          let currentBalance = 0;
+
+          try {
+            const snapshot = await get(userBalanceRef); // Fetch the data at this reference
+            if (snapshot.exists()) {
+              currentBalance = snapshot.val();
+            } else {
+              console.log("No data found at userBalanceRef.");
+            }
+          } catch (error) {
+            console.error("Error fetching values:", error);
+          }
+          console.log("new curr balance", currentBalance);
+          let newBalance = parseFloat(currentBalance) + parseFloat(totalRe);
+
+          await update(ref(db, `unsettled/${key}`), {
+            "betObject/bet_1/status": "push",
+            unsettled: "false",
+            totalReturn: totalRe,
+          });
+
+          await update(ref(db, `betslipSet/${betUser}/betslips/${key}`), {
+            unsettled: "false",
+            totalReturn: totalRe,
+            "betObject/bet_1/status": "push",
+          });
+
+          await set(ref(db, `betslipSet/${betUser}/balance`), newBalance);
+          await remove(ref(db, `unsettled/${key}`));
+        } else {
+          console.log("No data found for the key:", key);
+        }
       } else {
         console.log("The array does not contain both 'cache' and 'push'.");
       }
