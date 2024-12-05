@@ -85,13 +85,13 @@ export function printBetCart() {
     const betLink = document.createElement("div");
     betLink.setAttribute("item-number", `${cartItems}`);
 
-    betLink.style.borderRadius = "8px";
-    betLink.style.marginLeft = "10px";
+    betLink.style.borderRadius = "10px";
+    betLink.style.marginLeft = "15px";
     betLink.style.marginTop = "10px";
     betLink.style.width = "230px";
+    betLink.style.height = "130px";
     betLink.style.backgroundColor = "rgb(232, 234, 237)";
     betLink.style.fontFamily = "sans-serif";
-    betLink.style.padding = "3px";
     console.log("this is the bet name", betName);
     let NewbetName = betName.replace(/[\[\]]/g, ""); // Removes "[" and "]"
     NewbetName = NewbetName.replace(/"/g, ""); // Removes all occurrences of "
@@ -107,26 +107,44 @@ export function printBetCart() {
     const betSlipContainer = document.createElement("div");
     const gameInfo = document.createElement("div");
     //gameInfo.style.backgroundColor = "lightpink";
-    gameInfo.style.marginLeft = "5px";
-    gameInfo.style.marginTop = "5px";
+
     gameInfo.style.marginBottom = "5px";
-    gameInfo.style.width = "210px";
-    gameInfo.style.borderRadius = "8px";
-    gameInfo.style.border = "solid";
-    gameInfo.style.borderColor = "rgb(95, 96, 97)";
-    gameInfo.style.paddingLeft = "7px";
-    gameInfo.style.paddingTop = "3px";
+    gameInfo.style.width = "208px";
+    gameInfo.style.borderRadius = "8px 8px 0 0";
+    gameInfo.style.border = "none";
+    gameInfo.style.backgroundColor = "#7F7D9C";
+    gameInfo.style.color = "white";
     gameInfo.style.paddingBottom = "3px";
+    console.log(gameTeams);
+
+    const parts = gameTeams.split(" @ ");
+    const team1 = parts[0]; // "Washington Wizards"
+    const delimiter = "@"; // "@"
+    const team2 = parts[1]; // "Boston Celtics"
+
+    // Log the results
+    console.log("Team 1:", team1);
+    console.log("Delimiter:", delimiter);
+    console.log("Team 2:", team2);
+    let otherTeam = "";
+    if (team1 === teamName) {
+      otherTeam = "Away: " + team2;
+    } else {
+      otherTeam = "Home:  " + team1;
+    }
 
     const gameInfoDate = document.createElement("div");
     gameInfoDate.textContent = `${gameDate}`;
     gameInfoDate.style.fontSize = "12px";
-    gameInfoDate.style.color = "rgb(36, 38, 41)";
+    gameInfoDate.style.color = "white";
     const gameInfoTeams = document.createElement("div");
-    gameInfoTeams.textContent = `${gameTeams}`;
+    gameInfoTeams.textContent = `${otherTeam}`;
     gameInfoTeams.style.fontSize = "14px";
-    gameInfo.appendChild(gameInfoDate);
+    gameInfo.style.paddingLeft = "19px";
+    gameInfo.style.paddingRight = "3px";
     gameInfo.appendChild(gameInfoTeams);
+    gameInfo.appendChild(gameInfoDate);
+
     betSlipContainer.appendChild(gameInfo);
     const betInfo = document.createElement("div");
     const betInfoData = document.createElement("div");
@@ -141,7 +159,6 @@ export function printBetCart() {
     betInfoContainer.style.display = "flex";
     betInfoContainer.style.justifyContent = "space-between";
     //betInfoContainer.style.backgroundColor = "lightgreen";
-    betInfoContainer.style.marginLeft = "5px";
     betInfoContainer.style.marginTop = "5px";
     betInfoContainer.style.marginBottom = "5px";
 
@@ -151,41 +168,72 @@ export function printBetCart() {
     betInfoProp.textContent = `${propName}`;
     betInfoTeam.style.fontSize = "16px";
     betInfoTeam.style.fontWeight = "550";
+    betInfoTeam.style.width = "170px";
     betInfoProp.style.fontSize = "12px";
     betInfoOdds.style.fontWeight = "550";
     betInfoProp.style.color = "rgb(36, 38, 41)";
     const betInfoTopHeader = document.createElement("div");
     betInfoTopHeader.style.display = "flex";
-    betInfoTopHeader.style.justifyContent = "space-between";
     betInfoTopHeader.style.marginBottom = "2px";
     betInfoTopHeader.appendChild(betInfoTeam);
     betInfoTopHeader.appendChild(betInfoOdds);
     const betInfoBotHeader = document.createElement("div");
+    betInfoBotHeader.style.display = "flex";
+    betInfoBotHeader.style.justifyContent = "space-between";
+    betInfoBotHeader.style.width = "205px";
+    betInfoProp.style.width = "190px";
     betInfoBotHeader.appendChild(betInfoProp);
     betInfo.appendChild(betInfoTopHeader);
     betInfo.appendChild(betInfoBotHeader);
     betInfo.style.flex = "55"; // BetInfo takes 3 parts of the space
-    betInfo.style.marginLeft = "8px";
+
     removeBtn.style.flex = "1"; // RemoveBtn takes 1 part of the space
     removeBtn.textContent = "X";
-    removeBtn.style.marginLeft = "5px";
     removeBtn.style.backgroundColor = "transparent";
     removeBtn.style.border = "none";
     removeBtn.style.fontSize = "10px";
     removeBtn.style.fontWeight = "bold";
+    removeBtn.width = "10px";
     betInfoContainer.style.alignItems = "center";
-    betInfoContainer.appendChild(betInfo);
     betInfoContainer.appendChild(removeBtn);
 
+    betInfoContainer.appendChild(betInfo);
+
+    const inputContainer = document.createElement("div");
+    inputContainer.style.display = "flex";
+
+    const betInputContainer = document.createElement("div");
+    const betLabel = document.createElement("div");
+    betLabel.textContent = "Wager";
+    betInputContainer.appendChild(betLabel);
+
     const betInput = document.createElement("input");
+    betInput.style.width = "90px";
     betInput.type = "number";
     betInput.placeholder = "Enter your wager";
     betInput.value = wager; // Set the value from the array
-
+    betInput.style.height = "20px";
+    betInputContainer.appendChild(betInput);
+    betInputContainer.style.width = "90px";
+    betInputContainer.style.fontSize = "14px";
+    betInputContainer.style.alignItems = "center";
+    const betOutputContainer = document.createElement("div");
+    betOutputContainer.textContent = "To Win";
+    betOutputContainer.style.fontSize = "14px";
     const betOutput = document.createElement("input");
     betOutput.type = "number";
     betOutput.placeholder = "$0.00";
+    betOutput.style.width = "50px";
     betOutput.readOnly = true;
+    betOutput.style.width = "85px";
+    betOutputContainer.appendChild(betOutput);
+    betOutputContainer.style.width = "80px";
+    betOutputContainer.style.marginLeft = "20px";
+    betOutput.style.height = "20px";
+    inputContainer.appendChild(betInputContainer);
+    inputContainer.appendChild(betOutputContainer);
+    inputContainer.style.marginLeft = "19px";
+    inputContainer.style.width = "240px";
 
     const oddsNum = odds.replace(/[\[\]"]/g, "");
     const numericOdds = parseFloat(oddsNum);
@@ -212,9 +260,11 @@ export function printBetCart() {
 
     betLink.appendChild(gameInfo);
     betLink.appendChild(betInfoContainer);
-    betLink.appendChild(betInput);
-    betLink.appendChild(betOutput);
+     inputContainer.id = "input-container";
+    betLink.appendChild(inputContainer);
     betCart.appendChild(betLink);
+      document.dispatchEvent(new Event("inputContainerLoaded"));
+
   });
 
   calculatePayout(); // Initial calculation of total payout

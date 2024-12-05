@@ -1,0 +1,40 @@
+/* Style the container */
+.bet-input-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 150px; /* Adjust as needed */
+  border: 1px solid #ccc; /* Optional border */
+  border-radius: 5px; /* Optional rounded corners */
+  padding: 5px;
+  background-color: white;
+}
+
+/* Style the $ prefix */
+.bet-input-container::before {
+  content: "$";
+  position: absolute;
+  left: 10px; /* Adjust spacing */
+  font-size: 16px;
+  color: #555; /* Optional grey color */
+}
+
+/* Style the .00 suffix */
+.bet-input-container::after {
+  content: ".00";
+  position: absolute;
+  right: 10px; /* Adjust spacing */
+  font-size: 16px;
+  color: #555; /* Optional grey color */
+}
+
+/* Style the input */
+.bet-input {
+  width: 100%;
+  padding-left: 20px; /* Leave space for $ prefix */
+  padding-right: 30px; /* Leave space for .00 suffix */
+  border: none;
+  font-size: 16px;
+  outline: none; /* Remove blue outline on focus */
+  text-align: left; /* Align text to the left */
+}

@@ -1727,6 +1727,22 @@
     <script>
       const strButton = document.getElementById("straightButton");
       const parButton = document.getElementById("parlayButton");
+      const inputContainer = document.getElementById("input-container"); // Replace with dynamic creation if necessary
+
+      // Show input-container when strButton is clicked
+      strButton.addEventListener("click", () => {
+        if (inputContainer) {
+          inputContainer.style.display = "block"; // Show the input container
+        }
+      });
+
+      // Hide input-container when parButton is clicked
+      parButton.addEventListener("click", () => {
+        if (inputContainer) {
+          inputContainer.style.display = "none"; // Hide the input container
+        }
+      });
+      /*
       function hideInputsInBetCart() {
         const divs = betCart.querySelectorAll("div[item-number]"); // Select all divs with "item-number"
         divs.forEach((div) => {
@@ -1735,6 +1751,7 @@
             input.style.display = "none"; // Hide the input
           }
         });
+        
         function showInputsInBetCart() {
           const divs = betCart.querySelectorAll("div[item-number]"); // Select all divs with "item-number"
           divs.forEach((div) => {
@@ -1745,9 +1762,11 @@
           });
         }
       }
+        */
     </script>
 
     <script>
+      //FIX HERE
       const sButton = document.getElementById("straightButton");
       const pButton = document.getElementById("parlayButton");
       const betCart = document.getElementById("betCart");
