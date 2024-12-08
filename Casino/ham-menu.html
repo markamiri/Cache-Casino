@@ -140,26 +140,58 @@
             container for the betslips
           </div>
           <div id="parlayInput" class="hidden">
-            <div style="display: flex; justify-content: space-between">
-              <div>Parlay</div>
-              <div>1.48</div>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                width: 218px;
+                margin-left: 20px;
+              "
+            >
+              <div
+                style="
+                  color: rgb(232, 234, 237);
+                  font-family: sans-serif;
+                  font-weight: bold;
+                "
+              >
+                Parlay
+              </div>
+              <div
+                id="parlayPayoutOdds"
+                style="
+                  color: rgb(232, 234, 237);
+                  font-family: sans-serif;
+                  font-weight: bold;
+                "
+              >
+                Payout
+              </div>
             </div>
-            <div style="display: flex; justify-content: space-between">
+            <div
+              style="
+                display: flex;
+                justify-content: space-evenly;
+                margin-bottom: 10px;
+              "
+            >
               <input
                 id="parlayWager"
-                style="width: 100px"
+                style="width: 90px; height: 20px"
                 type="number"
                 placeholder="bet"
+                min="0"
               />
               <input
                 id="parlayReturn"
-                style="width: 100px"
+                style="width: 90px; height: 20px; text-align: right"
                 type="number"
                 placeholder="to win"
               />
             </div>
           </div>
           <div
+            id="straightPayoutBox"
             style="
               height: 26px;
               padding-top: 10px;
@@ -1800,19 +1832,21 @@
       function updateButtonState() {
         const inputs = betCart.querySelectorAll("div[item-number] input"); // Select all inputs inside divs
         const inputCount = inputs.length;
+        const length = betCart.length; // Select all elements inside betCart
 
+        console.log("Total number of elements in betCart:", length);
         if (inputCount === 1) {
           // Set "Straight" button active when there's only 1 input
           pButton.classList.remove("active");
           sButton.classList.add("active");
-          showInputsInBetCart();
+          //showInputsInBetCart();
         } else if (inputCount === 2 && firstParlayTrigger) {
           // Set "Parlay" button active the first time there are 2 inputs
           sButton.classList.remove("active");
           pButton.classList.add("active");
           parlayInput.classList.remove("hidden");
           betCart.style.height = "200px";
-          hideInputsInBetCart();
+          //hideInputsInBetCart();
           firstParlayTrigger = false; // Ensure this runs only the first time
         }
       }
@@ -1824,7 +1858,7 @@
         parlayInput.classList.add("hidden");
         betCart.style.height = "250px";
         // Show inputs when "Straight" is active
-        showInputsInBetCart();
+        //showInputsInBetCart();
       });
 
       pButton.addEventListener("click", () => {
@@ -1839,15 +1873,15 @@
         parlayInput.classList.remove("hidden");
         // Hide inputs when "Parlay" is active
         betCart.style.height = "200px";
-        hideInputsInBetCart();
+        //hideInputsInBetCart();
       });
 
       // Example: Update the button state when the cart changes (this could be tied to a mutation observer or cart update function)
       // Call `updateButtonState()` whenever items are added or removed from the cart
-      const observer = new MutationObserver(updateButtonState);
+      //const observer = new MutationObserver(updateButtonState);
 
       // Observe changes to the betCart element
-      observer.observe(betCart, { childList: true, subtree: true });
+      //observer.observe(betCart, { childList: true, subtree: true });
     </script>
   </body>
 </html>

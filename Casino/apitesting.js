@@ -61,13 +61,204 @@ export function appendGameDataToBetCart(
 export function printBetCart() {
   const betCart = document.getElementById("betCart");
   const totalPayoutDiv = document.getElementById("totalPayout"); // Create a div for the total payout
+  const parlayPayoutOdds = document.getElementById("parlayPayoutOdds"); // Create a div for the total payout
 
   totalPayoutDiv.textContent = "$0.00";
   betCart.innerHTML = ""; // Clear the cart
 
+  function calculateParlayPayout() {
+    console.log("calculateParlayPayout", betsCart);
+    let totalOdds = betsCart.reduce((product, bet) => {
+      const odds = parseFloat(bet[2].replace(/['"]+/g, "")); // Remove extra quotes
+      return product * odds; // Multiply the odds
+    }, 1); // Start with 1 because it's a multiplication
+
+    const betInput = document.querySelector("#parlayWager"); // Select by id
+    const toWinInput = document.querySelector("#parlayReturn"); // Select by id
+    betInput.addEventListener("input", () => {
+      const wager = parseFloat(betInput.value) || 0; // Get the wager input, default to 0 if invalid
+      const potentialWin = wager * totalOdds; // Calculate the potential win
+      toWinInput.value = potentialWin.toFixed(2); // Update the To Win input with 2 decimal places
+    });
+    totalOdds = totalOdds.toFixed(2);
+
+    console.log("parlay Total Odds:", totalOdds);
+    parlayPayoutOdds.textContent = `${totalOdds}`;
+  }
   function calculatePayout() {
     const payout = betsCart.reduce((total, bet) => total + (bet[7] || 0), 0);
     totalPayoutDiv.textContent = `$${payout.toFixed(2)}`; // Update the payout display
+  }
+
+  function ParlaySlip() {
+    // Check if the parlay slip container already exists
+    let existingParlayBetLink = document.querySelector(
+      "#parlay-slip-container"
+    );
+
+    if (!existingParlayBetLink) {
+      // If it doesn't exist, create it
+      existingParlayBetLink = document.createElement("div");
+      existingParlayBetLink.id = "parlay-slip-container"; // Add an ID
+      existingParlayBetLink.classList.add("parlay-slip-container");
+      betCart.appendChild(existingParlayBetLink); // Append it to betCart
+    }
+
+    // Clear existing content
+    existingParlayBetLink.innerHTML = "";
+
+    // Style the parlay slip container
+    existingParlayBetLink.style.borderRadius = "10px";
+    existingParlayBetLink.style.marginLeft = "15px";
+    existingParlayBetLink.style.marginTop = "10px";
+    existingParlayBetLink.style.width = "230px";
+    existingParlayBetLink.style.height = "auto";
+    existingParlayBetLink.style.backgroundColor = "rgb(232, 234, 237)";
+    existingParlayBetLink.style.fontFamily = "sans-serif";
+
+    // Add the header
+    const testing = document.createElement("div");
+    testing.textContent = "Parlay";
+    testing.style.display = "flex"; // Make the container a flexbox
+    testing.style.alignItems = "center"; // Center the content vertically
+    testing.style.fontSize = "18px";
+    testing.style.marginBottom = "5px";
+    testing.style.width = "190px";
+    testing.style.height = "25px";
+    testing.style.alignItems = "center";
+    testing.style.borderRadius = "8px 8px 0 0";
+    testing.style.backgroundColor = "#7F7D9C";
+    testing.style.color = "white";
+    testing.style.padding = "3px 20px";
+    existingParlayBetLink.appendChild(testing);
+
+    // Create and append parlay legs
+    const parlayLegContainer = document.createElement("div");
+    parlayLegContainer.classList.add("parlay-leg-container");
+
+    // Add content dynamically from betsCart
+    betsCart.forEach((bet, index) => {
+      let betName = bet[1];
+      console.log("betname before split", betName);
+      betName = betName.split(" ");
+
+      let status;
+      let legProp;
+      let teamName;
+      if (betName.includes("MoneyLine")) {
+        console.log("this bet name contains moneyline");
+        status = betName.pop();
+        legProp = betName.pop();
+        teamName = betName.join(" ");
+        teamName = teamName.replace("[", "");
+        teamName = teamName.replace('"', "");
+      } else if (betName.includes("spread")) {
+        console.log("this bet name contains spread");
+
+        status = betName.pop();
+        let line = betName.pop();
+        let prop = betName.pop();
+        prop = prop.charAt(0).toUpperCase() + prop.slice(1);
+
+        console.log("Line value:", line);
+        console.log("Type of line:", typeof line);
+        const numericLine = parseFloat(line);
+        console.log("numeric line:", numericLine);
+        if (numericLine < 0) {
+          legProp = prop + ":" + " " + line;
+        } else if (numericLine > 0) {
+          legProp = prop + ":" + " " + "+" + line;
+        }
+        teamName = betName.join(" ");
+        teamName = teamName.replace("[", "");
+        teamName = teamName.replace('"', "");
+        console.log("this is the teamName", teamName);
+      } else {
+        console.log("this bet name contains Totals");
+        let legMatchup = bet[3];
+        console.log("this is the leg matchup", legMatchup);
+        const teams = legMatchup.split(" @ ");
+
+        // Get the last word of each team name
+        const team1 = teams[0].split(" ").pop(); // Last word of the first team
+        const team2 = teams[1].split(" ").pop(); // Last word of the second team
+
+        // Combine the simplified names
+        teamName = `${team1} @ ${team2}`;
+
+        status = betName.pop();
+        let line = betName.pop();
+        let prop = betName.pop();
+        prop = prop.charAt(0).toUpperCase() + prop.slice(1);
+        legProp = `${prop} ${line}`;
+        console.log("Line value:", line);
+        console.log("Type of line:", typeof line);
+        const numericLine = parseFloat(line);
+        console.log("numeric line:", numericLine);
+
+        /*
+        teamName = betName.join(" ");
+        teamName = teamName.replace("[", "");
+        teamName = teamName.replace('"', "");
+        console.log("this is the teamName", teamName);
+        */
+      }
+
+      const legOdds = bet[2].replace(/"/g, "");
+      const legMatchup = bet[3];
+      const legTime = bet[4];
+      const ParlaylegTime = legTime.replace("•", "");
+      // Create elements for each parlay leg
+      const parlayTopHeader = document.createElement("div");
+      parlayTopHeader.style.display = "flex";
+      const parlayTeam = document.createElement("div");
+      parlayTeam.textContent = `${teamName}`;
+      parlayTeam.style.fontSize = "16px";
+      parlayTeam.style.fontWeight = "550";
+      parlayTeam.style.width = "160px";
+
+      const parlayOdds = document.createElement("div");
+      parlayOdds.textContent = `${legOdds}`;
+      parlayOdds.style.fontWeight = "550";
+      parlayOdds.style.textAlign = "right";
+      parlayOdds.style.width = "40px";
+      parlayTopHeader.appendChild(parlayTeam);
+      parlayTopHeader.appendChild(parlayOdds);
+
+      const parlayProp = document.createElement("div");
+      parlayProp.textContent = `${legProp}`;
+      parlayProp.style.fontSize = "16px";
+      parlayProp.style.color = "rgb(36, 38, 41)";
+      parlayProp.style.marginBottom = "5px";
+      const parlayBotHeader = document.createElement("div");
+      parlayBotHeader.style.display = "flex";
+      parlayBotHeader.style.alignItems = "center";
+      const teams = document.createElement("div");
+      teams.textContent = `${legMatchup}`;
+      teams.style.fontSize = "12px";
+      teams.style.fontStyle = "italic";
+
+      teams.style.color = "rgb(28, 28, 31)";
+      teams.style.width = "200px";
+      const time = document.createElement("div");
+      time.textContent = `${ParlaylegTime}`;
+      time.style.fontSize = "12px";
+      time.style.color = "black";
+      time.style.paddingLeft = "50px";
+      parlayBotHeader.style.paddingLeft = "19px";
+      parlayBotHeader.style.paddingRight = "3px";
+      parlayBotHeader.appendChild(teams);
+      parlayBotHeader.appendChild(time);
+      parlayBotHeader.style.paddingBottom = "15px";
+      parlayTopHeader.style.marginLeft = "15px";
+      parlayProp.style.marginLeft = "15px";
+      // Append elements to parlayLegContainer
+      parlayLegContainer.appendChild(parlayTopHeader);
+      parlayLegContainer.appendChild(parlayProp);
+      parlayLegContainer.appendChild(parlayBotHeader);
+    });
+    // Append parlayLegContainer to the existingParlayBetLink
+    existingParlayBetLink.appendChild(parlayLegContainer);
   }
 
   betsCart.forEach((bet, index) => {
@@ -92,16 +283,126 @@ export function printBetCart() {
     betLink.style.height = "130px";
     betLink.style.backgroundColor = "rgb(232, 234, 237)";
     betLink.style.fontFamily = "sans-serif";
+
+    const parlayBetLink = document.createElement("div");
+    parlayBetLink.style.borderRadius = "10px";
+    parlayBetLink.style.marginLeft = "15px";
+    parlayBetLink.style.marginTop = "10px";
+    parlayBetLink.style.width = "230px";
+    parlayBetLink.style.height = "130px";
+    parlayBetLink.style.backgroundColor = "rgb(232, 234, 237)";
+    parlayBetLink.style.fontFamily = "sans-serif";
+    const testing = document.createElement("div");
+    testing.textContent = "Parlay";
+    testing.style.marginBottom = "5px";
+    testing.style.width = "210px";
+    testing.style.height = "25px";
+    testing.style.borderRadius = "8px 8px 0 0";
+    testing.style.border = "none";
+    testing.style.backgroundColor = "#7F7D9C";
+    testing.style.color = "white";
+    testing.style.paddingBottom = "3px";
+    testing.style.paddingLeft = "20px";
+    testing.style.paddingTop = "5px";
+    parlayBetLink.appendChild(testing);
+
+    const parlayLegContainer = document.createElement("div");
+    console.log("does this update?", betsCart);
+    for (let i = 0; i < betsCart.length; i++) {
+      console.log(`Bet ${i + 1}:`);
+      let legName = betsCart[i][1];
+      legName = legName.replace(/[\[\]]/g, "");
+      legName = legName.replace(/"/g, "");
+      let legNameArray = legName.split(" ");
+
+      const status = legNameArray.pop();
+      const legProp = legNameArray.pop();
+      const teamName = legNameArray.join(" ");
+      let legOdds = betsCart[i][2];
+      legOdds = legOdds.replace(/"/g, "");
+      let legMatchup = betsCart[i][3];
+      let legTime = betsCart[i][4];
+      console.log("legProp", legProp);
+      console.log("teamName", teamName);
+      const parlayTopHeader = document.createElement("div");
+      parlayTopHeader.style.display = "flex";
+      const parlayTeam = document.createElement("div");
+      parlayTeam.textContent = `${teamName}`;
+      const parlayOdds = document.createElement("div");
+      parlayOdds.textContent = `${legOdds}`;
+      parlayTopHeader.appendChild(parlayTeam);
+      parlayTopHeader.appendChild(parlayOdds);
+      parlayLegContainer.appendChild(parlayTopHeader);
+      const parlayProp = document.createElement("div");
+      parlayProp.textContent = `${legProp}`;
+      parlayLegContainer.appendChild(parlayProp);
+      const parlayBotHeader = document.createElement("div");
+      parlayBotHeader.style.display = "flex";
+      const teams = document.createElement("div");
+      teams.textContent = `${legMatchup}`;
+      const time = document.createElement("div");
+      teams.textContent = `${legTime}`;
+      parlayBotHeader.appendChild(teams);
+      parlayBotHeader.appendChild(time);
+      parlayLegContainer.appendChild(parlayBotHeader);
+      parlayBetLink.appendChild(parlayLegContainer);
+      // Iterate through indices 1 to 4 of the current nested array
+      console.log(legName + " " + legOdds + legMatchup + legTime);
+    }
     console.log("this is the bet name", betName);
     let NewbetName = betName.replace(/[\[\]]/g, ""); // Removes "[" and "]"
     NewbetName = NewbetName.replace(/"/g, ""); // Removes all occurrences of "
 
+    // how to make it work for totals and spreads
     let betNameArray = NewbetName.split(" ");
-    const status = betNameArray.pop();
-    console.log("betNameArray", betNameArray);
-    const propName = betNameArray.pop();
-    const teamName = betNameArray.join(" ");
-    const oddsName = odds.replace(/"/g, "");
+    let status;
+    let propName;
+    let teamName;
+    let oddsName;
+    if (betNameArray.includes("MoneyLine")) {
+      console.log("this bet name contains moneyline");
+      status = betNameArray.pop();
+      propName = betNameArray.pop();
+      teamName = betNameArray.join(" ");
+      oddsName = odds.replace(/"/g, "");
+    } else if (betNameArray.includes("spread")) {
+      console.log("this bet contains spread");
+      console.log("this is the data", betNameArray);
+      status = betNameArray.pop();
+      let line = betNameArray.pop();
+      let prop = betNameArray.pop();
+      prop = prop.charAt(0).toUpperCase() + prop.slice(1);
+      console.log("Line value:", line);
+      console.log("Type of line:", typeof line);
+      const numericLine = parseFloat(line);
+      console.log("numeric line:", numericLine);
+      if (numericLine < 0) {
+        propName = prop + ":" + " " + line;
+      } else if (numericLine > 0) {
+        propName = prop + ":" + " " + "+" + line;
+      }
+      teamName = betNameArray.join(" ");
+      oddsName = odds.replace(/"/g, "");
+    } else {
+      console.log("this bet name contains Totals");
+
+      status = betNameArray.pop();
+      let line = betNameArray.pop();
+      let prop = betNameArray.pop();
+      prop = prop.charAt(0).toUpperCase() + prop.slice(1);
+      propName = prop + " " + line;
+      const teams = gameTeams.split(" @ ");
+
+      // Get the last word of each team name
+      const team1 = teams[0].split(" ").pop(); // Last word of the first team
+      const team2 = teams[1].split(" ").pop(); // Last word of the second team
+
+      // Combine the simplified names
+      teamName = `${team1} @ ${team2}`;
+      console.log("this is the gameTeams", gameTeams);
+      oddsName = odds.replace(/"/g, "");
+    }
+
     console.log("teamName", teamName);
     console.log("propName", propName);
     const betSlipContainer = document.createElement("div");
@@ -116,7 +417,6 @@ export function printBetCart() {
     gameInfo.style.color = "white";
     gameInfo.style.paddingBottom = "3px";
     console.log(gameTeams);
-
     const parts = gameTeams.split(" @ ");
     const team1 = parts[0]; // "Washington Wizards"
     const delimiter = "@"; // "@"
@@ -146,6 +446,7 @@ export function printBetCart() {
     gameInfo.appendChild(gameInfoDate);
 
     betSlipContainer.appendChild(gameInfo);
+
     const betInfo = document.createElement("div");
     const betInfoData = document.createElement("div");
     const betInfoProp = document.createElement("div");
@@ -185,6 +486,7 @@ export function printBetCart() {
     betInfoBotHeader.appendChild(betInfoProp);
     betInfo.appendChild(betInfoTopHeader);
     betInfo.appendChild(betInfoBotHeader);
+
     betInfo.style.flex = "55"; // BetInfo takes 3 parts of the space
 
     removeBtn.style.flex = "1"; // RemoveBtn takes 1 part of the space
@@ -211,6 +513,8 @@ export function printBetCart() {
     betInput.style.width = "90px";
     betInput.type = "number";
     betInput.placeholder = "Enter your wager";
+    betInput.min = "0";
+
     betInput.value = wager; // Set the value from the array
     betInput.style.height = "20px";
     betInputContainer.appendChild(betInput);
@@ -260,14 +564,78 @@ export function printBetCart() {
 
     betLink.appendChild(gameInfo);
     betLink.appendChild(betInfoContainer);
-     inputContainer.id = "input-container";
-    betLink.appendChild(inputContainer);
-    betCart.appendChild(betLink);
-      document.dispatchEvent(new Event("inputContainerLoaded"));
 
+    inputContainer.classList.add("input-container"); // Use class instead of id
+    betLink.appendChild(inputContainer);
+    betLink.classList.add("betLink"); // Use class instead of id
+
+    betCart.appendChild(betLink);
+
+    document.dispatchEvent(new Event("inputContainerLoaded"));
+    const sButton = document.getElementById("straightButton");
+    const pButton = document.getElementById("parlayButton");
+    const inputContainers = document.querySelectorAll(".input-container");
+    const betLinkContainers = document.querySelectorAll(".betLink");
+    const parlayLinkContainer = document.querySelector(
+      ".parlay-slip-container"
+    );
+    function toggleContainers(showStraight) {
+      // Toggle visibility of inputContainers
+      inputContainers.forEach((container) => {
+        container.style.display = showStraight ? "flex" : "none";
+      });
+
+      // Toggle visibility of betLinkContainers
+      betLinkContainers.forEach((container) => {
+        container.style.display = showStraight ? "block" : "none";
+      });
+
+      // Toggle visibility of parlaySlipContainer
+      const parlaySlipContainer = document.querySelector(
+        "#parlay-slip-container"
+      );
+      if (parlaySlipContainer) {
+        parlaySlipContainer.style.display = showStraight ? "none" : "block";
+      }
+      const straightPayoutBox = document.querySelector("#straightPayoutBox");
+      const betCart = document.getElementById("betCart");
+      const parlayInput = document.getElementById("parlayInput");
+      if (straightPayoutBox) {
+        straightPayoutBox.style.display = showStraight ? "flex" : "none";
+        betCart.style.height = showStraight ? "240px" : "230px";
+        parlayInput.style.display = showStraight ? "none" : "block";
+      }
+
+      // Call ParlaySlip only if "PARLAY" is selected
+      if (!showStraight) {
+        ParlaySlip();
+      }
+    }
+
+    console.log("cartItems", cartItems);
+    if (cartItems === 0) {
+      toggleContainers(true); // Show the input containers
+
+      pButton.classList.remove("active");
+      sButton.classList.add("active");
+    } else {
+      sButton.addEventListener("click", () => {
+        toggleContainers(true); // Show the input containers
+        pButton.classList.remove("active");
+        sButton.classList.add("active");
+      });
+
+      // Hide inputContainer when parButton is clicked
+      pButton.addEventListener("click", () => {
+        toggleContainers(false);
+        pButton.classList.add("active");
+        sButton.classList.remove("active");
+      });
+    }
   });
 
   calculatePayout(); // Initial calculation of total payout
+  calculateParlayPayout();
 }
 
 // Function to dynamically create and append game data elements
