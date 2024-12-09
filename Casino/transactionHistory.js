@@ -192,6 +192,7 @@ export async function printTransactionHistory() {
           // If it doesn't exist, create it
           unsettledContainer = document.createElement("div");
           unsettledContainer.id = "unsettled-container"; // Add an ID for identification
+          unsettledContainer.classList.add("unsettled-container");
           transactionHistory.appendChild(unsettledContainer); // Append it to the transaction history
         }
 
@@ -330,6 +331,11 @@ export async function printTransactionHistory() {
 
     // Populate the settledContainer
     console.log("Settled Transactions:", settled);
+    const betDiv = document.createElement("div");
+    betDiv.textContent = `Settled Bet: ${JSON.stringify(settled)}`;
+    settledContainer.appendChild(betDiv);
+    settledContainer.style.backgroundColor = "lightblue";
+    /*
     settled.forEach((bet) => {
       if (
         bet.betObject &&
@@ -349,6 +355,7 @@ export async function printTransactionHistory() {
       betDiv.textContent = `Settled Bet: ${JSON.stringify(bet)}`;
       settledContainer.appendChild(betDiv);
     });
+    */
 
     // Initially show the unsettledContainer and hide the settledContainer
     transactionHistory.appendChild(unsettledContainer);
@@ -357,14 +364,28 @@ export async function printTransactionHistory() {
     settledContainer.style.display = "none";
 
     // Add event listeners to the buttons
+    // Add event listeners to the Open and Settled buttons
     Open.addEventListener("click", () => {
-      unsettledContainer.style.display = "block";
-      settledContainer.style.display = "none";
+      // Hide all "settledContainer" elements
+      document.querySelectorAll(".settledContainer").forEach((container) => {
+        container.style.display = "none";
+      });
+
+      // Show all "unsettled-container" elements
+      document.querySelectorAll(".unsettled-container").forEach((container) => {
+        container.style.display = "block";
+      });
     });
 
     Settled.addEventListener("click", () => {
-      unsettledContainer.style.display = "none";
-      settledContainer.style.display = "block";
+      // Hide all "unsettled-container" elements
+      document.querySelectorAll(".unsettled-container").forEach((container) => {
+        container.style.display = "none";
+      });
+
+      // Show all "settledContainer" elements
+      document.querySelector("#unsettledContainer").style.display = "none";
+      document.querySelector("#settledContainer").style.display = "block";
     });
   } catch (error) {
     console.error("Error fetching transaction history:", error);

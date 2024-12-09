@@ -32,6 +32,7 @@ As of right now only team Moneyline, Spread, and Totals are available with playe
 6. Click place bets and that will put the wager into the database
 7. To settle user Bets open live server for apiNba.html and click cash users
 8. Next go run live server on transactionHistory.html to see the transactions
+9. refresh the ham menu and click on the profile icon on the top right to see the reflected balance after settling
 
 ---
 
