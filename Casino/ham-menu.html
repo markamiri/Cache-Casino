@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="static/betboost.css" />
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="apiTesting.js"></script>
+    <title>Cache Sports Betting</title>
   </head>
   <body style="background-color: #31313c">
     <div class="header">
@@ -1715,9 +1716,10 @@
         if (straightSlip.classList.contains("active")) {
           console.log(betsCart);
           betsCart.forEach((bet) => {
+            console.log("betsCart here", bet);
             const userId = bet[0];
             const betName = bet[1]; // E.g., "[Sacramento Kings spread -3]"
-
+            const teamNames = bet[3]
             // Remove the square brackets before parsing (if that's the case)
             const cleanedBetName = betName.replace(/[\[\]"]/g, ""); // Removes '[' and ']' characters
 
@@ -1731,7 +1733,7 @@
             console.log(cleanedBetName);
 
             // Call AddData for each bet
-            AddData(userId, [cleanedBetName], [cleanedodds], wagered); // You can still pass it as an array
+            AddData(userId, [cleanedBetName], [cleanedodds], wagered, teamNames); // You can still pass it as an array
           });
         } else if (parlaySlip.classList.contains("active")) {
           const parlayCart = parlayCombine(betsCart);

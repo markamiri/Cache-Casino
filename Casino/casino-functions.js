@@ -1582,7 +1582,7 @@ export function AddParlayData(userId, betName, odds, wagered) {
   // Retrieve the user's balance
 }
 
-export function AddData(userId, betName, odds, wagered) {
+export function AddData(userId, betName, odds, wagered, teamName) {
   const wageredAmount = parseFloat(wagered);
   const userRef = ref(db, `betslipSet/${userId}`);
   const userBalanceRef = ref(db, `betslipSet/${userId}/balance`);
@@ -1616,7 +1616,7 @@ export function AddData(userId, betName, odds, wagered) {
         typeof betName === "string" ? JSON.parse(betName) : [betName];
       const oddsArray = typeof odds === "string" ? JSON.parse(odds) : [odds];
 
-      console.log("betName", betName);
+      console.log("betName here", betName);
       console.log("Inner betName array:", betName[0]);
 
       const betOddsObj = Object.fromEntries(
@@ -1626,6 +1626,7 @@ export function AddData(userId, betName, odds, wagered) {
             "bet name": bet,
             odds: oddsArray[index],
             status: "unsettled",
+            teamName: teamName,
           },
         ])
       );

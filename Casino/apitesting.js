@@ -222,6 +222,21 @@ export function printBetCart() {
       parlayOdds.style.fontWeight = "550";
       parlayOdds.style.textAlign = "right";
       parlayOdds.style.width = "40px";
+
+      const removeBtnDiv = document.createElement("div");
+      removeBtnDiv.style.width = "10px";
+      removeBtnDiv.style.padding = "4px";
+      const removeBtn = document.createElement("button");
+      removeBtn.style.flex = "1"; // RemoveBtn takes 1 part of the space
+      removeBtn.textContent = "X";
+      removeBtn.style.backgroundColor = "transparent";
+      removeBtn.style.border = "none";
+      removeBtn.style.fontSize = "10px";
+      removeBtn.style.fontWeight = "bold";
+      removeBtn.style.padding = 0;
+      removeBtnDiv.appendChild(removeBtn);
+      parlayTopHeader.style.alignItems = "center";
+      parlayTopHeader.appendChild(removeBtnDiv);
       parlayTopHeader.appendChild(parlayTeam);
       parlayTopHeader.appendChild(parlayOdds);
 
@@ -250,8 +265,8 @@ export function printBetCart() {
       parlayBotHeader.appendChild(teams);
       parlayBotHeader.appendChild(time);
       parlayBotHeader.style.paddingBottom = "15px";
-      parlayTopHeader.style.marginLeft = "15px";
-      parlayProp.style.marginLeft = "15px";
+      //parlayTopHeader.style.marginLeft = "15px";
+      parlayProp.style.marginLeft = "19px";
       // Append elements to parlayLegContainer
       parlayLegContainer.appendChild(parlayTopHeader);
       parlayLegContainer.appendChild(parlayProp);
