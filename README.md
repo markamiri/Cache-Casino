@@ -24,7 +24,7 @@ As of right now only team Moneyline, Spread, and Totals are available with playe
 
 ## Usage
 
-1. Open Live server with the ham-menu.html to go to the homepage
+1. Go into the casino folder then open live server with the ham-menu.html to go to the homepage
 2. Click the Sign Up button to create an account
 3. Click on any of the buttons under the Spread, Total, Moneyline
 4. Then click on the clipboard on the bottom right to see the bet cart
