@@ -136,6 +136,7 @@
       "
     >
       <div
+        id="redirectSignUp"
         style="
           padding-right: 20px;
           border-right: 1px solid grey;
@@ -244,5 +245,13 @@
         >Privacy Policy</span
       >
     </div>
+
+    <script>
+      const redirectSignUp = document.getElementById("redirectSignUp");
+
+      redirectSignUp.addEventListener("click", () => {
+        window.location.href = "temp-signup.html";
+      });
+    </script>
   </body>
 </html>

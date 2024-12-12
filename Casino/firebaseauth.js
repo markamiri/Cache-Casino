@@ -3,7 +3,19 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut,
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+import {
+  getDatabase,
+  ref,
+  set,
+  get,
+  update,
+  push,
+  runTransaction,
+  remove,
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 import {
   getFirestore,
   setDoc,
@@ -34,10 +46,51 @@ function showMessage(message, elementId) {
   }, 3000);
 }
 
+function signInFnc() {
+  const signIn = document.getElementById("submitSignIn");
+  signIn.addEventListener("click", async (event) => {
+    event.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    const auth = getAuth();
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      // Store the user's UID in local storage
+      localStorage.setItem("loggedInUserId", user.uid);
+      showMessage("Login is successful", "signInMessage");
+
+      // Redirect to the user's dashboard or home page
+      window.location.href = "ham-menu.html";
+    } catch (error) {
+      console.error("Error signing in: ", error);
+      const errorCode = error.code;
+
+      if (errorCode === "auth/invalid-credential") {
+        showMessage("Incorrect Email or Password", "signInMessage");
+      } else if (errorCode === "auth/user-not-found") {
+        showMessage("User does not exist. Please sign up.", "signInMessage");
+      } else {
+        showMessage("Error signing in: " + error.message, "signInMessage");
+      }
+    }
+  });
+}
+
 function signUpfnc() {
   const signUp = document.getElementById("submitSignUp");
-  signUp.addEventListener("click", (event) => {
+  signUp.addEventListener("click", async (event) => {
+    // Add async here
     event.preventDefault();
+
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
     const firstName = document.getElementById("fName").value;
@@ -46,64 +99,49 @@ function signUpfnc() {
 
     const auth = getAuth();
     const db = getFirestore();
+    const rtdb = getDatabase();
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        const userData = {
-          email: email,
-          firstName: firstName,
-          lastName: lastName,
-          username: userName,
-          balance: 500,
-        };
+    try {
+      // Create the user
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
 
-        // Store the user's UID in local storage
-        localStorage.setItem("loggedInUserId", user.uid);
+      // User data for Firestore
+      const userData = {
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        username: userName,
+        balance: 500, // Fixed typo "balacne"
+      };
 
-        showMessage("Account Created Successfully", "signUpMessage");
+      // Store the user's UID in local storage
+      localStorage.setItem("loggedInUserId", user.uid);
+      showMessage("Account created successfully", "signUpMessage");
 
-        const docRef = doc(db, "users", user.uid);
-        setDoc(docRef, userData)
-          .then(() => {
-            console.log("User data saved to Firestore");
-            window.location.href = "ham-menu.html";
-          })
-          .catch((error) => {
-            console.error("Firestore error:", error);
-            showMessage("Unable to create user in Firestore", "signUpMessage");
-          });
-      })
-      .catch((error) => {
-        console.error("Error creating user:", error);
-        showMessage("Error creating user", "signUpMessage");
-      });
-  });
-}
+      // Save user data to Firestore
+      await setDoc(doc(db, "users", user.uid), userData);
+      console.log("User data saved to Firestore");
 
-function signInFnc() {
-  const signIn = document.getElementById("submitSignIn");
-  signIn.addEventListener("click", (event) => {
-    event.preventDefault();
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const auth = getAuth();
+      // Save initial balance to Realtime Database
+      const userFolderRef = ref(rtdb, `betslipSet/${userName}`);
+      const balanceData = {
+        balance: 500,
+        betslips: {},
+      };
+      await set(userFolderRef, balanceData);
+      console.log("User data saved to Realtime Database");
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        showMessage("Login is successful", "signInMessage");
-        const user = userCredential.user;
-        localStorage.setItem("loggedInUserId", user.uid);
-        window.location.href = "ham-menu.html";
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        if (errorCode === "auth/invalid-credential") {
-          showMessage("Incorrect Email or Password", "signInMessage");
-        } else {
-          showMessage("Account does not Exist", "signInMessage");
-        }
-      });
+      // Redirect to another page
+      window.location.href = "ham-menu.html";
+    } catch (error) {
+      console.error("Error: ", error);
+      showMessage("Error creating user: " + error.message, "signUpMessage");
+    }
   });
 }
 
@@ -116,3 +154,42 @@ document.addEventListener("DOMContentLoaded", () => {
     signInFnc();
   }
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutButton = document.getElementById("logoutButton");
+  const loggedIn = localStorage.getItem("loggedInUserId");
+  const withdraw = document.getElementById("withdraw");
+  const deposit = document.getElementById("deposit");
+
+  if (loggedIn) {
+    logoutButton.addEventListener("click", signOutFnc);
+  } else if (!loggedIn) {
+    logoutButton.addEventListener("click", redirectSignIn);
+    withdraw.addEventListener("click", redirectSignIn);
+    deposit.addEventListener("click", redirectSignUp);
+  } else {
+    console.warn("Logout button not found in the DOM.");
+  }
+});
+
+function redirectSignIn() {
+  window.location.href = "temp-signin.html";
+}
+
+function redirectSignUp() {
+  window.location.href = "temp-signup.html";
+}
+function signOutFnc() {
+  const auth = getAuth();
+  signOut(auth)
+    .then(() => {
+      //showMessage("Successfully signed out", "signOutMessage");
+
+      localStorage.removeItem("loggedInUserId"); // Clear user ID from localStorage
+
+      window.location.href = "temp-signin.html"; // Redirect to the login page or home page
+    })
+    .catch((error) => {
+      //showMessage("Error signing out: " + error.message, "signOutMessage");
+    });
+}

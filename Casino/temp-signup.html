@@ -31,7 +31,7 @@
             src="static/icons/responsible-gambling.png"
         /></a>
 
-        <button class="login">Log In</button>
+        <button id="login" class="login">Log In</button>
         <button class="signup">Sign Up</button>
         <button class="profile-icon">
           <img class="profile-color" src="static/icons/Profile-icon.png" />
@@ -191,6 +191,14 @@
         Continue
       </button>
       <script type="module" src="firebaseauth.js" defer></script>
+
+      <script>
+        const redirectSignIn = document.getElementById("login");
+
+        redirectSignIn.addEventListener("click", () => {
+          window.location.href = "temp-signin.html";
+        });
+      </script>
     </div>
   </body>
 </html>

@@ -1,4 +1,5 @@
 // casino-functions.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 
 import {
   getDatabase,
@@ -16,7 +17,6 @@ import {
   updateDoc,
   getDoc,
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -28,10 +28,26 @@ const firebaseConfig = {
   messagingSenderId: "539121343265",
   appId: "1:539121343265:web:0972f1e127abab931efc60",
 };
-
 const app = initializeApp(firebaseConfig);
-const db = getDatabase();
+
 const firestore = getFirestore(app);
+
+const db = getDatabase();
+
+export {
+  firestore,
+  db,
+  ref,
+  set,
+  get,
+  update,
+  doc,
+  updateDoc,
+  getDoc,
+  push,
+  runTransaction,
+  remove,
+};
 
 async function getUpdateBetNames(key) {
   let betUser = "";

@@ -43,7 +43,7 @@
         <button onclick="redirect_login()" class="login">Log In</button>
         <button
           onclick="redirect_signup()"
-          style="margin-right: 20px"
+          style="margin-right: 20px; color: black"
           class="signup"
         >
           Sign Up
@@ -301,6 +301,7 @@
             </div>
             <div style="display: flex; justify-content: space-between">
               <button
+                id="withdraw"
                 style="
                   font-size: 16px;
                   font-weight: bold;
@@ -315,6 +316,7 @@
               >
                 Withdraw</button
               ><button
+                id="deposit"
                 style="
                   font-size: 16px;
                   font-weight: bold;
@@ -415,9 +417,10 @@
               Help
             </div>
           </div>
-          <div class="profile-link" style="margin-left: 12px">
+          <div class="profile-link" id="logoutButton" style="margin-left: 12px">
             <img src="static/sidebar-icons/logout.png" />
             <div
+              id="logout"
               style="font-size: 14px; color: #e8eaed; font-family: sans-serif"
             >
               Log Out
@@ -1597,27 +1600,6 @@
     </script>
 
     <script type="module">
-      import { cache_straights } from "./casino-functions.js"; // Adjust path as needed
-
-      document
-        .querySelector("#cache-straights-btn")
-        .addEventListener("click", function () {
-          console.log("Button clicked"); // Log to ensure the event is triggered
-
-          const userId = "markamiri1"; // Replace with the actual user ID
-          const targetBetName = "BOS Celtics Money Line"; // The bet name you're targeting
-
-          cache_straights(userId, targetBetName)
-            .then(() => {
-              alert("Cache straights function completed.");
-            })
-            .catch((error) => {
-              alert("Error: " + error.message);
-            });
-        });
-    </script>
-
-    <script type="module">
       import {
         filterGameData,
         appendGameDataToDOM,
@@ -1744,6 +1726,8 @@
           console.log("Full parlayCart:", parlayCart);
 
           const userId = parlayCart[0];
+          console.log("is this markamir1 ", userId);
+
           const betNames = parlayCart[1];
           console.log("betsCart 1", parlayCart[1]); // Check the actual value
           console.log("typeof ", typeof parlayCart[1]); // Check its type
@@ -1801,6 +1785,32 @@
         }
       }
         */
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const loggedInUserId = localStorage.getItem("loggedInUserId");
+        console.log("local storage");
+        console.log(localStorage.getItem("loggedInUserId"));
+
+        const withdrawBtn = document.getElementById("withdraw");
+        const depositBtn = document.getElementById("deposit");
+        const logoutBtn = document.getElementById("logout");
+        if (withdrawBtn && depositBtn) {
+          // Ensure the elements exist
+          if (loggedInUserId) {
+            withdrawBtn.textContent = "Withdraw";
+            depositBtn.textContent = "Deposit";
+            logout.textContent = "Log Out";
+          } else {
+            withdrawBtn.textContent = "Log In";
+            depositBtn.textContent = "Sign Up";
+            logout.textContent = "Log In";
+          }
+        } else {
+          console.warn("Withdraw or Deposit buttons not found in the DOM.");
+        }
+      });
     </script>
 
     <script>

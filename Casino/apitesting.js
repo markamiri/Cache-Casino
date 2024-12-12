@@ -2,6 +2,12 @@ const API_KEY = "743ecb6572msh7921b757954e5b6p17850cjsn40bf0515f96d";
 const BASE_URL = "https://api.the-odds-api.com";
 //import { AddData } from "./casino-functions.js";
 
+import { firestore, db } from "./casino-functions.js";
+import {
+  doc,
+  getDoc,
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
 // Function to extract and format the data
 function filterGameData(data) {
   const { commence_time, away_team, home_team, bookmakers } = data;
@@ -56,6 +62,38 @@ export function appendGameDataToBetCart(
   printBetCart();
 
   return betsCart.length;
+}
+
+// Async function to fetch the username
+async function fetchUsername() {
+  // Retrieve the user ID from localStorage
+  const dataUserId = localStorage.getItem("loggedInUserId");
+
+  if (!dataUserId) {
+    console.error("No user ID found in localStorage");
+    return null; // Return null if no user ID is found
+  }
+
+  try {
+    // Reference the user's document in Firestore
+    const userDocRef = doc(firestore, "users", dataUserId);
+
+    // Fetch the user's document
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists()) {
+      // Extract the username field
+      const userData = userDoc.data();
+      console.log("Username fetched successfully:", userData.username);
+      return userData.username; // Return the username
+    } else {
+      console.error("No such document exists for user ID:", dataUserId);
+      return null; // Return null if the document doesn't exist
+    }
+  } catch (error) {
+    console.error("Error fetching username from Firestore:", error);
+    return null; // Return null in case of an error
+  }
 }
 
 export function printBetCart() {
@@ -654,10 +692,16 @@ export function printBetCart() {
 }
 
 // Function to dynamically create and append game data elements
-function appendGameDataToDOM(gameData) {
+async function appendGameDataToDOM(gameData) {
   const gameSchedule = document.getElementById("gameSchedule");
   const today = new Date().toISOString().split("T")[0]; // Extract only the date part
 
+  let dataUserId = localStorage.getItem("loggedInUserId");
+  const userId = localStorage.getItem("loggedInUserId");
+
+  if (userId) {
+    dataUserId = await fetchUsername(); // Wait for fetchUsername to resolve
+  }
   gameData.forEach((game) => {
     const { commence_time, away_team, home_team, h2h, spreads, totals } =
       filterGameData(game);
@@ -799,7 +843,7 @@ function appendGameDataToDOM(gameData) {
       const awayTeamSpreadButton = document.createElement("button");
 
       awayTeamSpreadButton.classList.add("awayTeamSpreadButton", "add");
-      awayTeamSpreadButton.setAttribute("data-user-id", "markamiri1");
+      awayTeamSpreadButton.setAttribute("data-user-id", dataUserId);
       awayTeamSpreadButton.setAttribute(
         "data-bet-name",
         `"[${awayTeamSpreadVar.name} spread ${awayTeamSpreadVar.point} unsettled]"`
@@ -873,7 +917,7 @@ function appendGameDataToDOM(gameData) {
       const awayTeamOUButton = document.createElement("button");
       awayTeamOUButton.classList.add("awayTeamOUButton", "add");
 
-      awayTeamOUButton.setAttribute("data-user-id", "markamiri1");
+      awayTeamOUButton.setAttribute("data-user-id", dataUserId);
       awayTeamOUButton.setAttribute(
         "data-bet-name",
         `"[${awayTeamH2hVar.name} ${awayTeamTotalVar.name} ${awayTeamTotalVar.point} unsettled]"`
@@ -926,7 +970,7 @@ function appendGameDataToDOM(gameData) {
 
       const awayTeamMLButton = document.createElement("button");
       awayTeamMLButton.classList.add("awayTeamMLButton", "add");
-      awayTeamMLButton.setAttribute("data-user-id", "markamiri1");
+      awayTeamMLButton.setAttribute("data-user-id", dataUserId);
       awayTeamMLButton.setAttribute(
         "data-bet-name",
         `"[${awayTeamH2hVar.name} MoneyLine unsettled]"`
@@ -1026,7 +1070,7 @@ function appendGameDataToDOM(gameData) {
       const hometeamSpreadButton = document.createElement("button");
       hometeamSpreadButton.classList.add("homeTeamSpreadButton", "add");
 
-      hometeamSpreadButton.setAttribute("data-user-id", "markamiri1");
+      hometeamSpreadButton.setAttribute("data-user-id", dataUserId);
       hometeamSpreadButton.setAttribute(
         "data-bet-name",
         `"[${homeTeamSpreadVar.name} spread ${homeTeamSpreadVar.point} unsettled]"`
@@ -1095,7 +1139,7 @@ function appendGameDataToDOM(gameData) {
       const homeTeamOUButton = document.createElement("button");
       homeTeamOUButton.classList.add("homeTeamOUButton", "add");
 
-      homeTeamOUButton.setAttribute("data-user-id", "markamiri1");
+      homeTeamOUButton.setAttribute("data-user-id", dataUserId);
       homeTeamOUButton.setAttribute(
         "data-bet-name",
         `"[${awayTeamH2hVar.name} ${homeTeamTotalVar.name} ${homeTeamTotalVar.point} unsettled]"`
@@ -1148,7 +1192,7 @@ function appendGameDataToDOM(gameData) {
       const homeTeamMLButton = document.createElement("button");
       homeTeamMLButton.classList.add("homeTeamMLButton", "add");
 
-      homeTeamMLButton.setAttribute("data-user-id", "markamiri1");
+      homeTeamMLButton.setAttribute("data-user-id", dataUserId);
       homeTeamMLButton.setAttribute(
         "data-bet-name",
         `"[${homeTeamH2hVar.name} MoneyLine unsettled]"`

@@ -329,6 +329,220 @@ export async function printTransactionHistory() {
       unsettledContainer.appendChild(betDiv);
     });
 
+    settled.forEach((bet) => {
+      if (
+        bet.betObject &&
+        bet.betObject.bet_1 &&
+        bet.betObject.bet_1["bet name"]
+      ) {
+        console.log("settled bet name", bet);
+        const betNameArray = bet.betObject.bet_1["bet name"]; // Extract the array
+        const betNameLength = betNameArray.length; // Get the length
+        console.log("Bet Name settled length:", betNameLength);
+        console.log("Bet Name:", betNameArray);
+        //Container for the betslip
+        let settledContainer = document.getElementById("unsettledContainer"); // Make sure you have this container defined
+        let amtwagered = bet.amtwagered;
+        let totalbetodds = bet.totalbetodds;
+        let totalReturn = bet.totalReturn;
+        console.log(amtwagered);
+        console.log(totalbetodds);
+        let potentialReturn = parseFloat(amtwagered) * parseFloat(totalbetodds);
+        potentialReturn = potentialReturn.toFixed(2);
+        const bottomRow = document.createElement("div");
+        const bottomRowTop = document.createElement("div");
+        const bottomRowBot = document.createElement("div");
+        const wagerText = document.createElement("div");
+        const returnText = document.createElement("div");
+        wagerText.textContent = "Wager";
+        wagerText.style.fontSize = "11px";
+        returnText.textContent = "Potential Return";
+        returnText.style.fontSize = "11px";
+        bottomRowTop.style.display = "flex";
+        bottomRowTop.style.justifyContent = "space-between";
+        bottomRowTop.appendChild(wagerText);
+        bottomRowTop.appendChild(returnText);
+        bottomRowBot.style.display = "flex";
+        bottomRowBot.style.justifyContent = "space-between";
+        const amtwageredText = document.createElement("div");
+        amtwageredText.textContent = `$${amtwagered}`;
+        const potentialReturnText = document.createElement("div");
+        potentialReturnText.textContent = `$${potentialReturn}`;
+        bottomRowBot.appendChild(amtwageredText);
+        bottomRowBot.appendChild(potentialReturnText);
+        bottomRow.appendChild(bottomRowTop);
+        bottomRow.appendChild(bottomRowBot);
+        bottomRow.style.marginTop = "10px";
+        bottomRow.style.borderTop = "1px solid #7F7D9C";
+
+        if (!settledContainer) {
+          settledContainer = document.createElement("div");
+          settledContainer.id = "settled-container"; // Add an ID for identification
+          settledContainer.classList.add("settled-container");
+          transactionHistory.appendChild(settledContainer); // Append it to the transaction history
+        }
+        settledContainer.innerHTML = "";
+        if (betNameLength === 1) {
+          console.log("this is a settled straight ");
+
+          const betLink = document.createElement("div");
+
+          betLink.style.marginLeft = "15px";
+          betLink.style.marginTop = "10px";
+          betLink.style.width = "477px";
+          betLink.style.height = "477px";
+          betLink.style.marginBottom = "45px"; // Add space between bet links
+          betLink.style.borderRadius = "3px 3px 0px 0px";
+          betLink.style.backgroundColor = "rgb(232, 234, 237)";
+          betLink.style.fontFamily = "sans-serif";
+
+          const gameInfo = document.createElement("div");
+          //gameInfo.style.backgroundColor = "lightpink";
+
+          gameInfo.style.marginBottom = "5px";
+          gameInfo.style.width = "437px";
+          gameInfo.style.border = "none";
+
+          gameInfo.style.color = "black";
+          gameInfo.style.borderBottom = "1px solid #7F7D9C"; // Border only on the bottom
+          // Optional background color
+          gameInfo.style.paddingBottom = "3px";
+          let nameArray = bet.betObject.bet_1["bet name"];
+          let combinedString = nameArray.join(" "); // Combine all elements with a space
+          let betNameArray = combinedString.split(" "); // Split the combined string if needed
+          let status;
+          let propName;
+          let oddsName = bet.betObject.bet_1["odds"];
+          let teamName = bet.betObject.bet_1["teamName"];
+          let teams = teamName.split("@").map((team) => team.trim());
+          let updatedTeams = teams.map((team) => {
+            let words = team.split(" "); // Split the team name into words
+            words.shift(); // Remove the first word
+            return words.join(" "); // Rejoin the remaining words
+          });
+
+          // Join the updated team names with "@" again
+          let updatedTeamName = updatedTeams.join(" @ ");
+          teamName = updatedTeamName;
+          let resultStatus = bet.betObject.bet_1["status"];
+          if (resultStatus === "push") {
+            resultStatus = "Pushed";
+          } else if (resultStatus === "cashed") {
+            resultStatus = "Cached";
+          } else {
+            resultStatus = "Defeated";
+          }
+
+          console.log("Team Name:", teamName);
+          const teamsDiv = document.createElement("div");
+          teamsDiv.textContent = teamName;
+          teamsDiv.style.fontSize = "12px";
+          teamsDiv.style.fontStyle = "italic";
+          teamsDiv.style.color = "rgb(28,28,31)";
+          teamsDiv.style.marginLeft = "20px";
+          const cashOutContainer = document.createElement("div");
+          cashOutContainer.style.width = "100%";
+          cashOutContainer.style.display = "flex"; // Use Flexbox
+          cashOutContainer.style.justifyContent = "center"; // Center horizontally
+          cashOutContainer.style.alignItems = "center"; // Center vertically
+          cashOutContainer.style.marginTop = "10px";
+          cashOutContainer.style.height = "30px";
+          const cashOutButton = document.createElement("button");
+          cashOutButton.textContent = `$${totalReturn} Returned`;
+          cashOutButton.style.backgroundColor = "rgb(255, 220, 0)";
+          cashOutButton.style.border = "none";
+          cashOutButton.style.width = "100%";
+          cashOutButton.style.borderRadius = "0px 0px 3px 3px";
+          cashOutButton.style.backgroundColor = "#7F7D9C";
+          cashOutButton.style.color = "white";
+          cashOutButton.style.height = "30px";
+          cashOutContainer.appendChild(cashOutButton);
+          if (betNameArray.includes("MoneyLine")) {
+            console.log("this bet name contains moneyline");
+            status = betNameArray.pop();
+            propName = betNameArray.pop();
+            teamName = betNameArray.join(" ");
+          } else if (betNameArray.includes("spread")) {
+            console.log("this bet contains spread");
+            console.log("this is the data", betNameArray);
+            status = betNameArray.pop();
+            let line = betNameArray.pop();
+            let prop = betNameArray.pop();
+            prop = prop.charAt(0).toUpperCase() + prop.slice(1);
+            console.log("Line value:", line);
+            console.log("Type of line:", typeof line);
+            const numericLine = parseFloat(line);
+            console.log("numeric line:", numericLine);
+            if (numericLine < 0) {
+              propName = prop + ":" + " " + line;
+            } else if (numericLine > 0) {
+              propName = prop + ":" + " " + "+" + line;
+            }
+            teamName = betNameArray.join(" ");
+          } else if (
+            betNameArray.includes("Over") ||
+            betNameArray.includes("Under")
+          ) {
+            console.log("this bet contains Totals");
+            console.log("this is the data", betNameArray);
+            status = betNameArray.pop();
+            let line = betNameArray.pop();
+            let prop = betNameArray.pop();
+            propName = prop + " " + line;
+            teamsDiv.textContent = "";
+          }
+          const betOdds = document.createElement("div");
+          const teamNamediv = document.createElement("div");
+          const propNamediv = document.createElement("div");
+          betOdds.textContent = `${oddsName}`;
+          teamNamediv.textContent = `${teamName}`;
+          propNamediv.textContent = `${propName}`;
+          gameInfo.style.paddingTop = "3px";
+          gameInfo.style.paddingBottom = "3px";
+          gameInfo.style.height = "40px";
+          gameInfo.style.display = "flex";
+          gameInfo.style.justifyContent = "space-between";
+
+          let result = document.createElement("button");
+          result.textContent = `${resultStatus}`;
+          result.style.fontSize = "14px";
+          result.style.height = "30px";
+          let betSlipType = document.createElement("div");
+          if (betNameLength === 1) {
+            betSlipType.textContent = "Straight";
+          } else {
+            betSlipType.textContent = "Parlay";
+          }
+          betSlipType.style.fontSize = "18px";
+          betSlipType.style.fontWeight = "bold";
+          betSlipType.style.fontFamily = "sans-serif";
+          gameInfo.appendChild(betSlipType);
+          gameInfo.appendChild(result);
+          gameInfo.style.alignItems = "center";
+          gameInfo.style.marginLeft = "20px";
+
+          const headerDiv = document.createElement("div");
+          headerDiv.appendChild(teamNamediv);
+          headerDiv.appendChild(betOdds);
+          headerDiv.style.display = "flex";
+          headerDiv.style.justifyContent = "space-between";
+          headerDiv.style.width = "437px";
+          headerDiv.style.marginLeft = "20px";
+          propNamediv.style.fontSize = "12px";
+          propNamediv.style.color = "rgb(36, 38, 41)";
+          propNamediv.style.marginLeft = "20px";
+          betLink.appendChild(gameInfo);
+          betLink.appendChild(headerDiv);
+          betLink.appendChild(propNamediv);
+          betLink.appendChild(teamsDiv);
+          betLink.appendChild(bottomRow);
+          betLink.appendChild(cashOutContainer);
+
+          settledContainer.appendChild(betLink);
+        }
+      }
+    });
+
     // Populate the settledContainer
     console.log("Settled Transactions:", settled);
     const betDiv = document.createElement("div");
