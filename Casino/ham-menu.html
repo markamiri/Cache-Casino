@@ -1727,6 +1727,8 @@
 
           const userId = parlayCart[0];
           console.log("is this markamir1 ", userId);
+          const teamNames = parlayCart[3];
+          console.log("is this teamNames? ", teamNames);
 
           const betNames = parlayCart[1];
           console.log("betsCart 1", parlayCart[1]); // Check the actual value
@@ -1741,7 +1743,13 @@
           const wagerValue = parseFloat(parlayWager.value) || 0; // Default to 0 if input is invalid
           const wagered = wagerValue.toFixed(2); // Update value to match wager
 
-          AddParlayData(userId, [cleanedBetName], [betOdds], wagered);
+          AddParlayData(
+            userId,
+            [cleanedBetName],
+            [betOdds],
+            wagered,
+            teamNames
+          );
         }
       });
     </script>

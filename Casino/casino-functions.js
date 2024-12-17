@@ -49,6 +49,28 @@ export {
   remove,
 };
 
+function getCurrentFormattedDateTime() {
+  const now = new Date();
+
+  // Extract components
+  const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
+  const day = String(now.getDate()).padStart(2, "0");
+  const year = now.getFullYear();
+  let hours = now.getHours();
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const meridian = hours >= 12 ? "PM" : "AM";
+
+  // Convert to 12-hour format
+  hours = hours % 12 || 12;
+
+  // Combine into formatted string
+  const formattedDateTime = `${month}/${day}/${year} ${hours}:${minutes}${meridian} ET`;
+
+  return formattedDateTime;
+}
+
+// Example usage
+
 async function getUpdateBetNames(key) {
   let betUser = "";
   const userSnapshot = await get(ref(db, `unsettled/${key}`));
@@ -384,6 +406,9 @@ export async function getUnsettled() {
           console.log("potentialReturn ", potentialReturn);
           console.log("Type of betNames:", typeof betNames);
           console.log("Value of betNames:", betNames);
+
+          const currentDateTime = getCurrentFormattedDateTime();
+
           if (Array.isArray(betNames)) {
             //Parlay update bet slips
             console.log("is this working?>");
@@ -439,6 +464,7 @@ export async function getUnsettled() {
                           totalReturn: totalre,
                           "betObject/bet_1/status": "cashed",
                           [`betObject/bet_1/bet name/${index}`]: newBetName,
+                          timeSettled: currentDateTime,
                         }
                       );
 
@@ -471,6 +497,7 @@ export async function getUnsettled() {
                           unsettled: "false",
                           "betObject/bet_1/status": "failed",
                           [`betObject/bet_1/bet name/${index}`]: newBetName,
+                          timeSettled: currentDateTime,
                         }
                       );
                       //await remove(ref(db, `unsettled/${key}`));
@@ -502,6 +529,7 @@ export async function getUnsettled() {
                           totalReturn: totalre,
                           "betObject/bet_1/status": "cashed",
                           [`betObject/bet_1/bet name/${index}`]: newBetName,
+                          timeSettled: currentDateTime,
                         }
                       );
                       /*
@@ -531,6 +559,7 @@ export async function getUnsettled() {
                           unsettled: "false",
                           "betObject/bet_1/status": "failed",
                           [`betObject/bet_1/bet name/${index}`]: newBetName,
+                          timeSettled: currentDateTime,
                         }
                       );
                       //await remove(ref(db, `unsettled/${key}`));
@@ -589,6 +618,7 @@ export async function getUnsettled() {
                             totalReturn: totalre,
                             "betObject/bet_1/status": "cashed",
                             [`betObject/bet_1/bet name/${index}`]: newBetName,
+                            timeSettled: currentDateTime,
                           }
                         );
                         /*
@@ -619,6 +649,7 @@ export async function getUnsettled() {
                             unsettled: "false",
                             "betObject/bet_1/status": "failed",
                             [`betObject/bet_1/bet name/${index}`]: newBetName,
+                            timeSettled: currentDateTime,
                           }
                         );
                         //await remove(ref(db, `unsettled/${key}`));
@@ -644,6 +675,7 @@ export async function getUnsettled() {
                             "betObject/bet_1/status": "push",
                             totalReturn: betWager,
                             [`betObject/bet_1/bet name/${index}`]: newBetName,
+                            timeSettled: currentDateTime,
                           }
                         );
                         /*
@@ -689,6 +721,7 @@ export async function getUnsettled() {
                             unsettled: "false",
                             totalReturn: totalre,
                             "betObject/bet_1/status": "cashed",
+                            timeSettled: currentDateTime,
                           }
                         );
                         /*
@@ -720,6 +753,7 @@ export async function getUnsettled() {
                             unsettled: "false",
                             "betObject/bet_1/status": "failed",
                             [`betObject/bet_1/bet name/${index}`]: newBetName,
+                            timeSettled: currentDateTime,
                           }
                         );
                         /*
@@ -747,6 +781,7 @@ export async function getUnsettled() {
                             "betObject/bet_1/status": "push",
                             totalReturn: betWager,
                             [`betObject/bet_1/bet name/${index}`]: newBetName,
+                            timeSettled: currentDateTime,
                           }
                         );
                         /*
@@ -806,6 +841,7 @@ export async function getUnsettled() {
                             unsettled: "false",
                             totalReturn: totalre,
                             "betObject/bet_1/status": "cashed",
+                            timeSettled: currentDateTime,
                           }
                         );
                         //update the users balance
@@ -837,6 +873,7 @@ export async function getUnsettled() {
                             unsettled: "false",
                             "betObject/bet_1/status": "failed",
                             [`betObject/bet_1/bet name/${index}`]: newBetName,
+                            timeSettled: currentDateTime,
                           }
                         );
                         /*
@@ -864,6 +901,7 @@ export async function getUnsettled() {
                             "betObject/bet_1/status": "push",
                             totalReturn: betWager,
                             [`betObject/bet_1/bet name/${index}`]: newBetName,
+                            timeSettled: currentDateTime,
                           }
                         );
                         /*
@@ -912,6 +950,7 @@ export async function getUnsettled() {
                             unsettled: "false",
                             totalReturn: totalre,
                             "betObject/bet_1/status": "cashed",
+                            timeSettled: currentDateTime,
                           }
                         );
                         /*
@@ -943,6 +982,7 @@ export async function getUnsettled() {
                             unsettled: "false",
                             "betObject/bet_1/status": "failed",
                             [`betObject/bet_1/bet name/${index}`]: newBetName,
+                            timeSettled: currentDateTime,
                           }
                         );
                         await remove(ref(db, `unsettled/${key}`));
@@ -968,6 +1008,7 @@ export async function getUnsettled() {
                             "betObject/bet_1/status": "push",
                             totalReturn: betWager,
                             [`betObject/bet_1/bet name/${index}`]: newBetName,
+                            timeSettled: currentDateTime,
                           }
                         );
                         /*
@@ -1052,6 +1093,7 @@ export async function getUnsettled() {
                           totalReturn: totalre,
                           "betObject/bet_1/status": "cashed",
                           "betObject/bet_1/bet name/0": newBetName,
+                          timeSettled: currentDateTime,
                         }
                       );
                       //update the users balance
@@ -1081,6 +1123,7 @@ export async function getUnsettled() {
                           unsettled: "false",
                           "betObject/bet_1/status": "failed",
                           "betObject/bet_1/bet name/0": newBetName,
+                          timeSettled: currentDateTime,
                         }
                       );
                       await remove(ref(db, `unsettled/${key}`));
@@ -1105,6 +1148,7 @@ export async function getUnsettled() {
                           unsettled: "false",
                           totalReturn: totalre,
                           "betObject/bet_1/status": "cashed",
+                          timeSettled: currentDateTime,
                         }
                       );
                       //update the users balance
@@ -1127,6 +1171,7 @@ export async function getUnsettled() {
                         {
                           unsettled: "false",
                           "betObject/bet_1/status": "failed",
+                          timeSettled: currentDateTime,
                         }
                       );
                       await remove(ref(db, `unsettled/${key}`));
@@ -1179,6 +1224,7 @@ export async function getUnsettled() {
                             unsettled: "false",
                             totalReturn: totalre,
                             "betObject/bet_1/status": "cashed",
+                            timeSettled: currentDateTime,
                           }
                         );
                         //update the users balance
@@ -1202,6 +1248,7 @@ export async function getUnsettled() {
                           {
                             unsettled: "false",
                             "betObject/bet_1/status": "failed",
+                            timeSettled: currentDateTime,
                           }
                         );
                         await remove(ref(db, `unsettled/${key}`));
@@ -1221,6 +1268,7 @@ export async function getUnsettled() {
                             unsettled: "false",
                             "betObject/bet_1/status": "push",
                             totalReturn: betWager,
+                            timeSettled: currentDateTime,
                           }
                         );
                         await set(
@@ -1256,6 +1304,7 @@ export async function getUnsettled() {
                             unsettled: "false",
                             totalReturn: totalre,
                             "betObject/bet_1/status": "cashed",
+                            timeSettled: currentDateTime,
                           }
                         );
                         //update the users balance
@@ -1279,6 +1328,7 @@ export async function getUnsettled() {
                           {
                             unsettled: "false",
                             "betObject/bet_1/status": "failed",
+                            timeSettled: currentDateTime,
                           }
                         );
                         await remove(ref(db, `unsettled/${key}`));
@@ -1298,6 +1348,7 @@ export async function getUnsettled() {
                             unsettled: "false",
                             "betObject/bet_1/status": "push",
                             totalReturn: betWager,
+                            timeSettled: currentDateTime,
                           }
                         );
                         await set(
@@ -1345,6 +1396,7 @@ export async function getUnsettled() {
                             unsettled: "false",
                             totalReturn: totalre,
                             "betObject/bet_1/status": "cashed",
+                            timeSettled: currentDateTime,
                           }
                         );
                         //update the users balance
@@ -1368,6 +1420,7 @@ export async function getUnsettled() {
                           {
                             unsettled: "false",
                             "betObject/bet_1/status": "failed",
+                            timeSettled: currentDateTime,
                           }
                         );
                         await remove(ref(db, `unsettled/${key}`));
@@ -1387,6 +1440,7 @@ export async function getUnsettled() {
                             unsettled: "false",
                             "betObject/bet_1/status": "push",
                             totalReturn: betWager,
+                            timeSettled: currentDateTime,
                           }
                         );
                         await set(
@@ -1426,6 +1480,7 @@ export async function getUnsettled() {
                             unsettled: "false",
                             totalReturn: totalre,
                             "betObject/bet_1/status": "cashed",
+                            timeSettled: currentDateTime,
                           }
                         );
                         //update the users balance
@@ -1449,6 +1504,7 @@ export async function getUnsettled() {
                           {
                             unsettled: "false",
                             "betObject/bet_1/status": "failed",
+                            timeSettled: currentDateTime,
                           }
                         );
                         await remove(ref(db, `unsettled/${key}`));
@@ -1469,6 +1525,7 @@ export async function getUnsettled() {
                             unsettled: "false",
                             "betObject/bet_1/status": "push",
                             totalReturn: betWager,
+                            timeSettled: currentDateTime,
                           }
                         );
                         await set(
@@ -1502,7 +1559,7 @@ export async function getUnsettled() {
   }
 }
 
-export function AddParlayData(userId, betName, odds, wagered) {
+export function AddParlayData(userId, betName, odds, wagered, teamName) {
   const wageredAmount = parseFloat(wagered);
   const userRef = ref(db, `betslipSet/${userId}`);
   const userBalanceRef = ref(db, `betslipSet/${userId}/balance`);
@@ -1532,14 +1589,17 @@ export function AddParlayData(userId, betName, odds, wagered) {
       const newBalance = snapshot.val();
       console.log("User balance has been successfully updated to:", newBalance);
 
+      const teamNames =
+        typeof betName === "string" ? JSON.parse(teamName) : [teamName];
+      console.log("what does teamNames look like", teamNames);
+      const oddsArray = typeof odds === "string" ? JSON.parse(odds) : [odds];
       const betNames =
         typeof betName === "string" ? JSON.parse(betName) : [betName];
-      const oddsArray = typeof odds === "string" ? JSON.parse(odds) : [odds];
-
       console.log("betName", betName);
       console.log("Inner betName array:", betName[0]);
       const oddsArryData = oddsArray[0][0];
       console.log(oddsArryData[0]);
+      const teamArryName = teamNames;
 
       const betOddsObj = Object.fromEntries(
         betNames.map((bet, index) => [
@@ -1548,6 +1608,7 @@ export function AddParlayData(userId, betName, odds, wagered) {
             "bet name": bet,
             odds: oddsArryData,
             status: "unsettled",
+            teamName: teamArryName[index],
           },
         ])
       );
