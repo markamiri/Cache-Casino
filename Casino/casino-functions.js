@@ -601,8 +601,8 @@ export async function getUnsettled() {
                       if (newvisitorPoints > homePoints) {
                         console.log("bet cashed ");
                         status = "cache";
-                        const newBetName =
-                          teamName + " " + removedWord + " " + status;
+                        const newBetName = teamName + " " + numberLine + " ";
+                        removedWord + " " + status;
                         console.log(newBetName);
 
                         await update(ref(db, `unsettled/${key}`), {
@@ -635,7 +635,14 @@ export async function getUnsettled() {
                         console.log("bet failed");
                         status = "failed";
                         const newBetName =
-                          teamName + " " + removedWord + " " + status;
+                          teamName +
+                          " " +
+                          numberLine +
+                          " " +
+                          removedWord +
+                          " " +
+                          status;
+
                         console.log(newBetName);
                         //update bet in the unsettled folder
                         await update(ref(db, `unsettled/${key}`), {
@@ -658,7 +665,13 @@ export async function getUnsettled() {
                         console.log("bet pushed");
                         status = "push";
                         const newBetName =
-                          teamName + " " + removedWord + " " + status;
+                          teamName +
+                          " " +
+                          numberLine +
+                          " " +
+                          removedWord +
+                          " " +
+                          status;
                         console.log(newBetName);
                         //update bet in the unsettled folder
                         await update(ref(db, `unsettled/${key}`), {
@@ -704,7 +717,13 @@ export async function getUnsettled() {
                         console.log("bet cashed ");
                         status = "cache";
                         const newBetName =
-                          teamName + " " + removedWord + " " + status;
+                          teamName +
+                          " " +
+                          numberLine +
+                          " " +
+                          removedWord +
+                          " " +
+                          status;
                         console.log(newBetName);
                         await update(ref(db, `unsettled/${key}`), {
                           [`betObject/bet_1/bet name/${index}`]: newBetName,
@@ -738,7 +757,13 @@ export async function getUnsettled() {
                         console.log("bet failed");
                         status = "failed";
                         const newBetName =
-                          teamName + " " + removedWord + " " + status;
+                          teamName +
+                          " " +
+                          numberLine +
+                          " " +
+                          removedWord +
+                          " " +
+                          status;
                         console.log(newBetName);
                         //update bet in the unsettled folder
                         await update(ref(db, `unsettled/${key}`), {
@@ -764,7 +789,13 @@ export async function getUnsettled() {
                         console.log("bet pushed");
                         status = "push";
                         const newBetName =
-                          teamName + " " + removedWord + " " + status;
+                          teamName +
+                          " " +
+                          numberLine +
+                          " " +
+                          removedWord +
+                          " " +
+                          status;
                         console.log(newBetName);
                         //update bet in the unsettled folder
                         await update(ref(db, `unsettled/${key}`), {
@@ -823,7 +854,13 @@ export async function getUnsettled() {
 
                         status = "cache";
                         const newBetName =
-                          teamName + " " + removedWord + " " + status;
+                          teamName +
+                          " " +
+                          numberLine +
+                          " " +
+                          removedWord +
+                          " " +
+                          status;
                         console.log(newBetName);
                         // update the betslip in unsettled first
                         await update(ref(db, `unsettled/${key}`), {
@@ -859,7 +896,13 @@ export async function getUnsettled() {
                         //update bet in the unsettled folder
                         status = "failed";
                         const newBetName =
-                          teamName + " " + removedWord + " " + status;
+                          teamName +
+                          " " +
+                          numberLine +
+                          " " +
+                          removedWord +
+                          " " +
+                          status;
                         console.log(newBetName);
                         await update(ref(db, `unsettled/${key}`), {
                           unsettled: "false",
@@ -884,7 +927,13 @@ export async function getUnsettled() {
                         console.log("bet pushed");
                         status = "push";
                         const newBetName =
-                          teamName + " " + removedWord + " " + status;
+                          teamName +
+                          " " +
+                          numberLine +
+                          " " +
+                          removedWord +
+                          " " +
+                          status;
                         console.log(newBetName);
                         //update bet in the unsettled folder
                         await update(ref(db, `unsettled/${key}`), {
@@ -934,7 +983,13 @@ export async function getUnsettled() {
                         console.log("bet cashed");
                         status = "cache";
                         const newBetName =
-                          teamName + " " + removedWord + " " + status;
+                          teamName +
+                          " " +
+                          numberLine +
+                          " " +
+                          removedWord +
+                          " " +
+                          status;
                         console.log(newBetName);
                         await update(ref(db, `unsettled/${key}`), {
                           "betObject/bet_1/status": "cashed",
@@ -967,7 +1022,13 @@ export async function getUnsettled() {
                         console.log("bet failed");
                         status = "failed";
                         const newBetName =
-                          teamName + " " + removedWord + " " + status;
+                          teamName +
+                          " " +
+                          numberLine +
+                          " " +
+                          removedWord +
+                          " " +
+                          status;
                         console.log(newBetName);
                         //update bet in the unsettled folder
                         await update(ref(db, `unsettled/${key}`), {
@@ -991,7 +1052,13 @@ export async function getUnsettled() {
                         console.log("bet pushed");
                         status = "push";
                         const newBetName =
-                          teamName + " " + removedWord + " " + status;
+                          teamName +
+                          " " +
+                          numberLine +
+                          " " +
+                          removedWord +
+                          " " +
+                          status;
                         console.log(newBetName);
                         //update bet in the unsettled folder
                         await update(ref(db, `unsettled/${key}`), {
@@ -1564,6 +1631,7 @@ export function AddParlayData(userId, betName, odds, wagered, teamName) {
   const userRef = ref(db, `betslipSet/${userId}`);
   const userBalanceRef = ref(db, `betslipSet/${userId}/balance`);
   const unsettledRef = ref(db, "unsettled/");
+  const currentDateTime = getCurrentFormattedDateTime();
 
   runTransaction(userBalanceRef, (currentBalance) => {
     if (currentBalance === null) {
@@ -1633,6 +1701,7 @@ export function AddParlayData(userId, betName, odds, wagered, teamName) {
         totalReturn: 0,
         //totalbetodds: totalBetOdds,
         betTFObj: betTFObj,
+        timePlaced: currentDateTime,
       };
 
       // Add the bet slip to the user's folder with a unique ID
@@ -1664,6 +1733,7 @@ export function AddData(userId, betName, odds, wagered, teamName) {
   const userRef = ref(db, `betslipSet/${userId}`);
   const userBalanceRef = ref(db, `betslipSet/${userId}/balance`);
   const unsettledRef = ref(db, "unsettled/");
+  const currentDateTime = getCurrentFormattedDateTime();
 
   runTransaction(userBalanceRef, (currentBalance) => {
     if (currentBalance === null) {
@@ -1718,6 +1788,7 @@ export function AddData(userId, betName, odds, wagered, teamName) {
         WorL: "None",
         totalReturn: 0,
         totalbetodds: totalBetOdds,
+        timePlaced: currentDateTime,
       };
 
       // Add the bet slip to the user's folder with a unique ID

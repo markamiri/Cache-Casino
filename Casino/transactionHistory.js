@@ -106,6 +106,7 @@ export async function separateBetslips() {
           unsettled: betslip.unsettled,
           totalbetodds: betslip.totalbetodds,
           timeSettled: betslip.timeSettled,
+          timePlaced: betslip.timePlaced,
         };
 
         if (formattedBetslip.unsettled === true) {
@@ -191,6 +192,7 @@ export async function printTransactionHistory() {
         bottomRow.appendChild(bottomRowBot);
         bottomRow.style.marginTop = "10px";
         bottomRow.style.width = "437px";
+        bottomRow.style.marginLeft = "20px";
 
         if (!unsettledContainer) {
           // If it doesn't exist, create it
@@ -206,27 +208,33 @@ export async function printTransactionHistory() {
           console.log("this is a straight");
           const betLink = document.createElement("div");
 
-          betLink.style.borderRadius = "10px";
           betLink.style.marginLeft = "15px";
           betLink.style.marginTop = "10px";
-          betLink.style.width = "230px";
-          betLink.style.height = "140px";
+          betLink.style.width = "477px";
           betLink.style.marginBottom = "45px"; // Add space between bet links
-
+          betLink.style.borderRadius = "3px 3px 0px 0px";
           betLink.style.backgroundColor = "rgb(232, 234, 237)";
           betLink.style.fontFamily = "sans-serif";
 
           const gameInfo = document.createElement("div");
           //gameInfo.style.backgroundColor = "lightpink";
 
+          gameInfo.classList.add("gameInfo");
           gameInfo.style.marginBottom = "5px";
-          gameInfo.style.width = "208px";
+          gameInfo.style.width = "437px";
           gameInfo.style.border = "none";
-
+          gameInfo.style.paddingTop = "3px";
+          gameInfo.style.paddingBottom = "3px";
+          gameInfo.style.height = "40px";
+          gameInfo.style.display = "flex";
+          gameInfo.style.justifyContent = "space-between";
+          gameInfo.style.alignItems = "center";
+          gameInfo.style.marginLeft = "20px";
           gameInfo.style.color = "black";
+          gameInfo.style.fontWeight = "bold";
+          gameInfo.style.fontSize = "18px";
           gameInfo.style.borderBottom = "1px solid #7F7D9C"; // Border only on the bottom
           // Optional background color
-          gameInfo.style.paddingBottom = "3px";
           let nameArray = bet.betObject.bet_1["bet name"];
           let combinedString = nameArray.join(" "); // Combine all elements with a space
           let betNameArray = combinedString.split(" "); // Split the combined string if needed
@@ -234,26 +242,30 @@ export async function printTransactionHistory() {
           let propName;
           let oddsName = bet.betObject.bet_1["odds"];
           let teamName = bet.betObject.bet_1["teamName"];
-          console.log("Team Name:", teamName);
+          let timePlaced = bet.timePlaced;
+          console.log("time placed?:", timePlaced);
+
+          let betId = bet.id;
           const teamsDiv = document.createElement("div");
           teamsDiv.textContent = teamName;
           teamsDiv.style.fontSize = "12px";
           teamsDiv.style.fontStyle = "italic";
           teamsDiv.style.color = "rgb(28,28,31)";
-          teamsDiv.style.paddingLeft = "10px";
           const cashOutContainer = document.createElement("div");
-          cashOutContainer.style.width = "100%";
+          cashOutContainer.style.width = "437px";
           cashOutContainer.style.display = "flex"; // Use Flexbox
           cashOutContainer.style.justifyContent = "center"; // Center horizontally
           cashOutContainer.style.alignItems = "center"; // Center vertically
           cashOutContainer.style.marginTop = "10px";
           cashOutContainer.style.height = "30px";
+          cashOutContainer.style.marginLeft = "20px";
           const cashOutButton = document.createElement("button");
           cashOutButton.textContent = "Cash Out";
+          cashOutButton.style.fontWeight = "bold";
           cashOutButton.style.backgroundColor = "rgb(255, 220, 0)";
           cashOutButton.style.border = "none";
           cashOutButton.style.width = "100%";
-          cashOutButton.style.borderRadius = "0px 0px 8px 8px";
+          cashOutButton.style.borderRadius = "0px 0px 3px 3px";
           cashOutButton.style.backgroundColor = "#7F7D9C";
           cashOutButton.style.color = "white";
           cashOutButton.style.height = "30px";
@@ -293,6 +305,18 @@ export async function printTransactionHistory() {
             propName = prop + " " + line;
             teamsDiv.textContent = "";
           }
+          let betIdContainer = document.createElement("div");
+          let betIdDiv = document.createElement("div");
+          betIdDiv.textContent = `ID : ${betId} `;
+          let timePlacedDiv = document.createElement("div");
+          timePlacedDiv.textContent = `Placed: ${timePlaced}`;
+          betIdContainer.style.marginLeft = "20px";
+          betIdContainer.style.fontSize = "13px";
+          betIdContainer.style.color = "rgb(36, 38, 41)";
+          betIdContainer.style.paddingBottom = "15px";
+          betIdContainer.style.marginTop = "5px";
+          betIdContainer.appendChild(timePlacedDiv);
+          betIdContainer.appendChild(betIdDiv);
 
           const betOdds = document.createElement("div");
           const teamNamediv = document.createElement("div");
@@ -300,28 +324,37 @@ export async function printTransactionHistory() {
           betOdds.textContent = `${oddsName}`;
           teamNamediv.textContent = `${teamName}`;
           propNamediv.textContent = `${propName}`;
-          gameInfo.textContent = `$${amtwagered} Straight`;
-          gameInfo.style.paddingLeft = "19px";
-          gameInfo.style.paddingRight = "3px";
-          gameInfo.style.paddingTop = "3px";
-          gameInfo.style.paddingBottom = "3px";
+          gameInfo.textContent = `Straight`;
+
           const headerDiv = document.createElement("div");
           headerDiv.appendChild(teamNamediv);
           headerDiv.appendChild(betOdds);
           headerDiv.style.display = "flex";
           headerDiv.style.justifyContent = "space-between";
-          headerDiv.style.width = "210px";
-          headerDiv.style.paddingLeft = "10px";
+          headerDiv.style.width = "437px";
+          headerDiv.style.marginLeft = "20px";
+          headerDiv.style.fontWeight = "bold";
           propNamediv.style.fontSize = "12px";
           propNamediv.style.color = "rgb(36, 38, 41)";
-          propNamediv.style.marginLeft = "10px";
+          propNamediv.style.marginLeft = "20px";
+          teamsDiv.style.marginLeft = "20px";
+          headerDiv.classList.add("headerDiv");
+          propNamediv.classList.add("propNameDiv");
+          teamsDiv.classList.add("teamsDiv");
+          bottomRow.classList.add("bottomRow");
+          cashOutContainer.classList.add("cashOutContainer");
           betLink.appendChild(gameInfo);
           betLink.appendChild(headerDiv);
           betLink.appendChild(propNamediv);
           betLink.appendChild(teamsDiv);
           betLink.appendChild(bottomRow);
           betLink.appendChild(cashOutContainer);
-
+          betLink.appendChild(betIdContainer);
+          let temp = document.createElement("img");
+          temp.style.width = "256px";
+          temp.style.height = "144px";
+          temp.src = "static/icons/cache_receipt_logo.png";
+          //betLink.appendChild(temp);
           unsettledContainer.appendChild(betLink);
         } else {
           console.log("this is a parlay");
@@ -549,7 +582,7 @@ export async function printTransactionHistory() {
           betIdContainer.style.marginLeft = "20px";
           betIdContainer.style.fontSize = "13px";
           betIdContainer.style.color = "rgb(36, 38, 41)";
-          betIdContainer.style.paddingBottom = "40px";
+          betIdContainer.style.paddingBottom = "45px";
           betIdContainer.style.marginTop = "5px";
           let result = document.createElement("button");
           result.textContent = `${resultStatus}`;
@@ -634,6 +667,25 @@ export async function printTransactionHistory() {
             const statusIcon = document.createElement("img");
             let nameArraySplit = nameArray[i].split(" ");
             let lastWord = nameArraySplit.pop(); // Use pop() only once
+            let prop = nameArraySplit.pop();
+            let line;
+            let betInfo;
+            if (prop !== "MoneyLine") {
+              if (prop === "spread") {
+                line = nameArraySplit.pop();
+                if (parseFloat(line) > 0) {
+                  line = "+" + line;
+                }
+                betInfo = line + " " + prop;
+              } else if (prop === "Over" || prop === "Under") {
+                line = nameArraySplit.pop();
+                betInfo = prop + " " + line;
+              }
+            } else {
+              betInfo = prop;
+            }
+            let betInfoDiv = document.createElement("div");
+            betInfoDiv.textContent = betInfo;
             nameArraySplit = nameArraySplit.join(" ");
             if (lastWord === "cache") {
               statusIcon.src = "static/settled-icon/checkmark.png"; // Correct path for web
@@ -690,8 +742,12 @@ export async function printTransactionHistory() {
 
             const betCont = document.createElement("div");
             betCont.appendChild(nameOdds);
+            betInfoDiv.style.fontSize = "12px";
+            betInfoDiv.style.color = "rgb(36, 38, 41)";
+            betCont.appendChild(betInfoDiv);
             betCont.appendChild(gameDescription);
-
+            betCont.style.marginBottom = "5px";
+            parlayMiddle.style.fontFamily = "sans-serif";
             parlayMiddle.appendChild(betCont);
             parlayMiddle.style.marginLeft = "20px";
           }
@@ -786,7 +842,7 @@ export async function printTransactionHistory() {
           betIdContainer.style.marginTop = "5px";
           betIdContainer.style.color = "rgb(36, 38, 41)";
           betIdContainer.style.fontSize = "13px";
-          betIdContainer.style.paddingBottom = "40px";
+          betIdContainer.style.paddingBottom = "45px";
           betLink.style.clipPath =
             "polygon(0 0, 100% 0, 100% 90%, 95% 95%, 90% 90%, 85% 95%, 80% 90%, 75% 95%, 70% 90%, 65% 95%, 60% 90%, 55% 95%, 50% 90%, 45% 95%, 40% 90%, 35% 95%, 30% 90%, 25% 95%, 20% 90%, 15% 95%, 10% 90%, 5% 95%, 0 90%)";
           betIdContainer.appendChild(timeSettledDiv);
