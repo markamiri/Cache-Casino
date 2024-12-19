@@ -155,7 +155,10 @@ export async function printTransactionHistory() {
         bet.betObject.bet_1["bet name"]
       ) {
         const betNameArray = bet.betObject.bet_1["bet name"]; // Extract the array
-        const betNameLength = betNameArray.length; // Get the length
+        const flattenedBetNameArray = Array.isArray(betNameArray[0])
+          ? betNameArray[0]
+          : betNameArray; // Access the nested array
+        const betNameLength = flattenedBetNameArray.length; // Get the length of the nested array
         console.log("Bet Name Length:", betNameLength);
         console.log("Bet Name:", betNameArray);
         console.log("Bet name not found in this bet.");
@@ -242,8 +245,8 @@ export async function printTransactionHistory() {
           let propName;
           let oddsName = bet.betObject.bet_1["odds"];
           let teamName = bet.betObject.bet_1["teamName"];
+          console.log("This is the teamName", nameArray);
           let timePlaced = bet.timePlaced;
-          console.log("time placed?:", timePlaced);
 
           let betId = bet.id;
           const teamsDiv = document.createElement("div");
@@ -356,8 +359,124 @@ export async function printTransactionHistory() {
           temp.src = "static/icons/cache_receipt_logo.png";
           //betLink.appendChild(temp);
           unsettledContainer.appendChild(betLink);
-        } else {
+        } else if (betNameLength > 1) {
           console.log("this is a parlay");
+          const betLink = document.createElement("div");
+
+          betLink.style.marginLeft = "15px";
+          betLink.style.marginTop = "10px";
+          betLink.style.width = "477px";
+          betLink.style.marginBottom = "45px"; // Add space between bet links
+          betLink.style.borderRadius = "3px 3px 0px 0px";
+          betLink.style.backgroundColor = "rgb(232, 234, 237)";
+          betLink.style.fontFamily = "sans-serif";
+
+          const gameInfo = document.createElement("div");
+          //gameInfo.style.backgroundColor = "lightpink";
+
+          gameInfo.classList.add("gameInfo");
+          gameInfo.style.marginBottom = "5px";
+          gameInfo.style.width = "437px";
+          gameInfo.style.border = "none";
+          gameInfo.style.paddingTop = "3px";
+          gameInfo.style.paddingBottom = "3px";
+          gameInfo.style.height = "40px";
+          gameInfo.style.display = "flex";
+          gameInfo.style.justifyContent = "space-between";
+          gameInfo.style.alignItems = "center";
+          gameInfo.style.marginLeft = "20px";
+          gameInfo.style.color = "black";
+          gameInfo.style.fontWeight = "bold";
+          gameInfo.style.fontSize = "18px";
+          gameInfo.style.borderBottom = "1px solid #7F7D9C"; // Border only on the bottom
+          gameInfo.textContent = "Parlay";
+          let nameArray = bet.betObject.bet_1["bet name"];
+          let combinedString = nameArray.join(" "); // Combine all elements with a space
+          let betNameArray = combinedString.split(" "); // Split the combined string if needed
+          console.log("this is the betNameArray", nameArray);
+          let status;
+          let propName;
+          let oddsName = bet.betObject.bet_1["odds"];
+          console.log("this is the oddsName", oddsName);
+          let oddsArray = oddsName;
+          let teamName = bet.betObject.bet_1["teamName"];
+          console.log("this is the teamName", teamName);
+          let timePlaced = bet.timePlaced;
+
+          const parlayMiddle = document.createElement("div");
+          for (let i = 0; i < nameArray.length; i++) {
+            const nameOdds = document.createElement("div");
+            nameOdds.style.display = "flex";
+            nameArray = Array.isArray(nameArray[0]) ? nameArray[0] : nameArray; // Access the nested array
+            console.log(`Index ${i}:`, nameArray[i], typeof nameArray[i]);
+
+            let nameArraySplit = nameArray[i].split(" ");
+            let lastWord = nameArraySplit.pop(); // Use pop() only once
+            let prop = nameArraySplit.pop();
+            let line;
+            let betInfo;
+            if (prop !== "MoneyLine") {
+              if (prop === "spread") {
+                line = nameArraySplit.pop();
+                if (parseFloat(line) > 0) {
+                  line = "+" + line;
+                }
+                betInfo = line + " " + prop;
+              } else if (prop === "Over" || prop === "Under") {
+                line = nameArraySplit.pop();
+                betInfo = prop + " " + line;
+              }
+            } else {
+              betInfo = prop;
+            }
+            let betInfoDiv = document.createElement("div");
+            betInfoDiv.textContent = betInfo;
+            nameArraySplit = nameArraySplit.join(" ");
+            const legNameContainer = document.createElement("div");
+
+            const legName = document.createElement("div");
+            legName.textContent = `${nameArraySplit}`;
+
+            const gameDescription = document.createElement("div");
+            let teamDescriptionArray = teamName;
+            let teams = teamDescriptionArray[i]
+              .split("@")
+              .map((team) => team.trim());
+            let updatedTeams = teams.map((team) => {
+              let words = team.split(" "); // Split the team name into words
+              words.shift(); // Remove the first word
+              return words.join(" "); // Rejoin the remaining words
+            });
+            let updatedTeamName = updatedTeams.join(" @ ");
+            gameDescription.textContent = `${updatedTeamName}`;
+            gameDescription.style.fontSize = "12px";
+            gameDescription.style.fontStyle = "italic";
+            gameDescription.style.color = "rgb(28, 28, 31)";
+            legNameContainer.appendChild(legName);
+            legNameContainer.style.display = "flex";
+            legNameContainer.style.justifyContent = "space-between";
+            legNameContainer.style.width = "300px";
+            const legOdds = document.createElement("div");
+            legOdds.textContent = `${oddsArray[i]}`;
+            legOdds.style.marginLeft = "86px";
+            nameOdds.style.fontWeight = "bold";
+            nameOdds.appendChild(legNameContainer);
+            nameOdds.appendChild(legOdds);
+            const betCont = document.createElement("div");
+            betCont.appendChild(nameOdds);
+            betInfoDiv.style.fontSize = "12px";
+            betInfoDiv.style.color = "rgb(36, 38, 41)";
+            betCont.appendChild(betInfoDiv);
+            betCont.appendChild(gameDescription);
+            betCont.style.marginBottom = "5px";
+            parlayMiddle.style.fontFamily = "sans-serif";
+            parlayMiddle.appendChild(betCont);
+            parlayMiddle.style.marginLeft = "20px";
+          }
+          parlayMiddle.style.width = "437px";
+          betLink.appendChild(gameInfo);
+          betLink.appendChild(parlayMiddle);
+          unsettledContainer.appendChild(betLink);
         }
       }
 
