@@ -426,30 +426,41 @@ export async function printTransactionHistory() {
 
             let nameArraySplit = nameArray[i].split(" ");
             let lastWord = nameArraySplit.pop(); // Use pop() only once
+            console.log("Last word:", lastWord);
+
+            let line = nameArraySplit.pop();
+            console.log("Line:", line);
+
             let prop = nameArraySplit.pop();
-            let line;
+            console.log("Prop:", prop);
+
             let betInfo;
+            let betName;
             if (prop !== "MoneyLine") {
               if (prop === "spread") {
-                line = nameArraySplit.pop();
                 if (parseFloat(line) > 0) {
                   line = "+" + line;
                 }
                 betInfo = line + " " + prop;
               } else if (prop === "Over" || prop === "Under") {
-                line = nameArraySplit.pop();
                 betInfo = prop + " " + line;
               }
             } else {
               betInfo = prop;
             }
+            console.log("this is the betInfo", betInfo);
             let betInfoDiv = document.createElement("div");
             betInfoDiv.textContent = betInfo;
+            betInfoDiv.style.display = "None";
             nameArraySplit = nameArraySplit.join(" ");
             const legNameContainer = document.createElement("div");
 
             const legName = document.createElement("div");
-            legName.textContent = `${nameArraySplit}`;
+            if (prop === "spread") {
+              legName.textContent = `${nameArraySplit} ${line} `;
+            } else if (prop === "Over" || prop === "Under") {
+              legName.textContent = ` ${betInfo} `;
+            }
 
             const gameDescription = document.createElement("div");
             let teamDescriptionArray = teamName;
@@ -462,6 +473,7 @@ export async function printTransactionHistory() {
               return words.join(" "); // Rejoin the remaining words
             });
             let updatedTeamName = updatedTeams.join(" @ ");
+            updatedTeamName = teamDescriptionArray[i];
             gameDescription.textContent = `${updatedTeamName}`;
             gameDescription.style.fontSize = "12px";
             gameDescription.style.fontStyle = "italic";
@@ -490,8 +502,11 @@ export async function printTransactionHistory() {
             parlayMiddle.style.marginLeft = "20px";
           }
           parlayMiddle.style.width = "437px";
+          gameInfo.classList.add("gameInfo");
           betLink.appendChild(gameInfo);
+
           betLink.appendChild(parlayMiddle);
+          parlayMiddle.classList.add("parlayMiddle");
           parlayMiddle.style.marginBottom = "10px";
           console.log("amtwagered Parlay", amtwagered);
           console.log("totalbetodds Parlay", totalOdds);
@@ -555,6 +570,16 @@ export async function printTransactionHistory() {
           betIdContainer.style.fontSize = "13px";
           betIdContainer.style.paddingBottom = "15px";
 
+          bottomRow.classList.add("bottomRow");
+
+          cashOutContainer.classList.add("cashOutContainer");
+
+          timePlacedDiv.classList.add("timePlacedDiv");
+          betIdDiv.classList.add("betIdDiv");
+
+          betIdContainer.classList.add("betIdContainer");
+
+          unsettledContainer.classList.add("unsettledContainer");
           betLink.appendChild(bottomRow);
 
           betLink.appendChild(cashOutContainer);
@@ -657,6 +682,7 @@ export async function printTransactionHistory() {
           let oddsName = bet.betObject.bet_1["odds"];
           let teamName = bet.betObject.bet_1["teamName"];
           let teams = teamName.split("@").map((team) => team.trim());
+          /*
           let updatedTeams = teams.map((team) => {
             let words = team.split(" "); // Split the team name into words
             words.shift(); // Remove the first word
@@ -666,6 +692,7 @@ export async function printTransactionHistory() {
           // Join the updated team names with "@" again
           let updatedTeamName = updatedTeams.join(" @ ");
           teamName = updatedTeamName;
+          */
           let resultStatus = bet.betObject.bet_1["status"];
           let statusIcon = document.createElement("img");
           if (resultStatus === "push") {
@@ -691,10 +718,61 @@ export async function printTransactionHistory() {
             statusIcon.style.marginLeft = "10px"; // Add margin for spacing
           }
           //here
-          const legNameContainer = document.createElement("div");
 
+          let title;
+          const teamsDiv = document.createElement("div");
+          teamsDiv.textContent = teamName;
+          teamsDiv.style.fontSize = "12px";
+          teamsDiv.style.fontStyle = "italic";
+          teamsDiv.style.color = "rgb(28,28,31)";
+          teamsDiv.style.marginLeft = "20px";
+          teamsDiv.style.marginBottom = "10px";
           const legName = document.createElement("div");
-          legName.textContent = `${teamName}`;
+          const propNamediv = document.createElement("div");
+
+          if (betNameArray.includes("MoneyLine")) {
+            console.log("this bet name contains moneyline");
+            status = betNameArray.pop();
+            propName = betNameArray.pop();
+            teamName = betNameArray.join(" ");
+            legName.textContent = `${teamName} ${propName}`;
+          } else if (betNameArray.includes("spread")) {
+            console.log("this bet contains spread");
+            console.log("this is the data", betNameArray);
+            status = betNameArray.pop();
+            let line = betNameArray.pop();
+            let prop = betNameArray.pop();
+            prop = prop.charAt(0).toUpperCase() + prop.slice(1);
+            console.log("Line value:", line);
+            console.log("Type of line:", typeof line);
+            const numericLine = parseFloat(line);
+            console.log("numeric line:", numericLine);
+            if (numericLine < 0) {
+              propName = prop + ":" + " " + line;
+              title = betNameArray.join(" ") + " " + line;
+            } else if (numericLine > 0) {
+              propName = prop + ":" + " " + "+" + line;
+              title = betNameArray.join(" ") + " " + "+" + line;
+            }
+            console.log("this is the title", title);
+            console.log("this is the teamName", teamName);
+            legName.textContent = `${title}`;
+          } else if (
+            betNameArray.includes("Over") ||
+            betNameArray.includes("Under")
+          ) {
+            console.log("this bet contains Totals");
+            console.log("this is the data", betNameArray);
+            status = betNameArray.pop();
+            let line = betNameArray.pop();
+            let prop = betNameArray.pop();
+            propName = prop + " " + line;
+
+            teamsDiv.textContent = "";
+            legName.textContent = `${propName}`;
+            betNameArray = betNameArray + prop;
+          }
+          const legNameContainer = document.createElement("div");
 
           legNameContainer.appendChild(legName);
           legNameContainer.appendChild(statusIcon);
@@ -703,13 +781,7 @@ export async function printTransactionHistory() {
           legNameContainer.style.width = "400px";
 
           console.log("Team Name:", teamName);
-          const teamsDiv = document.createElement("div");
-          teamsDiv.textContent = teamName;
-          teamsDiv.style.fontSize = "12px";
-          teamsDiv.style.fontStyle = "italic";
-          teamsDiv.style.color = "rgb(28,28,31)";
-          teamsDiv.style.marginLeft = "20px";
-          teamsDiv.style.marginBottom = "10px";
+
           const cashOutContainer = document.createElement("div");
           cashOutContainer.style.width = "100%";
           cashOutContainer.style.display = "flex"; // Use Flexbox
@@ -728,43 +800,9 @@ export async function printTransactionHistory() {
           cashOutButton.style.color = "white";
           cashOutButton.style.height = "30px";
           cashOutContainer.appendChild(cashOutButton);
-          if (betNameArray.includes("MoneyLine")) {
-            console.log("this bet name contains moneyline");
-            status = betNameArray.pop();
-            propName = betNameArray.pop();
-            teamName = betNameArray.join(" ");
-          } else if (betNameArray.includes("spread")) {
-            console.log("this bet contains spread");
-            console.log("this is the data", betNameArray);
-            status = betNameArray.pop();
-            let line = betNameArray.pop();
-            let prop = betNameArray.pop();
-            prop = prop.charAt(0).toUpperCase() + prop.slice(1);
-            console.log("Line value:", line);
-            console.log("Type of line:", typeof line);
-            const numericLine = parseFloat(line);
-            console.log("numeric line:", numericLine);
-            if (numericLine < 0) {
-              propName = prop + ":" + " " + line;
-            } else if (numericLine > 0) {
-              propName = prop + ":" + " " + "+" + line;
-            }
-            teamName = betNameArray.join(" ");
-          } else if (
-            betNameArray.includes("Over") ||
-            betNameArray.includes("Under")
-          ) {
-            console.log("this bet contains Totals");
-            console.log("this is the data", betNameArray);
-            status = betNameArray.pop();
-            let line = betNameArray.pop();
-            let prop = betNameArray.pop();
-            propName = prop + " " + line;
-            teamsDiv.textContent = "";
-          }
+
           const betOdds = document.createElement("div");
           const teamNamediv = document.createElement("div");
-          const propNamediv = document.createElement("div");
           betOdds.textContent = `${oddsName}`;
           teamNamediv.textContent = `${teamName}`;
           propNamediv.textContent = `${propName}`;
@@ -828,11 +866,18 @@ export async function printTransactionHistory() {
           betLink.appendChild(headerDiv);
           headerDiv.classList.add("headerDiv");
 
-          betLink.appendChild(propNamediv);
+          //betLink.appendChild(propNamediv);
+          console.log("newbetName Array", betNameArray);
+          if (betNameArray.includes("Over") || betNameArray.includes("Under")) {
+            propNamediv.textContent = teamName;
+            betLink.appendChild(propNamediv);
+          }
+
           propNamediv.classList.add("propNamediv");
 
           betLink.appendChild(teamsDiv);
           teamsDiv.classList.add("teamsDiv");
+          bottomRow.style.paddingTop = "5px";
 
           betLink.appendChild(bottomRow);
           bottomRow.classList.add("bottomRow");
@@ -905,6 +950,7 @@ export async function printTransactionHistory() {
             }
             let betInfoDiv = document.createElement("div");
             betInfoDiv.textContent = betInfo;
+            betInfoDiv.style.display = "None";
             nameArraySplit = nameArraySplit.join(" ");
             if (lastWord === "cache") {
               statusIcon.src = "static/settled-icon/checkmark.png"; // Correct path for web
@@ -928,7 +974,15 @@ export async function printTransactionHistory() {
             const legNameContainer = document.createElement("div");
 
             const legName = document.createElement("div");
-            legName.textContent = `${nameArraySplit}`;
+            console.log("this is the prop", prop);
+            if (prop === "Over" || prop === "Under") {
+              legName.textContent = `${betInfo}`;
+            } else if (prop === "MoneyLine") {
+              legName.textContent = `${nameArraySplit} ${prop}`;
+            } else {
+              legName.textContent = `${nameArraySplit} ${line}`;
+            }
+
             const gameDescription = document.createElement("div");
 
             let teams = teamDescriptionArray[i]
@@ -942,6 +996,8 @@ export async function printTransactionHistory() {
 
             // Join the updated team names with "@" again
             let updatedTeamName = updatedTeams.join(" @ ");
+            //CODE CHANGED HERE
+            updatedTeamName = teamDescriptionArray[i];
             gameDescription.textContent = `${updatedTeamName}`;
             gameDescription.style.fontSize = "12px";
             gameDescription.style.fontStyle = "italic";
@@ -965,6 +1021,13 @@ export async function printTransactionHistory() {
             betCont.appendChild(nameOdds);
             betInfoDiv.style.fontSize = "12px";
             betInfoDiv.style.color = "rgb(36, 38, 41)";
+            console.log("this is the betinfodiv", betInfoDiv.textContent);
+            if (
+              betInfoDiv.textContent.includes("Over") ||
+              betInfoDiv.textContent.includes("Under")
+            ) {
+              betInfoDiv.style.display = "None";
+            }
             betCont.appendChild(betInfoDiv);
             betCont.appendChild(gameDescription);
             betCont.style.marginBottom = "5px";

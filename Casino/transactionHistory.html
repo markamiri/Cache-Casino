@@ -15,7 +15,7 @@
         margin-left: 100px;
         margin-top: 100px;
         height: 1000px;
-        width: 1000px;
+        width: 2000px;
       "
     >
       <div
@@ -25,17 +25,40 @@
           font-weight: bold;
           font-size: 30px;
           margin-bottom: 30px;
+          margin-left: 20px;
         "
       >
         My Bets
       </div>
 
-      <div style="display: flex">
-        <button id="Open">Open</button>
-        <button id="Settled">Settled</button>
+      <div style="display: flex; border-bottom: 1.5px solid rgb(79, 80, 81)">
+        <button
+          style="
+            border: none;
+            margin-left: 15px;
+            background-color: transparent;
+            color: white;
+            font-size: 16px;
+          "
+          id="Open"
+        >
+          Open
+        </button>
+        <button
+          style="
+            border: none;
+            margin-left: 15px;
+            background-color: transparent;
+            color: white;
+            font-size: 16px;
+          "
+          id="Settled"
+        >
+          Settled
+        </button>
       </div>
 
-      <div id="transactionHistory"></div>
+      <div style="left: 33%; position: absolute" id="transactionHistory"></div>
     </div>
     <div class="header">
       <div>
