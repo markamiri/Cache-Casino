@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>First Quarter Winner Simulator</title>
+  </head>
+  <body>
+    <h1>First Quarter Winner Simulator</h1>
+    <button id="simulate">Simulate Winner</button>
+    <p id="result"></p>
+    <p id="history"></p>
+
+    <script>
+      const teams = ["DET Pistons", "LA Lakers"];
+      const firstqWinner = { teamA: 2.36, teamB: 1.6 };
+
+      // Convert odds to probabilities
+      function convertOdds(odds) {
+        let percent = 1 / odds;
+        return percent;
+      }
+
+      // Calculate probabilities
+      const probabilities = {
+        teamA: convertOdds(firstqWinner.teamA),
+        teamB: convertOdds(firstqWinner.teamB),
+      };
+
+      console.log("Probability Team A:", probabilities.teamA);
+      console.log("Probability Team B:", probabilities.teamB);
+
+      // Generator function
+      function* firstqWinnerGenerator() {
+        while (true) {
+          const random = Math.random();
+          console.log("Random %", random);
+          if (
+            random <
+            probabilities.teamA / (probabilities.teamA + probabilities.teamB)
+          ) {
+            yield teams[0]; // DET Pistons win
+          } else {
+            yield teams[1]; // LA Lakers win
+          }
+        }
+      }
+
+      const generator = firstqWinnerGenerator();
+
+      // Event listener for the simulate button
+      document.getElementById("simulate").addEventListener("click", () => {
+        const result = generator.next().value;
+        document.getElementById("result").textContent = `Winner: ${result}`;
+
+        const historyElement = document.getElementById("history");
+        historyElement.textContent += `${result} | `;
+      });
+    </script>
+  </body>
+</html>

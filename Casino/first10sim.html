@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Basketball Play-by-Play Simulation</title>
+  </head>
+  <body>
+    <h1>Basketball Simulation: Race to 100 Points</h1>
+    <button id="simulate">Simulate Game</button>
+    <div id="playByPlay"></div>
+    <div id="winner"></div>
+
+    <script>
+      const odds = {
+        lakers: 0.64,
+        pistons: 0.43,
+      };
+
+      function findWinner() {
+        // Generate a random number between 0 and 1
+        const random = Math.random();
+
+        // Determine the winner based on the odds
+        if (random < odds.lakers / (odds.lakers + odds.pistons)) {
+          return "Lakers";
+        } else {
+          return "Pistons";
+        }
+      }
+
+      // Function to generate a single combination of 2s and 3s to reach the target score
+      function findSingleCombination(target) {
+        const combination = [];
+        while (target > 0) {
+          const value = target >= 3 && Math.random() < 0.5 ? 3 : 2; // Randomly choose 2 or 3
+          combination.push(value);
+          target -= value;
+        }
+        return combination;
+      }
+
+      // Generate play-by-play from the combinations
+      function generatePlayByPlay(
+        winningTeam,
+        losingTeam,
+        winningCombo,
+        losingCombo
+      ) {
+        const playByPlay = [];
+        const maxLength = Math.max(winningCombo.length, losingCombo.length);
+
+        let winningScore = 0;
+        let losingScore = 0;
+
+        for (let i = 0; i < maxLength; i++) {
+          if (i < losingCombo.length) {
+            losingScore += losingCombo[i];
+            playByPlay.push(
+              `${losingTeam} scores ${losingCombo[i]} points! (${winningTeam}: ${winningScore}, ${losingTeam}: ${losingScore})`
+            );
+          }
+          if (i < winningCombo.length) {
+            winningScore += winningCombo[i];
+            playByPlay.push(
+              `${winningTeam} scores ${winningCombo[i]} points! (${winningTeam}: ${winningScore}, ${losingTeam}: ${losingScore})`
+            );
+          }
+        }
+        return playByPlay;
+      }
+
+      document.getElementById("simulate").addEventListener("click", () => {
+        // Clear previous play-by-play
+        const playByPlayContainer = document.getElementById("playByPlay");
+        playByPlayContainer.innerHTML = "";
+
+        // Determine the winning and losing teams
+        const winner = findWinner();
+        const loser = winner === "Lakers" ? "Pistons" : "Lakers";
+
+        // Set scores
+        const winningScore = 100;
+        const losingScore = Math.floor(Math.random() * 100); // Random score between 0 and 99
+
+        // Generate single combinations for both teams
+        const winningCombo = findSingleCombination(winningScore);
+        const losingCombo = findSingleCombination(losingScore);
+
+        // Generate play-by-play
+        const playByPlay = generatePlayByPlay(
+          winner,
+          loser,
+          winningCombo,
+          losingCombo
+        );
+
+        // Display the play-by-play on the screen
+        playByPlay.forEach((play) => {
+          const playDiv = document.createElement("div");
+          playDiv.textContent = play;
+          playByPlayContainer.appendChild(playDiv);
+        });
+
+        // Display the winner
+        const winnerDiv = document.getElementById("winner");
+        winnerDiv.textContent = `${winner} wins the race to 100 points!`;
+      });
+    </script>
+  </body>
+</html>
